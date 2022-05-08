@@ -1,9 +1,68 @@
 
 ![](https://apiflask.com/_assets/apiflask-logo.png)
 
-# APIFlask
+# APIFlask 中文文档
 
 [![Build status](https://github.com/greyli/apiflask/workflows/build/badge.svg)](https://github.com/greyli/apiflask/actions) [![codecov](https://codecov.io/gh/greyli/apiflask/branch/main/graph/badge.svg?token=2CFPCZ1DMY)](https://codecov.io/gh/greyli/apiflask)
+
+
+## 翻译流程
+
+欢迎参与翻译，仓库地址为：
+
+<https://github.com/apiflask/docs-zh>
+
+参与翻译的基本流程如下：
+
+- 创建 PR 在下面列表里你想翻译的章节后添加你的名字，一次一章
+- Fork 本仓库（[apiflask/docs-zh](https://github.com/apiflask/docs-zh)），然后克隆你的 fork 到本地（将下面的 `{username}` 替换为你的用户名）：
+
+```
+$ git clone https://github.com/{username}/docs-zh
+$ cd docs-zh
+$ git remote add upstream https://github.com/apiflask/docs-zh
+```
+
+- 参考[贡献指南](/contributing)搭建开发环境（跳过 fork 部分）
+- 创建 branch 翻译 docs_zh/ 目录下对应的文件
+- 执行 `mkdocs serve` 预览文档并修正错误
+- 提交 PR 等待审核
+
+
+## 翻译章节列表
+
+- Home (index.md) [@greyli](https://github.com/greyli)
+- Documentation Index (docs.md)
+- Migrating from Flask (migrating.md)
+- Basic Usage (usage.md)
+- Request Handling (request.md)
+- Response Formatting (response.md)
+- Data Schema (schema.md)
+- Authentication (authentication.md)
+- OpenAPI Generating (openapi.md)
+- Swagger UI and Redoc (api-docs.md)
+- Configuration (configuration.md)
+- Error Handling (error-handling.md)
+- Examples (examples.md)
+- Comparison and Motivations (comparison.md)
+- Authors (authors.md)
+- Changelog (changelog.md)
+- Contributing Guide (contributing.md)
+- API Reference:
+    - APIFlask (api/app.md)
+    - APIBlueprint (api/blueprint.md)
+    - Exceptions (api/exceptions.md)
+    - OpenAPI (api/openapi.md)
+    - Schemas (api/schemas.md)
+    - Fields (api/fields.md)
+    - Validators (api/validators.md)
+    - Route (api/route.md)
+    - Security (api/security.md)
+    - Helpers (api/helpers.md)
+    - Commands (api/commands.md)
+
+
+## APIFlask 介绍
 
 APIFlask is a lightweight Python web API framework based on [Flask](https://github.com/pallets/flask) and [marshmallow-code](https://github.com/marshmallow-code) projects. It's easy to use, highly customizable, ORM/ODM-agnostic, and 100% compatible with the Flask ecosystem.
 

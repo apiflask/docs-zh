@@ -1,23 +1,23 @@
 site_name: APIFlask
 site_description: A lightweight Python web API framework.
 site_url: https://apiflask.com
-docs_dir: docs
+docs_dir: docs_zh
 theme:
   name: material
-  custom_dir: docs/_templates
+  custom_dir: docs_zh/_templates
   logo: _assets/white-logo.png
   favicon: _assets/favicon.png
   palette:
     primary: deep orange
   icon:
     repo: fontawesome/brands/github
-  language: en
-repo_url: https://github.com/greyli/apiflask
-repo_name: greyli/apiflask
+  language: zh
+repo_url: https://github.com/apiflask/apiflask
+repo_name: apiflask/apiflask
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/greyli/apiflask
+      link: https://github.com/apiflask/apiflask
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/apiflask
 copyright: Copyright &copy; 2021 <a href="https://greyli.com/en" target="_blank" rel="noopener">Grey Li</a>
@@ -34,6 +34,7 @@ markdown_extensions:
   - attr_list
   - toc:
         permalink: True
+        slugify: !!python/name:pymdownx.slugs.uslugify
 nav:
   - Home: index.md
   - Documentation Index: docs.md
@@ -73,6 +74,10 @@ plugins:
           rendering:
             heading_level: 2
       watch:
-        - apiflask
+        - src/apiflask
+        - README.md
+        - examples/README.md
+        - CHANGES.md
+        - CONTRIBUTING.md
 extra_css:
   - _assets/extra.css
