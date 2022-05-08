@@ -32,7 +32,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 ## 翻译章节列表
 
 - Home (index.md) [@greyli](https://github.com/greyli)
-- Documentation Index (docs.md)
+- Documentation Index (docs.md) [@rice0208](https://github.com/rice0208)
 - Migrating from Flask (migrating.md)
 - Basic Usage (usage.md)
 - Request Handling (request.md)
