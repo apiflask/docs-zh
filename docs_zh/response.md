@@ -1,35 +1,29 @@
-# Response Formatting
+# 格式化响应
 
-Read the following sections in the Basic Usage chapter first for the basics on response formatting:
+首先阅读“基本用法”章节中的以下部分，了解有关格式化响应的基础知识：
 
-- [Use `@app.output` to format response data](/usage/#use-appoutput-to-format-response-data)
-- [The return value of the view function](/usage/#the-return-value-of-the-view-function)
+- [使用 `@app.output` 格式化响应数据](/usage/#use-appoutput-to-format-response-data)
+- [视图函数的返回值](/usage/#the-return-value-of-the-view-function)
 
-Basic concepts on response formatting:
+格式化响应的基本概念：
 
-- APIFlask uses [marshmallow](https://github.com/marshmallow-code/marshmallow) to handle
-  the response formatting.
-- The response data returned by the view function will only be formatting against your
-  schema, not validating.
-- You can only declare one output (use one `app.output` decorator) for the JSON response body.
-- The error responses of your view can be declared with `app.doc(response=...)`.
+- APIFlask 使用 [marshmallow](https://github.com/marshmallow-code/marshmallow) 来处理格式化响应。
+- 视图函数返回的响应数据只会根据你的 schema 进行格式化，不会进行验证。
+- 你只能为 JSON 响应体声明一个输出（使用一个 `app.output` 装饰器）。
+- 视图的错误响应可以使用 `app.doc(response=...)` 来声明。
 
+## 分页支持
 
-## Pagination support
-
-APIFlask provides two utilies for pagination:
+APIFlask 提供了两个用于分页的工具：
 
 - [apiflask.PaginationSchema](/api/schemas/#apiflask.schemas.PaginationSchema)
 - [apiflask.pagination_builder](/api/helpers/#apiflask.helpers.pagination_builder)
 
-The `PaginationSchema` is a schema that contains the general fields
-for pagination information.
+`PaginationSchema` 是一个 schema 类，其中包含用于分页数据的常用字段。
 
-The `pagination_builder` is a helper function to generate pagination
-data for the `PaginationSchema`.
+`pagination_builder` 是一个用来为 `PaginationSchema` 生成分页数据的辅助函数。
 
-To add pagination support to our pet store example. First, we create a
-schema for query strings:
+下面为我们的宠物商店示例添加分页支持。首先，我们创建一个 PetQuerySchema 类：
 
 ```python
 from apiflask import Schema
@@ -38,14 +32,13 @@ from apiflask.validators import Range
 
 
 class PetQuerySchema(Schema):
-    page = Integer(load_default=1)  # set default page to 1
-    # set default value to 20, and make sure the value is less than 30
+    page = Integer(load_default=1)  # 设置默认页面为 1
+    # 将默认值设置为 20，并确保该值不超过 30
     per_page = Integer(load_default=20, validate=Range(max=30))
 ```
 
-Then we create a pet output schema, and a pets schema that contains
-a list of nested `PetOutSchema` schema, and a nested `PaginationSchema`
-schema.
+然后我们创建 PetOutSchema 类，与嵌套了 “PetOutSchema” 和 “PaginationSchema” 的
+PetsOutSchema 类。
 
 ```python
 from apiflask import Schema, PaginationSchema
@@ -63,7 +56,7 @@ class PetsOutSchema(Schema):
     pagination = Nested(PaginationSchema)
 ```
 
-Now we use these schemas in our `get_pets` view:
+现在我们在 `get_pets` 视图中使用这些 schema：
 
 ```python
 from apiflask import APIFlask, pagination_builder
@@ -84,13 +77,10 @@ def get_pets(query):
     }
 ```
 
-In the return value of the view function, we use `pagination_builder`
-to build the pagination data and passes the `pagination` object provided
-by Flask-SQLAlchemy.
+在视图函数的返回值中，我们使用 `pagination_builder` 来构建分页数据，并通过 Flask-SQLAlchemy 传递 `pagination` 对象。
 
-This function is designed based on Flask-SQLAlchemy's `Pagination` class.
-If you are using a different or custom pagination class, make sure the
-passed pagination object has the following attributes:
+`pagination_builder` 函数是基于 Flask-SQLAlchemy 的 `Pagination` 类设计的。
+如果你想使用自定义的分页类，请确保传递的 `pagination` 对象具有以下属性：
 
 - `page`
 - `per_page`
@@ -101,23 +91,18 @@ passed pagination object has the following attributes:
 - `prev_num`
 - `has_prev`
 
-You can also write a custom builder function and pagination schema
-to build your custom pagination data.
+你还可以编写自定义构建器函数和分页 schema 来构建你的自定义分页数据。
 
-See the [full example](https://github.com/apiflask/apiflask/blob/main/examples/pagination/app.py)
-for more details.
+具体细节请参阅 [完整示例](https://github.com/apiflask/apiflask/blob/main/examples/pagination/app.py)
 
+## 响应示例
 
-## Response examples
+你可以通过 `example` 和 `examples` 参数来为 OpenAPI spec 设置响应示例，请参阅 OpenAPI Generating 章节中 [响应与请求示例](/openapi/#response-and-request-example)
+来了解更多详情。
 
-You can set response examples for OpenAPI spec with the `example` and `examples`
-parameters, see [this section](/openapi/#response-and-request-example) in the
-OpenAPI Generating chapter for more details.
+## 字典 schema
 
-
-## Dict schema
-
-When passing the schema to `app.output`, you can also use a dict instead of a schema class:
+将 schema 传递给 `app.output` 时，你可以使用字典来代替 schema 类：
 
 ```python
 from apiflask.fields import Integer
@@ -129,8 +114,7 @@ def get_answer():
     return {'answer': 'Nothing'}
 ```
 
-The dict schema's name will be something like `"Generated"`. To specify a schema
-name, use the `schema_name` parameter:
+字典 schema 的名称类似 `"Generated"`，可以用 `schema_name` 参数来指定 schema 名称：
 
 ```python
 from apiflask.fields import Integer
@@ -142,5 +126,4 @@ def get_answer():
     return {'answer': 'Nothing'}
 ```
 
-However, we recommend creating a schema class whenever possible to make the
-code easy to read and reuse.
+但是，我们建议尽可能创建一个 schema 类，这样会使代码易于阅读和复用。
