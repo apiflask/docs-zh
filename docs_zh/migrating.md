@@ -5,7 +5,7 @@
 
 ## `Flask` 类 -> `APIFlask` 类
 
-你一般这么创建一个 Flask 应用：
+你一般这样创建一个 Flask 应用：
 
 ```python
 from flask import Flask
@@ -24,7 +24,7 @@ app = APIFlask(__name__)
 
 ## `Blueprint` 类 -> `APIBlueprint` 类
 
-你一般这么创建一个 Flask 蓝本：
+你一般这样创建一个 Flask 蓝本：
 
 ```python
 from flask import Blueprint
