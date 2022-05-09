@@ -11,7 +11,7 @@
 - **[从 Flask 项目迁移](/migrating)**: 迁移指南与注意事项。
 - **[基本用法](/usage)**: 开始使用 APIFlask 。
 - **[处理请求](/request)**: 对 `@app.input` 装饰器的详细介绍。
-- **[格式化相应](/response)**:  对 `@app.output` 装饰器的详细介绍。
+- **[格式化响应](/response)**:  对 `@app.output` 装饰器的详细介绍。
 - **[数据的 schema](/schema)**: 如何写输入数据与输出数据的 schema 。
 - **[生成 OpenAPI](/openapi)**: 生成 OpenAPI 的原理——以及如何通过 `@app.doc` 装饰器和配置变量来自定义。
 - **[验证](/authentication)**: 给你的应用实现认证支持。
