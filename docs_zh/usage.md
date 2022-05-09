@@ -1,7 +1,8 @@
 # Basic Usage(基本用法)
 
 This chapter will cover the primary usage of APIFlask.
-这一章节涵盖了 APIFlask 的基本(主要)用法
+
+本章节涵盖了 APIFlask 的基本(主要)用法
 
 ## Prerequisites(前置准备/前提条件/环境要求)
 
@@ -10,6 +11,7 @@ This chapter will cover the primary usage of APIFlask.
 
 You also need to know the basic of Flask. Here are some useful free resources
 to learn Flask:
+
 你还需要去学习一下 Flask 的基础知识(入门知识)。下面是一些有用且免费的 Flask 学习资源(这里有一些有用的免费资源来学习Flask)：
 
 
@@ -78,7 +80,7 @@ def index():
 The default title and version of the API will be `APIFlask` and `0.1.0`; you can
 pass the `title` and the `version` arguments to change these settings:
 
-API的默认标题和版本将是 `APIFlask` 和 `0.1.0`；你可以通过设置 `title` 和 `version` 参数的内容来改变这里的内容。
+交互式API文档页面的默认标题和版本是 `APIFlask` 和 `0.1.0`；你可以通过设置 `title` 和 `version` 参数的内容来改变这里的内容。
 
 ```python
 app = APIFlask(__name__, title='Wonderful API', version='1.0')
@@ -96,7 +98,7 @@ $ flask run
 If your script's name isn't `app.py`, you will need to declare which application
 should be started before execute `flask run`. See the note below for more details.
 
-~~ 如果你的脚本的名字不是 `app.py`，你需要先声明~~
+如果你脚本的文件名不是 `app.py`，那么你需要在使用 `flask run` 命令启动应用程式前先声明它。更多详情请见下面的说明。
 
 ??? note "Assign the specific application to run with `FLASK_APP`"
 
@@ -199,6 +201,8 @@ $ flask run --reload
 
 We highly recommend enabling "debug mode" when developing Flask application. See the
 note below for the details.
+
+我们强烈建议在开发 Flask 应用的时候开启“调试模式”。更详细信息请看下面：
 
 ??? note "Enable the debug mode with `FLASK_ENV`"
 
