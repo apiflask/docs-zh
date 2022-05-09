@@ -12,7 +12,7 @@
 - **[基本用法](/usage)**：开始使用 APIFlask。
 - **[请求处理](/request)**：对 `@app.input` 装饰器的详细介绍。
 - **[响应格式化](/response)**： 对 `@app.output` 装饰器的详细介绍。
-- **[数据 schema](/schema)**：如何编写输入数据与输出数据的 schema。
+- **[数据 Schema](/schema)**：如何编写输入数据与输出数据的 schema。
 - **[OpenAPI 支持](/openapi)**：生成 OpenAPI spec 的原理，以及如何通过 `@app.doc` 装饰器和配置变量来进行自定义。
 - **[验证](/authentication)**：给你的应用实现认证支持。
 - **[Swagger UI 和 Redoc](/api-docs)**：API 文档工具的用法和配置
