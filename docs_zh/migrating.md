@@ -1,12 +1,11 @@
-# Migrating from Flask
+# 从Flask迁移
 
-Since APIFlask is a thin wrapper on top of Flask, you only need to change very little
-code to migrating your application to APIFlask (typically less than ten lines of code).
+因为 APIFlask 是 Flask 之上的一层包装，你应该能不费吹灰之力就将你的 Flask 应用迁移到 APIFlask（通常不会改动超过十行代码）。
 
 
-## `Flask` class -> `APIFlask` class
+## `Flask` 类 -> `APIFlask` 类
 
-It's how you create the Flask application:
+你一般这么创建一个 Flask 应用：
 
 ```python
 from flask import Flask
@@ -14,7 +13,7 @@ from flask import Flask
 app = Flask(__name__)
 ```
 
-Now change to APIFlask:
+现在，将它改写为 APIFlask 应用：
 
 ```python
 from apiflask import APIFlask
@@ -23,9 +22,9 @@ app = APIFlask(__name__)
 ```
 
 
-## `Blueprint` class -> `APIBlueprint` class
+## `Blueprint` 类 -> `APIBlueprint` 类
 
-It's how you create the Flask application:
+你一般这么创建一个 Flask 蓝本：
 
 ```python
 from flask import Blueprint
@@ -33,7 +32,7 @@ from flask import Blueprint
 bp = Blueprint(__name__, 'foo')
 ```
 
-Now change to APIFlask:
+现在，将它改写为 APIFlask 蓝本只需：
 
 ```python
 from apiflask import APIBlueprint
@@ -41,15 +40,15 @@ from apiflask import APIBlueprint
 bp = APIBlueprint(__name__, 'foo')
 ```
 
-!!! tip
+!!! tip "提示"
 
-    You can register a `Blueprint` object to an `APIFlask` instance, but you
-    can't register an `APIBlueprint` object to a `Flask` instance.
+    你可以把一个 `Blueprint` 对象注册到一个 `APIFlask` 实例，但是你不能把一个
+	`APIBlueprint` 对象注册到一个 `Flask` 实例。
 
 
-## Use route shortcuts (optional)
+## （可选的）使用快捷路径方法
 
-APIFlask provides some route shortcuts, you can update a view function:
+APIFlask 提供了一些快捷路径方法，你可以将一个视图函数：
 
 ```python hl_lines="1"
 @app.route('/pets', methods=['POST'])
@@ -57,7 +56,7 @@ def create_pet():
     return {'message': 'created'}
 ```
 
-to:
+改写为:
 
 ```python hl_lines="1"
 @app.post('/pets')
@@ -65,19 +64,18 @@ def create_pet():
     return {'message': 'created'}
 ```
 
-!!! tip
+!!! tip "提示"
 
-    You can mix the use of `app.route()` with route shortcuts. Flask 2.0 will include
-    these route shortcuts.
+	你可以将 `app.route()` 与快捷路径方法混用。需要注意的是，
+	Flask 2.0 版本已经内置了这些方法。
 
+## 基于 MethodView 的视图类
 
-## Class-based views (MethodView)
+!!! warning "使用0.5.0及以上的版本"
 
-!!! warning "Version >= 0.5.0"
+    这个特性在[0.5.0版本](/changelog/#version-050)添加。
 
-    This feature was added in the [version 0.5.0](/changelog/#version-050).
-
-APIFlask support to use the `MethodView`-based view class, for example:
+APIFlask 支持基于 `MethodView` 的视图类，例如：
 
 ```python
 from apiflask import APIFlask, Schema, input, output
@@ -109,21 +107,19 @@ class Pet(MethodView):
         pass
 ```
 
-APIFlask supports to use the `route` decorator on a `MethodView`-based view class as a
-shortcut, but you can also use the `add_url_rule` method to regeister it for flexibility.
+APIFlask 支持对一个基于 `MethodView` 的视图类添加 `route` 装饰器，但是你也可以使用
+`add_url_rule` 方法来灵活注册这个视图类。
 
-The `View`-based view class is not supported, you can still use it but currently
-APIFlask can't generate OpenAPI spec (and API documentation) for it.
-
-
-## Other behavior changes and notes
+虽然基于 `View` 的类视图不被支持，你依然可以使用它，尽管目前 APIFlask 还无法为它生成
+OpenAPI spec 以及 API 文档。
 
 
-### Import statements
+## 其他改动以及一些提示
 
-You only need to import `APIFlask`, `APIBlueprint`, and other utilities APIFlask
-provides from the `apiflask` package. For others, you still import them from
-the `flask` package:
+### 引入语句
+
+你只需要引入 `APIFlask`、`APIBlueprint` 以及其他 `apiflask` 包提供的其他有用的组件。
+对于其他需要的对象或函数，你依然需要从 `flask` 包中引入它们：
 
 ```python
 from apiflask import APIFlask, APIBlueprint
@@ -131,10 +127,10 @@ from flask import request, escape, render_template, g, session, url_for
 ```
 
 
-### APIFlask's `abort()` vs Flask's `abort()`
+### 对比 APIFlask 与 Flask 中的 `abort()`
 
-APIFlask's `abort()` function will return a JSON error response while Flask's `abort()`
-returns an HTML error page:
+APIFlask 中的 `abort()` 函数会返回一个JSON错误响应，但 Flask 中的 `abort()`
+会返回一个HTML错误页面：
 
 ```python
 from apiflask import APIFlask, abort
@@ -146,7 +142,7 @@ def foo():
     abort(404)
 ```
 
-In the example above, when the user visits `/foo`, the response body will be:
+在上面的例子中，当用户访问 `/foo` 时，返回的响应体将会是：
 
 ```json
 {
@@ -156,19 +152,17 @@ In the example above, when the user visits `/foo`, the response body will be:
 }
 ```
 
-You can use `message` and `detail` parameter to pass error message and detailed
-information in the `abort()` function.
+你可以在 `abort()` 函数中使用 `message` 和 `detail` 两个参数来传递错误消息以及详细的信息
 
-!!! warning
+!!! warning "警告"
 
-    The function `abort_json()` was renamed to `abort()` in the
-    [version 0.4.0](/changelog/#version-040).
+    `abort_json()` 函数在 [0.4.0 版本](/changelog/#version-040) 中被重命名为 `abort()`。
 
 
-### JSON errors and mix the use of `flask.abort()` and `apiflask.abort()`
+### JSON 错误和对 `flask.abort()` 和 `apiflask.abort()` 的混用
 
-When you change the base application class to `APIFlask`, all the error responses
-will automatically convert to JSON format even if you use Flask's `abort()` function:
+当你将应用基类改为 `APIFlask` 时，所有的错误响应将会自动转换为 JSON 格式，即使你在使用
+Flask 提供的 `abort()` 函数：
 
 ```python
 from apiflask import APIFlask
@@ -181,7 +175,7 @@ def foo():
     abort(404)
 ```
 
-If you want to disable this behavior, just set `json_errors` parameter to `False`:
+如果你希望禁用这种自动转换，仅需设置 `json_errors` 参数为 `False`：
 
 ```python hl_lines="3"
 from apiflask import APIFlask
@@ -189,15 +183,14 @@ from apiflask import APIFlask
 app = APIFlask(__name__, json_errors=False)
 ```
 
-Now you can still use `abort` from `apiflask` package to return a JSON error
-response. To mix the use of `flask.abort` and `apiflask.abort`, you will need
-to import one of them with a different name:
+现在，你仍可以使用 `apiflask` 包提供的 `abort()` 来返回一个 JSON 错误响应。
+如果你想混用 `flask.abort` 和 `apiflask.abort`，引入其中的一个时你需要使用一个不同的名字：
 
 ```python
 from apiflask import abort as abort_json
 ```
 
-Here is a full example:
+这里是一个完整的例子：
 
 ```python hl_lines="1 14"
 from apiflask import APIFlask, abort as abort_json
@@ -217,15 +210,13 @@ def bar():
 ```
 
 
-### The return values of view function
+### 视图函数的返回值
 
-When you added a `@app.output` decorator for your view function, APIFlask expects you to
-return an ORM/ODM model object or a dict that matches the schema you passed in the
-`@app.output` decorator. If you return a `Response` object, APIFlask will return it
-directly without any process.
+当你为你的视图函数添加 `@app.output` 装饰器时，APIFlask 将会认为你返回的 ORM/ODM 模型或是字典
+符合你向 `@app.output` 传递的 Schema。如果你返回一个 `Response` 对象，APIFlask 直接返回它，不会
+进行任何处理。
 
+## 接下来的路
 
-## Next step
-
-Now your application is migrated to APIFlask. Check out the
-[Basic Usage](/usage) chapter to learn more about APIFlask. Enjoy!
+现在，你的应用应该已经迁移到了 APIFlask，你可以访问 [基本使用](/usage) 一张来学习更多关于
+APIFlask 的内容。乐在其中吧！
