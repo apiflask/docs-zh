@@ -1,4 +1,4 @@
-# Documentation Index
+# 文档索引
 
 欢迎阅读 APIFlask 的文档。
 
@@ -8,11 +8,11 @@
 你可以通过阅读以下章节来了解 APIFlask 的用法：
 
 - **[引言](/)**: 一个关于 APIFlask 的总体介绍。
-- **[从 Flask 迁移项目](/migrating)**: 迁移指南与注意事项。
+- **[从 Flask 项目迁移](/migrating)**: 迁移指南与注意事项。
 - **[基本用法](/usage)**: 开始使用 APIFlask 。
 - **[处理请求](/request)**: 对 `@app.input` 装饰器的详细介绍。
-- **[响应格式](/response)**:  对 `@app.output` 装饰器的详细介绍。
-- **[Data Schema](/schema)**: 如何写输入和输出的 data schema 。
+- **[格式化相应](/response)**:  对 `@app.output` 装饰器的详细介绍。
+- **[数据的 schema](/schema)**: 如何写输入数据与输出数据的 schema 。
 - **[生成 OpenAPI](/openapi)**: 生成 OpenAPI 的原理——以及如何通过 `@app.doc` 装饰器和配置变量来自定义。
 - **[验证](/authentication)**: 给你的应用实现认证支持。
 - **[Swagger UI 和 Redoc](/api-docs)**: API 文档工具的用法和配置
