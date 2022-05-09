@@ -24,6 +24,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 ```
 
 - 参考[贡献指南](/contributing)搭建开发环境（跳过 fork 部分）
+- 阅读《[翻译指南](https://github.com/apiflask/docs-zh/wiki/Translation-Guide)》了解翻译要求
 - 创建 branch 翻译 docs_zh/ 目录下对应的文件
 - 执行 `mkdocs serve` 预览文档并修正错误
 - 提交 PR 等待审核
