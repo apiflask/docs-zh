@@ -1,13 +1,13 @@
-# 格式化响应
+# 响应格式化
 
-首先阅读“基本用法”章节中的以下部分，了解有关格式化响应的基础知识：
+首先阅读“基本用法”章节中的以下部分，了解有关响应格式化的基础知识：
 
 - [使用 `@app.output` 格式化响应数据](/usage/#use-appoutput-to-format-response-data)
 - [视图函数的返回值](/usage/#the-return-value-of-the-view-function)
 
-格式化响应的基本概念：
+响应格式化的基本概念：
 
-- APIFlask 使用 [marshmallow](https://github.com/marshmallow-code/marshmallow) 来处理格式化响应。
+- APIFlask 使用 [marshmallow](https://github.com/marshmallow-code/marshmallow) 来处理响应格式化。
 - 视图函数返回的响应数据只会根据你的 schema 进行格式化，不会进行验证。
 - 你只能为 JSON 响应体声明一个输出（使用一个 `app.output` 装饰器）。
 - 视图的错误响应可以使用 `app.doc(response=...)` 来声明。
@@ -97,7 +97,7 @@ def get_pets(query):
 
 ## 响应示例
 
-你可以通过 `example` 和 `examples` 参数来为 OpenAPI spec 设置响应示例，请参阅 OpenAPI Generating 章节中 [响应与请求示例](/openapi/#response-and-request-example)
+你可以通过 `example` 和 `examples` 参数来为 OpenAPI spec 设置响应示例，请参阅 OpenAPI 支持章节中 [响应与请求示例](/openapi/#response-and-request-example)
 来了解更多详情。
 
 ## 字典 schema
