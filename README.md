@@ -24,6 +24,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 ```
 
 - 参考[贡献指南](/contributing)搭建开发环境（跳过 fork 部分）
+- 阅读《[翻译指南](https://github.com/apiflask/docs-zh/wiki/Translation-Guide)》了解翻译要求
 - 创建 branch 翻译 docs_zh/ 目录下对应的文件
 - 执行 `mkdocs serve` 预览文档并修正错误
 - 提交 PR 等待审核
@@ -32,7 +33,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 ## 翻译章节列表
 
 - Home (index.md) [@greyli](https://github.com/greyli)
-- Documentation Index (docs.md)
+- Documentation Index (docs.md) [@rice0208](https://github.com/rice0208)
 - Migrating from Flask (migrating.md) [@z-t-y](https://github.com/z-t-y)
 - Basic Usage (usage.md) [@Farmer](https://github.com/FarmerChillax)
 - Request Handling (request.md)
