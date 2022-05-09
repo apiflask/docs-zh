@@ -1,15 +1,17 @@
-# Basic Usage
+# Basic Usage(基本用法)
 
 This chapter will cover the primary usage of APIFlask.
+这一章节涵盖了 APIFlask 的基本(主要)用法
 
-
-## Prerequisites
+## Prerequisites(前置准备/前提条件/环境要求)
 
 - Python 3.7+
 - Flask 1.1+
 
 You also need to know the basic of Flask. Here are some useful free resources
 to learn Flask:
+你还需要去学习一下 Flask 的基础知识(入门知识)。下面是一些有用且免费的 Flask 学习资源(这里有一些有用的免费资源来学习Flask)：
+
 
 - [Flask's Documentation](https://flask.palletsprojects.com/){target=_blank}
 - [Official Flask Tutorial](https://flask.palletsprojects.com/tutorial/#tutorial){target=_blank}
@@ -17,7 +19,7 @@ to learn Flask:
 - [Flask for Beginners](https://github.com/greyli/flask-tutorial){target=_blank} (Chinese)
 
 
-## Installation
+## Installation(安装/安装APIFlask)
 
 === "Linux/macOS"
 
@@ -42,12 +44,25 @@ to learn Flask:
     [_pipenv]: https://pipenv.pypa.io/
     [_pdm]: https://pdm.fming.dev/
 
+<!-- 翻译tips -->
+!!! tip "Python的包(依赖)管理工具"
+    在命令行上使用 [pip][_pip]{target=_blank} 来安装 APIFlask，你也可以使用其他的依赖管理工具。比如：[Poetry][_poetry]{target=_blank}、
+    [Pipenv][_pipenv]{target=_blank}、[PDM][_pdm]{target=_blank} 等等。
 
-## Create an `app` instance with `APIFlask` class
+    [_pip]: https://pip.pypa.io/
+    [_poetry]: https://python-poetry.org/
+    [_pipenv]: https://pipenv.pypa.io/
+    [_pdm]: https://pdm.fming.dev/
+
+
+## Create an `app` instance with `APIFlask` class(使用 `APIFlask` 创建一个 `app` 实例)
 
 Similar to what you did to create a Flask `app` instance, you will need to import
 `APIFlask` class from `apiflask` package, then create the `app` instance from
 the `APIFlask` class:
+
+与创建 Flask `app` 实例的操作类似，您需要导入 `apiflask` 包中的 `APIFlask` 类，然后使用
+`APIFlask` 来实例化 `app`：
 
 ```python hl_lines="1 3"
 from apiflask import APIFlask
@@ -63,11 +78,15 @@ def index():
 The default title and version of the API will be `APIFlask` and `0.1.0`; you can
 pass the `title` and the `version` arguments to change these settings:
 
+API的默认标题和版本将是 `APIFlask` 和 `0.1.0`；你可以通过设置 `title` 和 `version` 参数的内容来改变这里的内容。
+
 ```python
 app = APIFlask(__name__, title='Wonderful API', version='1.0')
 ```
 
 To run this application, you can save it as `app.py`, then run the `flask run` command:
+
+想要运行这个应用程式，你需要先将其保存为 `app.py` 文件，然后运行(使用) `flask run` 命令(来运行)：
 
 ```bash
 $ flask run
@@ -76,6 +95,8 @@ $ flask run
 
 If your script's name isn't `app.py`, you will need to declare which application
 should be started before execute `flask run`. See the note below for more details.
+
+~~ 如果你的脚本的名字不是 `app.py`，你需要先声明~~
 
 ??? note "Assign the specific application to run with `FLASK_APP`"
 
@@ -154,6 +175,8 @@ should be started before execute `flask run`. See the note below for more detail
 If you want to make the application restart whenever the code changes, you can enable
 reloader with `--reload` option:
 
+如果你想在代码发生更改时让应用重新启动，你可以用 `--reload` 选项开启 reloader：
+
 ```bash
 $ flask run --reload
 ```
@@ -207,7 +230,7 @@ note below for the details.
     [_debug_mode]: https://flask.palletsprojects.com/quickstart/#debug-mode
 
 
-## Manage environment variables with python-dotenv
+## Manage environment variables with python-dotenv(使用 python-dotenv 管理环境变量)
 
 Manually setting environment is a bit inconvenient since the variable only lives in
 the current terminal session. You have to set it every time you reopen the terminal
@@ -282,7 +305,7 @@ See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more detai
 [_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
 
 
-## Interactive API documentation
+## Interactive API documentation(可互动的API文档--不会翻译)
 
 Once you have created the app instance, the interactive API documentation will be
 available at <http://localhost:5000/docs> and <http://localhost:5000/redoc>. On
@@ -295,7 +318,7 @@ You can refresh the documentation whenever you added a new route or added the in
 and output definition for the view function in the following sections.
 
 
-## Create a route with route decorators
+## Create a route with route decorators(使用装饰器来创建路由/使用路由装饰器来创建路由)
 
 To create a view function, you can do exactly what you did with Flask:
 
@@ -407,7 +430,7 @@ def delete_pet(pet_id):
     application.
 
 
-## Move to new API decorators
+## Move to new API decorators(转移到新的 API 装饰器/使用新的 API 装饰器)
 
 From APIFlask 0.12, the four standalone API decorators (i.e. `@input`, `@output`,
 `@doc`, and `@auth_required`) were moved to `APIFlask` and `APIBlueprint` classes.
@@ -444,7 +467,7 @@ The old standalone decorators were deprecated since 0.12, and will be removed in
 [upgrade APIFlask](/changelog/) to update the usage.
 
 
-## Use `@app.input` to validate and deserialize request data
+## Use `@app.input` to validate and deserialize request data(使用 `@app.input` 来校验与反序列化请求数据)
 
 To validate and deserialize a request body or request query parameters, we need to
 create a data schema class first. Think of it as a way to describe the valid
@@ -608,7 +631,7 @@ argument for `@app.input()` decorator, the value can be:
 Read the *[Request Handling](/request)* chapter for the advanced topics on request handling.
 
 
-## Use `@app.output` to format response data
+## Use `@app.output` to format response data(使用 `@app.output` 来序列化响应数据)
 
 Similarly, we can define a schema for output data with `@app.output` decorator. Here is an example:
 
@@ -722,7 +745,7 @@ def delete_pet(pet_id):
 Read the *[Response Formatting](/response)* chapter for the advanced topics on request formatting.
 
 
-## The return value of the view function
+## The return value of the view function(视图函数返回的内容)
 
 When you are using a `@app.output(schema)` decorator, you should return a dict or object
 that matches the schema you passed. For example, here is your schema:
@@ -847,7 +870,7 @@ def create_pet(data):
     will use the status code you returned at the end of the view function.
 
 
-## The OpenAPI generating support and the `@app.doc` decorator
+## The OpenAPI generating support and the `@app.doc` decorator(OpenAPI 生成与 `@app.doc` 装饰器使用方法)
 
 APIFlask provides automatic OpenAPI spec generating support, while also allows
 you to customize the spec:
@@ -882,12 +905,12 @@ about OpenAPI genenrating and the usage of the `doc` decorator.
     (i.e., `app.route`, `app.get`, `app.post`, etc.).
 
 
-## Use `@app.auth_required` to protect your views
+## Use `@app.auth_required` to protect your views(使用 `@app.auth_required` 保护你的视图/为了你接口添加鉴权)
 
 Based on [Flask-HTTPAuth](https://github.com/miguelgrinberg/Flask-HTTPAuth), APIFlask
 provides three types of authentication:
 
-### HTTP Basic
+### HTTP Basic (HTTP Basic 认证)
 
 To implement an HTTP Basic authentication, you will need to:
 
@@ -917,7 +940,7 @@ def hello():
     return f'Hello, {auth.current_user}!'
 ```
 
-### HTTP Bearer
+### HTTP Bearer(HTTP Bearer 认证)
 
 To implement an HTTP Bearer authentication, you will need to:
 
@@ -948,7 +971,7 @@ def hello():
     return f'Hello, {auth.current_user}'!
 ```
 
-### API Keys (in header)
+### API Keys (in header) (不会翻译)
 
 Similar to the Bearer type, but set the `scheme` to `ApiKey` when creating the
 auth object:
@@ -987,7 +1010,7 @@ instead of `@auth.login_required` for your view functions.
 Read the *[Authentication](/authentication)* chapter for the advanced topics on authentication.
 
 
-## Use class-based views
+## Use class-based views(使用基于类的视图)
 
 !!! warning "Version >= 0.5.0"
 
@@ -1139,7 +1162,7 @@ class Pet(MethodView):
 ```
 
 
-## Use `abort()` to return an error response
+## Use `abort()` to return an error response(使用)
 
 Similar to Flask's `abort`, but `abort` from APIFlask will return a JSON response.
 
@@ -1192,7 +1215,7 @@ The `abort()` and `HTTPError` accept the following arguments:
     the [version 0.4.0](/changelog/#version-040).
 
 
-## Overview of the `apiflask` package
+## Overview of the `apiflask` package(APIFlask总览/概述)
 
 In the end, let's unpack the whole `apiflask` package to check out what it shipped with:
 
