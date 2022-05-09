@@ -1,4 +1,4 @@
-# 从Flask迁移
+# 从 Flask 迁移
 
 因为 APIFlask 是 Flask 之上的一层包装，你应该能不费吹灰之力就将你的 Flask 应用迁移到 APIFlask（通常不会改动超过十行代码）。
 
@@ -40,7 +40,7 @@ from apiflask import APIBlueprint
 bp = APIBlueprint(__name__, 'foo')
 ```
 
-!!! tip "提示"
+!!! tip
 
     你可以把一个 `Blueprint` 对象注册到一个 `APIFlask` 实例，但是你不能把一个
 	`APIBlueprint` 对象注册到一个 `Flask` 实例。
@@ -64,7 +64,7 @@ def create_pet():
     return {'message': 'created'}
 ```
 
-!!! tip "提示"
+!!! tip
 
 	你可以将 `app.route()` 与快捷路径方法混用。需要注意的是，
 	Flask 2.0 版本已经内置了这些方法。
@@ -116,10 +116,10 @@ OpenAPI spec 以及 API 文档。
 
 ## 其他改动以及一些提示
 
-### 引入语句
+### 导入语句
 
-你只需要引入 `APIFlask`、`APIBlueprint` 以及其他 `apiflask` 包提供的其他有用的组件。
-对于其他需要的对象或函数，你依然需要从 `flask` 包中引入它们：
+你只需要导入 `APIFlask`、`APIBlueprint` 以及其他 `apiflask` 包提供的其他有用的组件。
+对于其他需要的对象或函数，你依然需要从 `flask` 包中导入它们：
 
 ```python
 from apiflask import APIFlask, APIBlueprint
@@ -184,7 +184,7 @@ app = APIFlask(__name__, json_errors=False)
 ```
 
 现在，你仍可以使用 `apiflask` 包提供的 `abort()` 来返回一个 JSON 错误响应。
-如果你想混用 `flask.abort` 和 `apiflask.abort`，引入其中的一个时你需要使用一个不同的名字：
+如果你想混用 `flask.abort` 和 `apiflask.abort`，导入其中的一个时你需要使用一个不同的名字：
 
 ```python
 from apiflask import abort as abort_json
@@ -216,7 +216,7 @@ def bar():
 符合你向 `@app.output` 传递的 Schema。如果你返回一个 `Response` 对象，APIFlask 直接返回它，不会
 进行任何处理。
 
-## 接下来的路
+## 下一步
 
 现在，你的应用应该已经迁移到了 APIFlask，你可以访问 [基本用法](/usage) 一章来学习更多关于
 APIFlask 的内容。乐在其中吧！
