@@ -32,18 +32,10 @@
 在 APIFlask 文档中，我将尝试覆盖所有的基本用法。然而，如果要使用一些高级用法，你可能需要
 阅读一些 APIFlask 依赖的框架、工具的文档：
 
-- **[Flask][_flask]{target=_blank}**：你有必要掌握 Flask 的知识。
-- **[marshmallow][_marshmallow]{target=_blank}**：Schema 的高级用法参考。
-- **[Flask-HTTPAuth][_flask_httpauth]{target=_blank}**：`HTTPBasicAuth` 和 `HTTPTokenAuth` 的高级用法参考。
-- **[webargs][_webargs]{target=_blank}**：如果你是贡献者，这将会有用。
-- **[apispec][_apispec]{target=_blank}**：如果你是贡献者，这将会有用。
-- **[OpenAPI][_openapi]{target=_blank}**：这是 OpenAPI 的规范。
-- **[JSON Schema][_jsonschema]{target=_blank}**：当你想要设定一个个性化的错误响应 schema 而且不想用 schema 类时，这将很有用。
-
-[_flask]：https://flask.palletsprojects.com/
-[_marshmallow]：https://marshmallow.readthedocs.io/
-[_flask_httpauth]：https://flask-httpauth.readthedocs.io/
-[_webargs]：https://webargs.readthedocs.io/
-[_apispec]：https://apispec.readthedocs.io/
-[_openapi]：https://github.com/OAI/OpenAPI-Specification/tree/main/versions
-[_jsonschema]：https://json-schema.org/
+- **[Flask](https://flask.palletsprojects.com/){target=_blank}**：你有必要掌握 Flask 的知识。
+- **[marshmallow](https://marshmallow.readthedocs.io/){target=_blank}**：Schema 的高级用法参考。
+- **[Flask-HTTPAuth](https://flask-httpauth.readthedocs.io/){target=_blank}**：`HTTPBasicAuth` 和 `HTTPTokenAuth` 的高级用法参考。
+- **[webargs](https://webargs.readthedocs.io/){target=_blank}**：如果你是贡献者，这将会有用。
+- **[apispec](https://apispec.readthedocs.io/){target=_blank}**：如果你是贡献者，这将会有用。
+- **[OpenAPI](https://github.com/OAI/OpenAPI-Specification/tree/main/versions){target=_blank}**：这是 OpenAPI 的规范。
+- **[JSON Schema](https://json-schema.org/){target=_blank}**：当你想要设定一个个性化的错误响应 schema 而且不想用 schema 类时，这将很有用。
