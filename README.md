@@ -36,7 +36,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 - Migrating from Flask (migrating.md)
 - Basic Usage (usage.md) [@Farmer](https://github.com/FarmerChillax)
 - Request Handling (request.md)
-- Response Formatting (response.md)
+- Response Formatting (response.md) [@Tridagger](https://github.com/Tridagger)
 - Data Schema (schema.md)
 - Authentication (authentication.md)
 - OpenAPI Generating (openapi.md)
