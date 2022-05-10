@@ -46,7 +46,7 @@ bp = APIBlueprint(__name__, 'foo')
 	`APIBlueprint` 对象注册到一个 `Flask` 实例。
 
 
-## （可选的）使用快捷路径方法
+## 使用快捷路由装饰器（可选）
 
 APIFlask 提供了一些快捷路由装饰器，你可以将下面这个视图函数：
 
@@ -130,7 +130,7 @@ from flask import request, escape, render_template, g, session, url_for
 ### 对比 APIFlask 与 Flask 中的 `abort()`
 
 APIFlask 中的 `abort()` 函数会返回一个 JSON 格式的错误响应，但 Flask 中的 `abort()`
-会返回一个HTML错误页面：
+会返回一个 HTML 错误页面：
 
 ```python
 from apiflask import APIFlask, abort
