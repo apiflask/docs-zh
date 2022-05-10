@@ -55,7 +55,7 @@ def hello(query, data):
     pass
 ```
 
-!!! 小贴士
+!!! tips
 
     视图函数的参数名称（`query, data`）由你来定义，你可以换成任何一个你喜欢的名字。
 
@@ -69,9 +69,9 @@ def get_article(category, article_id, query, data):
     pass
 ```
 
-!!! 小贴士
+!!! tips
 
-    注意：URL 变量对应的参数名称（`category, article_id`）必须与变量名相同。
+    注意：URL 变量对应的参数名称（`category`, `article_id`）必须与变量名相同。
 
 否则，APIFlask 将会自动返回 400 错误响应。与其它错误响应相同，
 这个错误响应将会有消息（`message`）和详情（`detail`）等部分。
@@ -171,7 +171,7 @@ def upload_image(data):
     return {'message': f'file {filename} saved.'}
 ```
 
-!!! 小贴士
+!!! tips
 
     这里，我们使用了 `secure_filename` 来清理这些文件名，请注意，它只会保留 ASCII 字符。
     你可能像为新文件创建一个随机的文件名, 这个
