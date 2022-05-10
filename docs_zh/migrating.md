@@ -73,7 +73,7 @@ def create_pet():
 
 !!! warning "使用0.5.0及以上的版本"
 
-    这个特性在[0.5.0版本](/changelog/#version-050)添加。
+    这个特性在 [0.5.0版本](/changelog/#version-050) 添加。
 
 APIFlask 支持基于 `MethodView` 的视图类，例如：
 
@@ -154,7 +154,7 @@ def foo():
 
 你可以在 `abort()` 函数中使用 `message` 和 `detail` 两个参数来传递错误消息以及详细的信息
 
-!!! warning "警告"
+!!! warning
 
     `abort_json()` 函数在 [0.4.0 版本](/changelog/#version-040) 中被重命名为 `abort()`。
 
