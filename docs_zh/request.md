@@ -1,6 +1,6 @@
 # 请求处理
 
-要了解请求处理的基本用法，请移步「基本用法」章节的[这个部分](/usage/#use-appinput-to-validate-and-deserialize-request-data)。
+要了解请求处理的基本用法，请移步「基本用法」章节的 [这个部分](/usage/#use-appinput-to-validate-and-deserialize-request-data)。
 
 首先是几个请求处理的基本概念：
 
@@ -209,7 +209,7 @@ def create_profile(data):
 
 目前功能的实现中，`files` 定位点的数据将还会包含表单数据（相当于 `form_and_files`）。
 
-!!! 提示
+!!! tips
 
     文件字段的验证器将在 1.1 版本中可用
     （参见 [#253](https://github.com/apiflask/apiflask/issues/253)）。目前来说，
@@ -224,4 +224,4 @@ def create_profile(data):
 ## 请求示例
 
 你可以用 `example` 和 `examples` 参数在 OpenAPI spec 中设定请求的示例，要了解更多信息，
-参见「OpenAPI 支持」章节的[这个部分](/openapi/#response-and-request-example)。
+参见「OpenAPI 支持」章节的 [这个部分](/openapi/#response-and-request-example)。
