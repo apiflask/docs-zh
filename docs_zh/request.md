@@ -177,8 +177,8 @@ def upload_image(data):
     你可能像为新文件创建一个随机的文件名, 这个
     [StackOverflow 回答](https://stackoverflow.com/a/44992275/5511849) 可能会帮到你。
 
-文件对象是 `werkzeug.datastructures.FileStorage` 类的实例，如果要了解请移步 
-[Werkzeug 文档](https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage)。
+文件对象是 `werkzeug.datastructures.FileStorage` 类的实例，
+如果要了解请移步 [Werkzeug 文档](https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage)。
 
 如果你想要在 schema 中同时加入文件和其它字段，请用 `form_and_files` 定位点：
 
