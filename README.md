@@ -34,7 +34,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 
 - Home (index.md) [@greyli](https://github.com/greyli)
 - Documentation Index (docs.md) [@rice0208](https://github.com/rice0208)
-- Migrating from Flask (migrating.md)
+- Migrating from Flask (migrating.md) [@z-t-y](https://github.com/z-t-y)
 - Basic Usage (usage.md) [@Farmer](https://github.com/FarmerChillax)
 - Request Handling (request.md) [@rice0208](https://github.com/rice0208)
 - Response Formatting (response.md)
