@@ -5,8 +5,8 @@
 这些是数据 schema 的几个基本概念：
 
 - APIFlask schema = [marshmallow](https://github.com/marshmallow-code/marshmallow) schema.
-- APIFlask 中的 `apiflask.Schema` 基类是直接从 marshmallow 中导入的，具体参见 marshmallow 的
-  [API 文档](https://marshmallow.readthedocs.io/en/stable/marshmallow.schema.html)
+- APIFlask 中的 `apiflask.Schema` 类是直接从 marshmallow 中导入的，具体请参阅 marshmallow 的
+  [API 文档](https://marshmallow.readthedocs.io/en/stable/marshmallow.schema.html)。
 - 我们建议你将输入与输出的 schema 分开来放，由于输出数据没有验证过程，你不用在输出的字段中定义验证器。
 - `apiflask.fields` 包含了 marshmallow、webargs 与 flask-marshmallow 提供的所有字段（部分字段的别名被移除）。
 - `apiflask.validators` 包含了 `marshmallow.validate` 提供的所有验证器。
@@ -32,36 +32,35 @@
 
 下列两个装饰器可以注册验证器方法：
 
-- `validates(field_name)`: to register a method to validate a specified field
-- `validates_schema`: to register a method to validate the whole schema
+- `validates(field_name)`：注册一个方法，来验证某个特定字段。
+- `validates_schema`：注册一个方法，使得整个 schema 被验证。
 
 !!! tips
 
-    When using the `validates_schema`, notice the `skip_on_field_errors` is set to `True` as default:
-    > If skip_on_field_errors=True, this validation method will be skipped whenever validation errors
-    > have been detected when validating fields.
+    当你使用 `validates_schema` 的时候，请注意，`skip_on_field_errors` 的默认值是 `True`：
+    > 如果 skip_on_field_errors=True，只要在验证字段的时候发现验证错误，这个验证方法将会被跳过。
 
-Import these decorators directly from marshmallow:
+你可以直接从 marshmallow 导入这些装饰器。
 
 ```python
 from marshmallow import pre_load, post_dump, validates
 ```
 
-See [this chapter](https://marshmallow.readthedocs.io/en/stable/extending.html) and the
-[API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.decorators.html)
-of these decorators for the details.
+要了解更多信息，请移步 marshmallow 文档的
+ [这个章节](https://marshmallow.readthedocs.io/en/stable/extending.html) 与
+ [API 文档](https://marshmallow.readthedocs.io/en/stable/marshmallow.decorators.html)。
 
 
-## Data fields
+## 数据字段
 
-APIFlask's `apiflask.fields` module includes all the data fields from marshmallow, webargs, and
-Flask-Marshmallow. We recommend importing them from the `apiflask.fields` module:
+APIFlask 的 `apiflask.fields` 模块包含了 marshmallow、webargs、Flask-Marshmallow 提供的所有数据字段。
+我们建议你从 `apiflask.fields` 导入它们。
 
 ```python
 from apiflask.fields import String, Integer
 ```
 
-Or you prefer to keep a reference:
+或者这样，如果你喜欢保留引用：
 
 ```python
 from apiflask import Schema, fields
@@ -71,9 +70,9 @@ class FooBarSchema(Schema):
     bar = fields.Integer()
 ```
 
-!!! warning "Some field aliases were removed"
+!!! warning "部分字段的别名被移除"
 
-    The following field aliases were removed:
+    下列字段别名被移除：
 
     - `Str`
     - `Int`
@@ -82,7 +81,7 @@ class FooBarSchema(Schema):
     - `UrlFor`
     - `AbsoluteUrlFor`
 
-    Instead, you will need to use:
+    相反，你需要使用下列名称代替它们：
 
     - `String`
     - `Integer`
@@ -91,13 +90,13 @@ class FooBarSchema(Schema):
     - `URLFor`
     - `AbsoluteURLFor`
 
-    See [apiflask#63](https://github.com/apiflask/apiflask/issues/63) and
-    [marshmallow#1828](https://github.com/marshmallow-code/marshmallow/issues/1828)for more details.
+    要了解更多信息，请参阅 [apiflask#63](https://github.com/apiflask/apiflask/issues/63) 和
+    [marshmallow#1828](https://github.com/marshmallow-code/marshmallow/issues/1828)。
 
 
-### marshmallow fields
+### marshmallow 字段
 
-API documentation: <https://marshmallow.readthedocs.io/en/stable/marshmallow.fields.html>
+API 文档：<https://marshmallow.readthedocs.io/en/stable/marshmallow.fields.html>
 
 - `AwareDateTime`
 - `Boolean`
@@ -130,38 +129,38 @@ API documentation: <https://marshmallow.readthedocs.io/en/stable/marshmallow.fie
 - `UUID`
 
 
-## Flask-Marshmallow fields
+### Flask-Marshmallow 字段
 
-API documentation: <https://flask-marshmallow.readthedocs.io/en/latest/#flask-marshmallow-fields>
+API 文档：<https://flask-marshmallow.readthedocs.io/en/latest/#flask-marshmallow-fields>
 
 - `AbsoluteURLFor`
 - `Hyperlinks`
 - `URLFor`
 
 
-## webargs fields
+### webargs 字段
 
-API documentation: <https://webargs.readthedocs.io/en/latest/api.html#module-webargs.fields>
+API 文档：<https://webargs.readthedocs.io/en/latest/api.html#module-webargs.fields>
 
 - `DelimitedList`
 - `DelimitedTuple`
 
 
-## APIFlask fields
+### APIFlask 字段
 
-API documentation: <https://apiflask.com/api/fields/#apiflask.fields.File>
+API 文档：<https://apiflask.com/api/fields/#apiflask.fields.File>
 
 - `File`
 
 !!! tips
 
-    If the existing fields don't fit your needs, you can also create
-    [custom fields](https://marshmallow.readthedocs.io/en/stable/custom_fields.html).
+    如果已经存在的字段并没有满足你的需求，你也可以创建
+    [自定义字段](https://marshmallow.readthedocs.io/en/stable/custom_fields.html).
 
 
-## Data validators
+## 数据验证器
 
-APIFlask's `aipflask.validators` contains all the validator class provided by marshmallow:
+APIFlask 的 `aipflask.validators` 模块包含了 marshmallow 提供的所有验证器：
 
 - `ContainsNoneOf`
 - `ContainsOnly`
@@ -176,10 +175,9 @@ APIFlask's `aipflask.validators` contains all the validator class provided by ma
 - `URL`
 - `Validator`
 
-See the [API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.validate.html)
-for the detailed usage.
+要了解具体用法，参见 marshmallow 的 [API 文档](https://marshmallow.readthedocs.io/en/stable/marshmallow.validate.html)。
 
-When specifying validators for a field, you can pass a single validator to the `validate` parameter:
+当你指定一个字段的验证器的时候，你可以给 `validate` 参数传递单个验证器：
 
 ```python
 from apiflask import Schema
@@ -191,7 +189,7 @@ class PetInSchema(Schema):
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
 
-Or pass a list of validators:
+或者也可以传递一个验证器组成的列表
 
 ```python
 from apiflask import Schema
@@ -200,23 +198,23 @@ from apiflask.validators import Length, OneOf
 
 
 class PetInSchema(Schema):
-    category = String(required=True, validate=[OneOf(['dog', 'cat'], Length(0, 10)]))
+    category = String(required=True, validate=[OneOf(['dog', 'cat']), Length(0, 10)])
 ```
+
 
 !!! tips
 
-    If the existing validators don't fit your needs, you can also create
-    [custom validators](https://marshmallow.readthedocs.io/en/stable/quickstart.html#validation).
+    如果已经存在的字段并没有满足你的需求，你也可以创建
+    [自定义字段](https://marshmallow.readthedocs.io/en/stable/quickstart.html#validation).
 
 
-## Schema name resolver
+## Schema 名称解析器
 
-!!! warning "Version >= 0.9.0"
+!!! warning "需要 0.9.0 以上版本"
 
-    This feature was added in the [version 0.9.0](/changelog/#version-090).
+    这个功能在 [版本 0.9.0](/changelog/#version-090) 中添加。
 
-The OpenAPI schema name of each schema is resolved based on a resolver function, here is
-the default schema name resolver used in APIFlask:
+OpenAPI 中每一个 schema 的名称都是基于一个函数解析而来，这里是 APIFlask 默认的 schema 名称解析函数：
 
 ```python
 def schema_name_resolver(schema):
@@ -228,8 +226,7 @@ def schema_name_resolver(schema):
     return name
 ```
 
-You can provide a custom schema name resolver by setting the `APIFlask.schema_name_resolver`
-attribute:
+你可以通过设定 `APIFlask.schema_name_resolver` 来提供一个自定义的 schema 名称解析函数。
 
 ```python hl_lines="14"
 from apiflask import APIFlask
@@ -248,18 +245,16 @@ app = APIFlask(__name__)
 app.schema_name_resolver = my_schema_name_resolver
 ```
 
-The schema name resolver should accept the schema object as argument and return the name.
+schema 的名称解析函数应该接收一个 schema 对象作为参数，并返回名称。
 
+## 自定义基本的响应 schema
 
-## Base response schema customization
+!!! warning "需要 0.9.0 以上版本"
 
-!!! warning "Version >= 0.9.0"
+    这个功能在 [版本 0.9.0](/changelog/#version-090) 中添加。
 
-    This feature was added in the [version 0.9.0](/changelog/#version-090).
-
-When you set up the output of a view function with the `output` decorator, you need to
-return the object or dict that matches the schema you passed to the `output` decorator. Then,
-APIFlask will serialize the return value to response body:
+当你通过 `output` 装饰器设定一个视图函数的输出时，你需要返回一个对象或字典，其符合传递至 `output` 装饰器的 schema。
+接下来，APIFlask 将会将返回值序列化到响应体：
 
 ```python
 {
@@ -269,9 +264,8 @@ APIFlask will serialize the return value to response body:
 }
 ```
 
-However, You may want to insert the output data into a data field and add some meta fields.
-So that you can return a unified response for all endpoints. For example, make all the
-responses to the following format:
+然而，你可能想要将输出数据插入到某个数据字段，然后添加一些元字段。这样你就可以给每一个端点返回一个统一的响应。
+例如，将所有响应统一成下面的格式：
 
 ```python
 {
@@ -285,8 +279,7 @@ responses to the following format:
 }
 ```
 
-To achieve this, you will need to set a base response schema, then pass it to the configuration variable
-`BASE_RESPONSE_SCHEMA`:
+要实现这个，你需要设定一个基本的响应 schema，然后把它传递到配置变量 `BASE_RESPONSE_SCHEMA` 中：
 
 ```python
 from apiflask import APIFlask, Schema
@@ -302,14 +295,13 @@ class BaseResponseSchema(Schema):
 app.config['BASE_RESPONSE_SCHEMA'] = BaseResponseSchema
 ```
 
-The default data key is "data", you can change it to match your data field name in your schema
-via the configuration variable `BASE_RESPONSE_DATA_KEY`:
+默认的数据键是 `data`，你可以通过配置变量 `BASE_RESPONSE_DATA_KEY` 把它换成别的，来迎合你的数据字段名称：
 
 ```python
 app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
 ```
 
-Now you can return a dict matches the base response schema in your view functions:
+现在，你可以在视图函数中返回一个符合基本 schema 的字典。
 
 ```python
 @app.get('/')
@@ -318,7 +310,7 @@ def say_hello():
     return {'message': 'Success!', 'status_code': 200, 'data': data}
 ```
 
-To make it more elegant, you can create a function to make response dict:
+如果要把代码变得优雅一点，你可以创建一个制作响应字典的函数：
 
 ```python
 def make_resp(message, status_code, data):
@@ -339,5 +331,4 @@ def get_pet(pet_id):
     return make_resp('Success!', 200, pets[pet_id])
 ```
 
-Check out [the complete example application](https://github.com/apiflask/apiflask/tree/main/examples/base_response/app.py)
-for more details, see [the examples page](/examples) for running the example application.
+要了解更多信息，你可以查看「[完整的示例应用](https://github.com/apiflask/apiflask/tree/main/examples/base_response/app.py)」，要运行这些示例应用，请访问「[示例应用](/examples)」页面。
