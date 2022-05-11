@@ -80,7 +80,8 @@ def index():
 The default title and version of the API will be `APIFlask` and `0.1.0`; you can
 pass the `title` and the `version` arguments to change these settings:
 
-交互式API文档页面的默认标题和版本是 `APIFlask` 和 `0.1.0`；你可以通过设置 `title` 和 `version` 参数的内容来改变这里的内容。
+API 项目的默认标题和版本是 `APIFlask` 和 `0.1.0`；你可以通过修改 `title` 和 `version` 参数来改变相应的内容。
+**译者注：这里的意思是指可以通过 title 和 version 两个参数来配置项目名与管理迭代版本，同时这两个参数也会影响到交互式 API 文档页面的内容**
 
 ```python
 app = APIFlask(__name__, title='Wonderful API', version='1.0')
@@ -88,7 +89,7 @@ app = APIFlask(__name__, title='Wonderful API', version='1.0')
 
 To run this application, you can save it as `app.py`, then run the `flask run` command:
 
-想要运行这个应用程式，你需要先将其保存为 `app.py` 文件，然后运行(使用) `flask run` 命令(来运行)：
+想要运行这个应用程序，你需要先将其保存为 `app.py` 文件，然后运行(使用) `flask run` 命令(来运行)：
 
 ```bash
 $ flask run
@@ -177,7 +178,7 @@ should be started before execute `flask run`. See the note below for more detail
 If you want to make the application restart whenever the code changes, you can enable
 reloader with `--reload` option:
 
-如果你想在代码发生更改时让应用重新启动，你可以用 `--reload` 选项开启 reloader：
+如果你想在修改代码时应用也随之重新启动，可以添加 `--reload` 选项开启 reloader：
 
 ```bash
 $ flask run --reload
