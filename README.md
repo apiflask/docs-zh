@@ -38,7 +38,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 - Basic Usage (usage.md) [@Farmer](https://github.com/FarmerChillax)
 - Request Handling (request.md)
 - Response Formatting (response.md)
-- Data Schema (schema.md)
+- Data Schema (schema.md) [@rice0208](https://github.com/rice0208)
 - Authentication (authentication.md)
 - OpenAPI Generating (openapi.md)
 - Swagger UI and Redoc (api-docs.md)
