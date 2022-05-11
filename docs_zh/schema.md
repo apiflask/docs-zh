@@ -1,44 +1,36 @@
-# Data Schema
+# 数据 Schema
 
-Read [this section](/usage/#use-appinput-to-validate-and-deserialize-request-data) and following
-section first in the Basic Usage chapter for the basics of writing input and output schema.
+要了解编写输入和输出 schema 的基本方法，请移步「基本用法」章节的 [这两个部分](/usage/#use-appinput-to-validate-and-deserialize-request-data)。
 
-Basic concepts on data schema:
+这些是数据 schema 的几个基本概念：
 
 - APIFlask schema = [marshmallow](https://github.com/marshmallow-code/marshmallow) schema.
-- APIFlask's `apiflask.Schema` base class is directly imported from marshmallow, see the
-  [API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.schema.html)
-  for the details.
-- We recommend separating input and output schema. Since the output data is not
-  validated, you don't need to define validators on output fields.
-- `apiflask.fields` includes all the fields provided by marshmallow, webargs, and
-  flask-marshmallow (while some aliases were removed).
-- `apiflask.validators` includes all the validators in `marshmallow.validate`.
-- For other functions/classes, just import them from marshmallow.
-- Read [marshmallow's documentation](https://marshmallow.readthedocs.io/) when you have free time.
+- APIFlask 中的 `apiflask.Schema` 基类是直接从 marshmallow 中导入的，具体参见 marshmallow 的
+  [API 文档](https://marshmallow.readthedocs.io/en/stable/marshmallow.schema.html)
+- 我们建议你将输入与输出的 schema 分开来放，由于输出数据没有验证过程，你不用在输出的字段中定义验证器。
+- `apiflask.fields` 包含了 marshmallow、webargs 与 flask-marshmallow 提供的所有字段（部分字段的别名被移除）。
+- `apiflask.validators` 包含了 `marshmallow.validate` 提供的所有验证器。
+- 对于其它函数与类，你只要直接从 marshmallow 导入即可。
+- 如果你有时间，阅读一下 [marshmallow 文档](https://marshmallow.readthedocs.io/) 比较好。
 
 
 
-## Deserialization (load) and serialization (dump)
+## 反序列化（加载）与序列化（倾倒）
 
-In APIFlask (marshmallow), the process of parsing and validating the input request data
-is called deserialization (we **load** the data from the request). And the process of
-formatting the output response data is called serialization (we **dump** the data to
-the response).
+在 APIFlask（marshmallow）中，请求中输入数据的解析与验证过程被称作反序列化（我们在请求中**加载**了数据）。
+相应地，将响应中的输出数据格式化的过程被称作序列化（我们把数据**倾倒**给了请求）。
 
-Notice we use the "load" and "dump" to represent these two processes. When creating
-the schema, we set the default value for the fields in the input schema with the `load_default`
-parameter, and we use the `dump_default` parameter to set the default value for fields
-in the output schema.
+请注意，我们使用了「加载」和「倾倒」两个词语来代表这两个过程。在创建 schema 的时候，我们用 `load_default` 参数设置
+输入 schema 中每一个字段的默认值，相应地，输出 schema 的字段由 `dump_default` 参数设置。
 
-There are four decorators to register callback methods in the load/dump processes:
+下列四个装饰器可以注册加载与倾倒过程中的回调函数：
 
-- `pre_load`: to register a method to invoke before parsing/validating the request data
-- `post_load`: to register a method to invoke after parsing/validating the request data
-- `pre_dump`: to register a method to invoke before formatting the return value of the view function
-- `post_dump`: to register a method to invoke after formatting the return value of the view function
+- `pre_load`：注册一个方法，该方法在解析与验证前调用。
+- `post_load`：注册一个方法，该方法在解析与验证后调用。
+- `pre_dump`：注册一个方法，该方法在视图函数返回值前调用。
+- `post_dump`：注册一个方法，该方法在视图函数返回值后调用。
 
-And there are two decorators to register a validation method:
+下列两个装饰器可以注册验证器方法：
 
 - `validates(field_name)`: to register a method to validate a specified field
 - `validates_schema`: to register a method to validate the whole schema
