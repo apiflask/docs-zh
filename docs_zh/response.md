@@ -9,7 +9,7 @@
 
 - APIFlask 使用 [marshmallow](https://github.com/marshmallow-code/marshmallow) 来处理响应格式化。
 - 视图函数返回的响应数据只会根据你的 schema 进行格式化，不会进行验证。
-- 你只能为 JSON 响应体声明一个输出（使用一个 `app.output` 装饰器）。
+- 你只能声明一个 JSON 响应体作为输出（即只能使用一个 `app.output` 装饰器）。
 - 视图的错误响应可以使用 `app.doc(response=...)` 来声明。
 
 ## 分页支持
@@ -37,8 +37,8 @@ class PetQuerySchema(Schema):
     per_page = Integer(load_default=20, validate=Range(max=30))
 ```
 
-然后我们创建 PetOutSchema 类，与嵌套了 “PetOutSchema” 和 “PaginationSchema” 的
-PetsOutSchema 类。
+然后我们创建 `PetOutSchema` 类，和嵌套了 `PetOutSchema` 和 `PaginationSchema` 的
+`PetsOutSchema` 类。
 
 ```python
 from apiflask import Schema, PaginationSchema
@@ -77,10 +77,10 @@ def get_pets(query):
     }
 ```
 
-在视图函数的返回值中，我们使用 `pagination_builder` 来构建分页数据，并通过 Flask-SQLAlchemy 传递 `pagination` 对象。
+在视图函数的返回值中，我们使用 `pagination_builder` 来构建分页数据，并传递 Flask-SQLAlchemy 提供的 `pagination` 对象。
 
 `pagination_builder` 函数是基于 Flask-SQLAlchemy 的 `Pagination` 类设计的。
-如果你想使用自定义的分页类，请确保传递的 `pagination` 对象具有以下属性：
+如果你在使用自定义的分页类，请确保传递的 `pagination` 对象具有以下属性：
 
 - `page`
 - `per_page`
@@ -93,12 +93,11 @@ def get_pets(query):
 
 你还可以编写自定义构建器函数和分页 schema 来构建你的自定义分页数据。
 
-具体细节请参阅 [完整示例](https://github.com/apiflask/apiflask/blob/main/examples/pagination/app.py)
+具体细节请参阅 [完整示例](https://github.com/apiflask/apiflask/blob/main/examples/pagination/app.py)。
 
 ## 响应示例
 
-你可以通过 `example` 和 `examples` 参数来为 OpenAPI spec 设置响应示例，请参阅 OpenAPI 支持章节中 [响应与请求示例](/openapi/#response-and-request-example)
-来了解更多详情。
+你可以通过 `example` 和 `examples` 参数来为 OpenAPI spec 设置响应示例，请参阅 OpenAPI 支持章节中 [响应与请求示例](/openapi/#response-and-request-example) 一节来了解更多详情。
 
 ## 字典 schema
 
@@ -114,7 +113,7 @@ def get_answer():
     return {'answer': 'Nothing'}
 ```
 
-字典 schema 的名称类似 `"Generated"`，可以用 `schema_name` 参数来指定 schema 名称：
+字典 schema 的名称将会类似 `"Generated"`。要指定 schema 名称，可使用 `schema_name` 参数：
 
 ```python
 from apiflask.fields import Integer
