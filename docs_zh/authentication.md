@@ -50,4 +50,4 @@ def create_pet(data):
 
 ## 处理安全认证错误
 
-请翻阅错误处理章节中的 [这一部分](/error-handling/#handling-authentication-errors) 来处理安全认证错误。
+请参见错误处理章节中的 [这一部分](/error-handling/#handling-authentication-errors) 来处理安全认证错误。
