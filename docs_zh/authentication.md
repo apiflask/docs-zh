@@ -1,9 +1,9 @@
 # 安全认证
 
-阅读 [本节](/usage/#use-appauth_required-to-protect-your-views)
-首先在基本用法一章中了解安全认证支持的基础知识。
+首先阅读基本用法中的 [这一部分](/usage/#use-appauth_required-to-protect-your-views)
+来了解安全认证支持的基础知识。
 
-认证支持的基本概念：
+安全认证支持的基本概念：
 
 - APIFlask 使用 Flask-HTTPAuth 来实现认证支持。
 - 使用 [`apiflask.HTTPBasicAuth`](/api/security/#apiflask.security.HTTPBasicAuth) 来进行 HTTP 基本身份验证（HTTP Basic Auth）。
