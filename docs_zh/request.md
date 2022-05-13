@@ -1,29 +1,29 @@
 # 请求处理
 
-要了解请求处理的基本用法，请移步「基本用法」章节的 [这个部分](/usage/#use-appinput-to-validate-and-deserialize-request-data)。
+要了解请求处理的基本用法，请移步《基本用法》章节的 [这个小节](/usage/#use-appinput-to-validate-and-deserialize-request-data)。
 
 首先是几个请求处理的基本概念：
 
 - APIFlask 使用 [webargs](https://github.com/marshmallow-code/webargs) 解析和验证请求。
-- 请使用至少一个 [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) 来声明一个输入来源，
-  并使用 `location` 来声明输入数据的定位点。
+- 使用一个或多个 [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) 来声明请求数据来源，
+  并使用 `location` 来声明输入数据的位置。
 - 假如解析与验证均成功，数据将会被传至视图函数，否则自动返回 400 错误响应。
 
 
-## 请求的定位点
+## 请求数据的位置声明
 
-APIFlask 提供了以下定位点的支持：
+APIFlask 提供了以下位置的支持：
 
-- `json` (默认)
+- `json` （默认）
 - `form`
-- `query` (与 `querystring` 相同)
+- `query` （与 `querystring` 相同）
 - `cookies`
 - `headers`
 - `files`
 - `form_and_files`
 - `json_or_form`
 
-你可以使用多个 `app.input` 装饰器声明多组输入数据。然而，你只能使用下面的其中一个来为视图函数声明一个请求体定位点：
+你可以使用多个 `app.input` 装饰器声明多组输入数据。然而，你只能使用下面的其中一个来为视图函数声明一个请求体位置：
 
 - `json`
 - `form`
@@ -43,7 +43,7 @@ def hello(headers, query, data):
 
 ## 请求体的验证
 
-当你使用 `app.input` 声明一个输入时，APIFlask（Webargs）将会从指定的定位点得到数据，并且依据 schema 的定义验证它。
+当你使用 `app.input` 声明一个输入时，APIFlask（Webargs）将会从指定的位置得到数据，并且依据 schema 的定义验证它。
 
 假如解析与验证均成功，数据将会被传至视图函数。当你声明多个输入时，参数的顺序从上到下依次排列：
 
@@ -55,7 +55,7 @@ def hello(query, data):
     pass
 ```
 
-!!! tips
+!!! tip
 
     视图函数的参数名称（`query, data`）由你来定义，你可以换成任何一个你喜欢的名字。
 
@@ -69,7 +69,7 @@ def get_article(category, article_id, query, data):
     pass
 ```
 
-!!! tips
+!!! tip
 
     注意：URL 变量对应的参数名称（`category`, `article_id`）必须与变量名相同。
 
@@ -143,11 +143,11 @@ def hello(query, data):
 
 ## 上传文件
 
-!!! Warning "需要 1.0.0 以上版本"
+!!! Warning "Version >= 1.0.0"
 
     这个功能在 [1.0.0 版本](/changelog/#version-100) 中添加。
 
-你可以在输入 schema 使用 [`apiflask.fields.File`](/api/fields/#apiflask.fields.File) ，并在 `app.input` 中用 `files` 定位点来创建一个文件字段：
+你可以在输入 schema 使用 [`apiflask.fields.File`](/api/fields/#apiflask.fields.File) ，并在 `app.input` 中用 `files` 位置来创建一个文件字段：
 
 ```python
 import os
@@ -171,7 +171,7 @@ def upload_image(data):
     return {'message': f'file {filename} saved.'}
 ```
 
-!!! tips
+!!! tip
 
     这里，我们使用了 `secure_filename` 来清理这些文件名，请注意，它只会保留 ASCII 字符。
     你可能像为新文件创建一个随机的文件名, 这个
@@ -180,7 +180,7 @@ def upload_image(data):
 文件对象是 `werkzeug.datastructures.FileStorage` 类的实例，
 如果要了解请移步 [Werkzeug 文档](https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage)。
 
-如果你想要在 schema 中同时加入文件和其它字段，请用 `form_and_files` 定位点：
+如果你想要在 schema 中同时加入文件和其它字段，请用 `form_and_files` 位置：
 
 ```python
 import os
@@ -207,9 +207,9 @@ def create_profile(data):
     return {'message': 'profile created.'}
 ```
 
-目前功能的实现中，`files` 定位点的数据将还会包含表单数据（相当于 `form_and_files`）。
+目前功能的实现中，`files` 位置的数据将还会包含表单数据（相当于 `form_and_files`）。
 
-!!! tips
+!!! notes
 
     文件字段的验证器将在 1.1 版本中可用
     （参见 [#253](https://github.com/apiflask/apiflask/issues/253)）。目前来说，
