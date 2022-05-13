@@ -42,7 +42,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 - Authentication (authentication.md) [@z-t-y](https://github.com/z-t-y)
 - OpenAPI Generating (openapi.md) [@rice0208](https://github.com/rice0208)
 - Swagger UI and Redoc (api-docs.md)
-- Configuration (configuration.md)
+- Configuration (configuration.md) [@z-t-y](https://github.com/z-t-y)
 - Error Handling (error-handling.md) [@yangfan9702](https://github.com/yangfan9702)
 - Examples (examples.md)
 - Comparison and Motivations (comparison.md)
