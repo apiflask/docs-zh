@@ -242,6 +242,11 @@ the current terminal session. You have to set it every time you reopen the termi
 or reboot the computer. That's why we need to use python-dotenv, and Flask also
 has special support for it.
 
+由于环境变量只会存在于当前终端会话中，因此每次建立一个新的终端会话都需要重新手动设置一遍环境变量，这样太不方便了。所以我们需要用到 python-dotenv 包来帮我们自动加载环境变量，并且 Flask 也对它做了优化。
+
+~~变量一般只会存在终端当前会话中，每次打开新终端会话都需要重新设计环境变量，因此手动设置环境变量是很麻烦的一件事情。~~
+
+
 Install `python-dotenv` with pip:
 
 === "Linux/macOS"
@@ -258,6 +263,9 @@ Install `python-dotenv` with pip:
 
 Now we can store environment variables in .env files. Flask-related environment
 variables should keep in a file called `.flaskenv`:
+
+现在，我们可以将环境变量写到一个名为 .env 的文件中，Flask 项目相关的环境变量则应该存储在 .flaskenv 中：
+（后续翻阅《Flask开发实战》中的对应部分进行微调）
 
 ```ini
 # save as .flaskenv
@@ -280,6 +288,7 @@ FOO_APP_KEY=some-app-key
     Git history. Be sure to ignore it by adding the file name into `.gitignore`.
 
 In the application, now we can read these variables via `os.getenv(key, default_value)`:
+现在，在应用程序中我们可以使用 `os.getenv(key, default_value)` 来读取这些变量：
 
 ```python hl_lines="1 5"
 import os
@@ -307,17 +316,25 @@ $ flask run
 
 See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more details.
 
+更多信息请浏览 *[Environment Variables From dotenv][_dotenv]{target=_blank}*。
+
 [_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
 
 
-## Interactive API documentation(可互动的API文档--不会翻译)
+## Interactive API documentation(交互式API文档)
 
 Once you have created the app instance, the interactive API documentation will be
 available at <http://localhost:5000/docs> and <http://localhost:5000/redoc>. On
 top of that, the OpenAPI spec file is available at <http://localhost:5000/openapi.json>.
 
+当你创建应用程序后，你将可以在 <http://localhost:5000/docs> 和 <http://localhost:5000/redoc> 浏览交互式API文档。最重要的是，你可以访问 <http://localhost:5000/openapi.json> 获取 OpenAPI 规范文件。
+
+
 If you want to preview the spec or save the spec to a local file, use [the `flask spec`
 command](/openapi/#the-flask-spec-command).
+
+如果你想预览规范文件或者将其保存到本地文件，[可以使用 `flask spec`
+命令](/openapi/#the-flask-spec-command)。
 
 You can refresh the documentation whenever you added a new route or added the input
 and output definition for the view function in the following sections.
@@ -326,6 +343,8 @@ and output definition for the view function in the following sections.
 ## Create a route with route decorators(使用装饰器来创建路由/使用路由装饰器来创建路由)
 
 To create a view function, you can do exactly what you did with Flask:
+
+你可以像 Flask 一样创建视图函数：
 
 ```python
 from apiflask import APIFlask
