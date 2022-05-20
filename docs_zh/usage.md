@@ -339,6 +339,7 @@ command](/openapi/#the-flask-spec-command).
 You can refresh the documentation whenever you added a new route or added the input
 and output definition for the view function in the following sections.
 
+当视图函数添加了新的路由或是 input 和 output 装饰器定义时，你可刷新文档页面来看到新增的内容。
 
 ## Create a route with route decorators(使用装饰器来创建路由/使用路由装饰器来创建路由)
 
@@ -460,6 +461,8 @@ From APIFlask 0.12, the four standalone API decorators (i.e. `@input`, `@output`
 `@doc`, and `@auth_required`) were moved to `APIFlask` and `APIBlueprint` classes.
 Now access them with your application or blueprint instance:
 
+从 APIFlask 0.12 版本开始，四个单独的 API 装饰器（`@input`，`@output`，`@doc`，和 `@auth_required`）被迁移到 `APIFlask` 和 `APIBlueprint` 中。你现在可以通过应用实例或蓝图实例来使用它们：
+
 ```python
 from apiflask import APIFlask
 
@@ -472,7 +475,7 @@ def hello():
     return {'message': 'Hello'}
 ```
 
-instead of:
+上面的例子将代替下面的例子:
 
 ```python
 from apiflask import APIFlask, input, output
@@ -490,6 +493,7 @@ The old standalone decorators were deprecated since 0.12, and will be removed in
 1.0 version. Notice all the usage in the docs are updated, you may want to
 [upgrade APIFlask](/changelog/) to update the usage.
 
+旧的独立装饰器将在 0.12 版本起弃用，并将在 1.0 版本被移除。请注意，文档中的所有用法都已更新，如有需要请阅读 [upgrade APIFlask](/changelog/) 以更新使用情况。
 
 ## Use `@app.input` to validate and deserialize request data(使用 `@app.input` 来校验与反序列化请求数据)
 
@@ -498,7 +502,11 @@ create a data schema class first. Think of it as a way to describe the valid
 incoming data. If you already familiar with marshmallow, then you already know
 how to write a data schema.
 
+如果需要校验和反序列化请求体或请求查询参数，我们需要先创建一个 data schema 类。这个 schema 类将被视为传入数据的一种描述方式。如果你已经熟悉 marshmallow 这个库，那么相信你已经知道如何编写 data schema。
+
 Here is a simple input schema for a Pet input resource:
+
+这是一个名为 Pet 的传入数据的简单的 schema 示例：
 
 ```python
 from apiflask import Schema
