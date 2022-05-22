@@ -506,7 +506,7 @@ how to write a data schema.
 
 Here is a simple input schema for a Pet input resource:
 
-这是一个名为 Pet 的传入数据的简单的 schema 示例：
+这是一个简单的 input schema 示例，用于接收 Pet 类传入的数据：
 
 ```python
 from apiflask import Schema
@@ -526,6 +526,8 @@ class PetInSchema(Schema):
 
 A schema class should inherit the `apiflask.Schema` class:
 
+schema 类应该继承自 `apiflask.Schema` 类：
+
 ```python hl_lines="1 6"
 from apiflask import Schema
 from apiflask.fields import Integer, String
@@ -538,6 +540,10 @@ class PetInSchema(Schema):
 ```
 
 fields are represented with field classes in `apiflask.fields`:
+
+
+字段需要引用自 `apiflask.fields` 的字段类：
+
 
 ```python hl_lines="2 7 8"
 from apiflask import Schema
@@ -553,6 +559,8 @@ class PetInSchema(Schema):
 To validate a field with a specific rule, you can pass a validator or a list of
 validators (import them from `apiflask.validators`) to the `validate` argument
 of the field class:
+
+如果需要使用自定义的规则来验证字段，你可以通过 `validate` 参数来传递验证器或验证器列表（从 `apiflask.validators` 中导入）：
 
 ```python hl_lines="3 7 8"
 from apiflask import Schema
@@ -577,6 +585,9 @@ class PetInSchema(Schema):
 
 With this schema, we declare that the input request body should appear in the
 following format:
+
+
+通过使用这个 schema，我们规定了输入的请求体需要满足下面的序列号格式：
 
 ```json
 {
@@ -613,13 +624,19 @@ def create_pet(data):
 You just need to pass the schema class to the `@app.input` decorator. When a request
 was received, APIFlask will validate the request body against the schema.
 
+你只需要将 schema 类传递给 `@app.input` 装饰器即可。当接收到请求的时候，APIFlask会自动的根据 schema 类校验请求体。
+
 If the validation passed, the data will inject into the view function as
 a positional argument in the form of `dict`. Otherwise, an error response
 with the detail of the validation result will be returned.
 
+如果验证通过，请求体的数据将会以 `dict` 的形式输出到视图函数的参数中。否则就把验证结果的详细信息以错误响应的形式返回出去。
+
 In the example above, I use the name `data` to accept the input data dict.
 You can change the argument name to whatever you like. Since this is a dict,
 you can do something like this to create an ORM model instance:
+
+在这个示例中，我使用了一个名为 `data` 的参数来接收输入的数据字典。你可以将参数名称更改为你喜欢的任何名称。同时因为这是一个字典，你可以像下面示例中一样创建一个 ORM 实例：
 
 ```python hl_lines="5"
 @app.post('/pets')
@@ -631,6 +648,9 @@ def create_pet(pet_id, data):
 ```
 
 or update an ORM model class instance like this:
+
+
+或者像这样更新一个 ORM 模型实例：
 
 ```python hl_lines="6 7"
 @app.patch('/pets/<int:pet_id>')
@@ -645,6 +665,8 @@ def update_pet(pet_id, data):
 
 If you want to mark the input with a different location, you can pass a `location`
 argument for `@app.input()` decorator, the value can be:
+
+如果你想获取不同请求位置的输入请求数据，你可通过改变 `@app.input()` 装饰器的 `location` 参数来从下面的这些地方获取请求数据：
 
 - Request JSON body: `'json'` (default)
 - Upload files: `'files'`
@@ -662,6 +684,7 @@ argument for `@app.input()` decorator, the value can be:
 
 Read the *[Request Handling](/request)* chapter for the advanced topics on request handling.
 
+阅读 *[请求处理](/request)* 章节，了解更多有关请求处理的进阶用法。
 
 ## Use `@app.output` to format response data(使用 `@app.output` 来序列化响应数据)
 
