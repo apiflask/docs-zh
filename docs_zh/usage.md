@@ -686,9 +686,11 @@ Read the *[Request Handling](/request)* chapter for the advanced topics on reque
 
 阅读 *[请求处理](/request)* 章节，了解更多有关请求处理的进阶用法。
 
-## Use `@app.output` to format response data(使用 `@app.output` 来序列化响应数据)
+## Use `@app.output` to format response data(使用 `@app.output` 来格式化响应数据)
 
 Similarly, we can define a schema for output data with `@app.output` decorator. Here is an example:
+
+同样的，我们可以使用 `@app.output` 装饰器配合定义好的 schema 来对响应的数据进行格式化，下面是一个简易的示例：
 
 ```python
 from apiflask.fields import String, Integer
@@ -703,6 +705,8 @@ class PetOutSchema(Schema):
 Since APIFlask will not validate the output data, we only need to list all the field for the output
 schema.
 
+由于 APIFlask 不会对响应的数据内容进行校验，因此我们只需要列出响应体的结构即可。
+
 !!! tip
 
     You can set a default value for output field with the `dump_default` argument:
@@ -712,6 +716,8 @@ schema.
     ```
 
 Now add it to the view function which used to get a pet resource:
+
+~~现在让我们将它添加到视图函数中，并利用它来获取 Pet 资源：~~
 
 ```python hl_lines="1 14"
 from apiflask import APIFlask, output
