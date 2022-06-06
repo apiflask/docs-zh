@@ -744,6 +744,8 @@ def get_pet(pet_id):
 The default status code for output response is `200`, you can set a different
 status code with the `status_code` argument:
 
+默认的状态码是 `200`，你可以通过 `status_code` 参数来设置不同的默认值：
+
 ```python hl_lines="3"
 @app.post('/pets')
 @app.input(PetInSchema)
@@ -753,13 +755,14 @@ def create_pet(data):
     return data
 ```
 
-Or just:
+或者像下面这样：
 
 ```python
 @app.output(PetOutSchema, 201)
 ```
 
 If you want to return a 204 response, you can use the `EmptySchema` from `apiflask.schemas`:
+如果你想返回一个204响应，你可以使用 `apiflask.schemas` 中的 `EmptySchema` 
 
 ```python hl_lines="1 5"
 from apiflask.schemas import EmptySchema
