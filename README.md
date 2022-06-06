@@ -63,55 +63,56 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
     - Commands (api/commands.md)
 
 
-## APIFlask 介绍
+## 介绍
 
-APIFlask is a lightweight Python web API framework based on [Flask](https://github.com/pallets/flask) and [marshmallow-code](https://github.com/marshmallow-code) projects. It's easy to use, highly customizable, ORM/ODM-agnostic, and 100% compatible with the Flask ecosystem.
+APIFlask 是一个轻量的 Python web API 框架，基于 [Flask](https://github.com/pallets/flask) 和 [marshmallow-code](https://github.com/marshmallow-code) 项目实现。它易于使用，高度可定制，可搭配任意 ORM/ODM 框架，并且和 Flask 生态 100% 兼容。
 
-With APIFlask, you will have:
+APIFlask 提供了下面这些主要特性：
 
-- More sugars for view function (`@app.input()`, `@app.output()`, `@app.get()`, `@app.post()` and more)
-- Automatic request validation and deserialization (with [webargs](https://github.com/marshmallow-code/webargs))
-- Automatic response formatting and serialization (with [marshmallow](https://github.com/marshmallow-code/marshmallow))
-- Automatic [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification) (OAS, formerly Swagger Specification) document generation (with [apispec](https://github.com/marshmallow-code/apispec))
-- Automatic interactive API documentation (with [Swagger UI](https://github.com/swagger-api/swagger-ui) and [Redoc](https://github.com/Redocly/redoc))
-- API authentication support (with [Flask-HTTPAuth](https://github.com/miguelgrinberg/flask-httpauth))
-- Automatic JSON response for HTTP errors
+- 为视图函数实现了更多的语法糖（`@app.input()`、`@app.output()`、`@app.get()`、`@app.post()` 等）
+- 自动化请求验证和反序列化（基于 [webargs](https://github.com/marshmallow-code/webargs)）
+- 自动化响应格式化和序列化（基于 [marshmallow](https://github.com/marshmallow-code/marshmallow)）
+- 自动生成 [OpenAPI 规范](https://github.com/OAI/OpenAPI-Specification) （OAS，原 Swagger 规范）文档（基于 [apispec](https://github.com/marshmallow-code/apispec)）
+- 自动生成交互式 API 文档（基于 [Swagger UI](https://github.com/swagger-api/swagger-ui) 和 [Redoc](https://github.com/Redocly/redoc)）
+- API 认证支持（基于 [Flask-HTTPAuth](https://github.com/miguelgrinberg/flask-httpauth)）
+- 自动为 HTTP 错误生成 JSON 响应
 
 
-## Requirements
+## 要求
 
 - Python 3.7+
 - Flask 1.1.0+
 
 
-## Installation
+## 安装
 
-For Linux and macOS:
+Linux 和 macOS：
 
 ```bash
 $ pip3 install apiflask
 ```
 
-For Windows:
+Windows：
 
 ```bash
 > pip install apiflask
 ```
 
 
-## Links
+## 链接
 
-- Website: <https://apiflask.com>
-- Documentation: <https://apiflask.com/docs>
-- PyPI Releases: <https://pypi.python.org/pypi/APIFlask>
-- Change Log: <https://apiflask.com/changelog>
-- Source Code: <https://github.com/apiflask/apiflask>
-- Issue Tracker: <https://github.com/apiflask/apiflask/issues>
-- Discussion: <https://github.com/apiflask/apiflask/discussions>
-- Twitter: <https://twitter.com/apiflask>
+- 网站：<https://apiflask.com>
+- 文档：<https://apiflask.com/docs>
+- PyPI：<https://pypi.python.org/pypi/APIFlask>
+- 变更日志：<https://apiflask.com/changelog>
+- 源代码：<https://github.com/apiflask/apiflask>
+- Issue 追踪：<https://github.com/apiflask/apiflask/issues>
+- 论坛（英文）：<https://github.com/apiflask/apiflask/discussions>
+- 论坛（中文）：<https://discuss.helloflask.com/>
+- Twitter：<https://twitter.com/apiflask>
 
 
-## Example
+## 示例
 
 ```python
 from apiflask import APIFlask, Schema, abort
@@ -139,7 +140,7 @@ class PetOutSchema(Schema):
 
 @app.get('/')
 def say_hello():
-    # returning a dict equals to use jsonify()
+    # 返回字典等同于使用 jsonify()
     return {'message': 'Hello!'}
 
 
@@ -148,8 +149,8 @@ def say_hello():
 def get_pet(pet_id):
     if pet_id > len(pets) - 1:
         abort(404)
-    # you can also return an ORM/ODM model class instance directly
-    # APIFlask will serialize the object into JSON format
+    # 你也可以直接返回一个 ORM/ODM 模型类实例
+    # APIFlask 会将其序列化为 JSON 格式
     return pets[pet_id]
 
 
@@ -157,8 +158,8 @@ def get_pet(pet_id):
 @app.input(PetInSchema(partial=True))
 @app.output(PetOutSchema)
 def update_pet(pet_id, data):
-    # the validated and parsed input data will
-    # be injected into the view function as a dict
+    # 验证且解析后的请求输入数据会
+    # 作为一个字典传递给视图函数
     if pet_id > len(pets) - 1:
         abort(404)
     for attr, value in data.items():
@@ -166,13 +167,12 @@ def update_pet(pet_id, data):
     return pets[pet_id]
 ```
 
-Notice: The `input`, `output`, `doc`, and `auth_required` decorators are now bound
-to application/blueprint instances, use standalone decorators if you are still using
-APIFlask < 0.12, see [here](https://apiflask.com/usage/#move-to-new-api-decorators)
-for more details.
+注意：`input`、`output`、`doc` 和 `auth_required` 装饰器现在移动到了程序/蓝本实例上，
+如果你使用 APIFlask 0.12 及以下版本，则需要使用独立的装饰器具体参考
+[这里](https://apiflask.com/usage/#move-to-new-api-decorators)。
 
 <details>
-<summary>You can also use class-based views with <code>MethodView</code></summary>
+<summary>你也可以通过 <code>MethodView</code> 编写基于类的视图（class-based views）</summary>
 
 ```python
 from apiflask import APIFlask, Schema, abort
@@ -199,11 +199,11 @@ class PetOutSchema(Schema):
     category = String()
 
 
-# use the "route" decorator to decorate the view class
+# “app.route”只是快捷方式，你也可以直接使用“app.add_url_rule”
 @app.route('/')
 class Hello(MethodView):
 
-    # use HTTP method name as class method name
+    # 使用 HTTP 方法名作为类方法名
     def get(self):
         return {'message': 'Hello!'}
 
@@ -231,7 +231,7 @@ class Pet(MethodView):
 </details>
 
 <details>
-<summary>Or use <code>async def</code> with Flask 2.0</summary>
+<summary>或使用 <code>async def</code>（Flask 2.0）</summary>
 
 ```bash
 $ pip install -U flask[async]
@@ -251,43 +251,54 @@ async def say_hello():
     return {'message': 'Hello!'}
 ```
 
-See <em><a href="https://flask.palletsprojects.com/async-await">Using async and await</a></em> for the details of the async support in Flask 2.0.
+参考 <a href="https://flask.palletsprojects.com/async-await">Using async and await</a> 了解 Flask 2.0 的异步支持。
 
 </details>
 
-Save this as `app.py`, then run it with :
+把代码保存到 `app.py`，然后使用下面的命令运行：
 
 ```bash
 $ flask run --reload
 ```
 
-Now visit the interactive API documentation (Swagger UI) at <http://localhost:5000/docs>:
+现在访问 <http://localhost:5000/docs> 查看交互式 API 文档（Swagger UI）：
 
 ![](https://apiflask.com/_assets/swagger-ui.png)
 
-Or you can visit the alternative API documentation (Redoc) at <http://localhost:5000/redoc>:
+或是访问 <http://localhost:5000/redoc> 查看备用的 API 文档（Redoc）：
 
 ![](https://apiflask.com/_assets/redoc.png)
 
-The auto-generated OpenAPI spec file is available at <http://localhost:5000/openapi.json>. You can also get the spec with [the `flask spec` command](https://apiflask.com/openapi/#the-flask-spec-command):
+注意：如果 API 文档页面加载不出来，大概率是因为 API 文档资源文件对应的 CDN 提供商被政府封锁，可以尝试
+[更换其他 CDN 提供商](https://apiflask.com/api-docs/#use-different-cdn-server-for-swagger-uiredoc-resources)，
+或是 [使用本地资源](https://apiflask.com/api-docs/#serve-swagger-uiredoc-from-local-resources)。下面是设置自定义资源 URL 的示例（可直接复制使用）：
+
+```py
+# 放到程序实例定义下
+app.config['SWAGGER_UI_BUNDLE_JS'] = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.11.1/swagger-ui-bundle.min.js'
+app.config['SWAGGER_UI_CSS'] = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.11.1/swagger-ui.min.css'
+app.config['SWAGGER_UI_STANDALONE_PRESET_JS'] = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.11.1/swagger-ui-standalone-preset.min.js'
+app.config['REDOC_STANDALONE_JS'] = 'https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js'
+```
+
+自动生成的 OpenAPI 规范文件可以在 <http://localhost:5000/openapi.json> 访问到。你也可以通过 [`flask spec` 命令](https://apiflask.com/openapi/#the-flask-spec-command) 获取：
 
 ```bash
 $ flask spec
 ```
 
-For some complete examples, see [/examples](https://github.com/apiflask/apiflask/tree/main/examples).
+更多完整的示例程序见 [/examples](https://github.com/apiflask/apiflask/tree/main/examples)。
 
 
-## Relationship with Flask
+## 和 Flask 的关系
 
-APIFlask is a thin wrapper on top of Flask. You only need to remember four differences (see *[Migrating from Flask](https://apiflask.com/migrating)* for more details):
+APIFlsak 是 Flask 之上的一层包装。你只需要记住下面几点区别（阅读 [从 Flask 迁移](https://apiflask.com/migrating) 了解更多细节）：
 
-- When creating an application instance, use `APIFlask` instead of `Flask`.
-- When creating a blueprint instance, use `APIBlueprint` instead of `Blueprint`.
-- The `abort()` function from APIFlask (`apiflask.abort`) returns JSON error response.
-- The view class should be registered with the `route` decorator.
+- 当创建程序实例时，使用 `APIFlask` 而不是 `Flask`。
+- 当创建蓝本实例时，使用 `APIBlueprint` 而不是 `Blueprint`。
+- APIFlask 提供的 `abort()` 函数（`apiflask.abort`）返回 JSON 错误响应。
 
-For a minimal Flask application:
+下面的 Flask 程序：
 
 ```python
 from flask import Flask, request, escape
@@ -300,7 +311,7 @@ def hello():
     return f'Hello, {escape(name)}'
 ```
 
-Now change to APIFlask:
+转换到 APIFlask 只需要两步：
 
 ```python
 from apiflask import APIFlask  # step one
@@ -314,18 +325,19 @@ def hello():
     return f'Hello, {escape(name)}'
 ```
 
-In a word, to make Web API development in Flask more easily, APIFlask provides `APIFlask` and `APIBlueprint` to extend Flask's `Flask` and `Blueprint` objects and it also ships with some helpful utilities. Other than that, you are actually using Flask.
+简单来说，为了让使用 Flask 开发 Web API 更容易，APIFlask 提供了 `APIFlask` 和 `APIBlueprint` 来扩展 Flask 的 `Flask` 和 `Blueprint` 对象，并且添加了一些有用的功能函数。除了这些，你实际上是在使用 Flask。
 
 
-## Relationship with marshmallow
+## 和 marshmallow 的关系
 
-APIFlask accepts marshmallow schema as data schema, uses webargs to validate the request data against the schema, and uses apispec to generate the OpenAPI representation from the schema.
 
-You can build marshmallow schemas just like before, but APIFlask also exposes some marshmallow APIs for convenience (it's optional, you can still import everything from marshamallow directly):
+APIFlask 接受 marshmallow schema 作为数据 schema，它使用 webargs 验证请求数据是否符合 schema 定义，并且使用 apispec 生成 schema 对应的 OpenAPI 表示。
 
-- `apiflask.Schema`: The base marshmallow schema class.
-- `apiflask.fields`: The marshmallow fields, contain the fields from both marshmallow and Flask-Marshmallow. Beware that the aliases (`Url`, `Str`, `Int`, `Bool`, etc.) were removed (vote in [marshmallow #1828](https://github.com/marshmallow-code/marshmallow/issues/1828) to remove these aliases from marshmallow).
-- `apiflask.validators`: The marshmallow validators (vote in [marshmallow #1829](https://github.com/marshmallow-code/marshmallow/issues/1829) for better names for validate-related APIs in marshmallow).
+你可以像以前那样构建 marshmallow schema。对于一些常用的 marshmallow 函数和类，你可以选择从 APIFlask 导入（你也可以直接从 marshmallow 导入）：
+
+- `apiflask.Schema`：schema 基类。
+- `apiflask.fields`：marshmallow 字段，包含来自 marshmallow、Flask-Marshmallow 和 webargs 的字段类。注意，别名字段（`Url`、`Str`、`Int`、`Bool` 等）已被移除（在 [marshmallow #1828](https://github.com/marshmallow-code/marshmallow/issues/1828) 投票移除这些别名字段）。
+- `apiflask.validators`：marshmallow 验证器（在 [marshmallow #1829](https://github.com/marshmallow-code/marshmallow/issues/1829) 投票为验证器相关的 API 使用更好的命名）。
 
 ```python
 from apiflask import Schema
@@ -334,6 +346,6 @@ from apiflask.validators import Length, OneOf
 from marshmallow import pre_load, post_dump, ValidationError
 ```
 
-## Credits
+## 致谢
 
-APIFlask starts as a fork of [APIFairy](https://github.com/miguelgrinberg/APIFairy) and is inspired by [flask-smorest](https://github.com/marshmallow-code/flask-smorest) and [FastAPI](https://github.com/tiangolo/fastapi) (see *[Comparison and Motivations](https://apiflask.com/comparison)* for the comparison between these projects).
+APIFlask 基于 [APIFairy](https://github.com/miguelgrinberg/APIFairy) 改写，并且受到 [flask-smorest](https://github.com/marshmallow-code/flask-smorest) 和 [FastAPI](https://github.com/tiangolo/fastapi) 的启发（阅读 [对比和动机](https://apiflask.com/comparison) 了解这些项目之间的区别）。
