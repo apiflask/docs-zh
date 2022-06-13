@@ -104,7 +104,7 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 - `SWAGGER_UI_BUNDLE_JS`
 - `SWAGGER_UI_STANDALONE_PRESET_JS`
 
-对于本地资源，您可以传递相对 URL 。 例如，如果你想在本地托管独立的 Redoc JavaScript 文件，请按照以下步骤操作：
+对于本地资源，你可以传递相对 URL。例如，如果你想在本地托管独立的 Redoc JavaScript 文件，请按照以下步骤操作：
 
 手动下载文件：
 
