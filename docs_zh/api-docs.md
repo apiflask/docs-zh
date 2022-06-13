@@ -97,7 +97,7 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 
 ## 从本地资源提供 Swagger UI/Redoc 服务
 
-就同前面那样，如果想使用本地资源，可以传递本地静态文件的 URL 到相应的配置变量：
+和上一节类似，如果想使用本地资源，可以传递本地静态文件的 URL 到相应的配置变量：
 
 - `REDOC_STANDALONE_JS`
 - `SWAGGER_UI_CSS`
