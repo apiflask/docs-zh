@@ -109,7 +109,7 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 手动下载文件：
 
 - 从 [CDN 服务器][_redoc_cdn]{target=_blank} 下载文件。
-- 将文件放在您的 `static` 文件夹中，将其命名为 `redoc.standalone.js` 或其他。
+- 将文件放在你的 `static` 文件夹中，将其命名为 `redoc.standalone.js` 或其他任意名称。
 - 找出 js 文件的相对 URL。 如果文件在 `static` 文件夹中，那么 URL 将是 `/static/redoc.standalone.js`。如果你把它放到一个名为 `js` 的子文件夹里，那么 URL 则是 `/static/js/redoc.standalone.js`。
 - 将 URL 传递给相应的配置变量：
 
