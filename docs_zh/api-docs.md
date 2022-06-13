@@ -1,11 +1,9 @@
-# Swagger UI and Redoc
+# Swagger UI 和 Redoc
 
+## 更改 Swagger UI 和 Redoc 的路径
 
-## Change the path to Swagger UI and Redoc
-
-The default path of Swagger UI is `/docs`, so it will be available at
-<http://localhost:5000/docs> when running on local with the default port. You can
-change the path via the `docs_path` parameter when creating the `APIFlask` instance:
+Swagger UI 的默认路径是 `/docs`，它使用默认端口在本地运行时的 URL 为
+<http://localhost:5000/docs>。你可以在创建 `APIFlask` 实例时，通过修改 `docs_path` 参数来更改此路径：
 
 ```python
 from apiflask import APIFlask
@@ -13,8 +11,7 @@ from apiflask import APIFlask
 app = APIFlask(__name__, docs_path='/swagger-ui')
 ```
 
-Similarly, the default path of Redoc is `/redoc`, and you can change it via the
-`redoc_path` parameter:
+同样，Redoc 的默认路径是 `/redoc`，你可以修改 `redoc_path` 参数来更改此路径：
 
 ```python
 from apiflask import APIFlask
@@ -22,8 +19,7 @@ from apiflask import APIFlask
 app = APIFlask(__name__, redoc_path='/api-doc')
 ```
 
-The `docs_path` and `redoc_path` accepts a URL path starts with a slash, so you can
-set a prefix like this:
+`docs_path` 和 `redoc_path` 接受以斜杠开头的 URL 路径，因此你可以设置这样的前缀：
 
 ```python
 from apiflask import APIFlask
@@ -31,13 +27,12 @@ from apiflask import APIFlask
 app = APIFlask(__name__, docs_path='/docs/swagger-ui', redoc_path='/docs/redoc')
 ```
 
-Now the local URL of the docs will be <http://localhost:5000/docs/swagger-ui> and
-<http://localhost:5000/docs/redoc>.
+这时文档的本地 URL 将是 <http://localhost:5000/docs/swagger-ui> 和
+<http://localhost:5000/docs/redoc>。
 
+## 全局禁用 API 文档
 
-## Disable the API documentations globally
-
-You can set the `docs_path` parameter to `None` to disable Swagger UI documentation:
+你可以将 `docs_path` 参数设置为 `None` 以禁用 Swagger UI 文档：
 
 ```python
 from apiflask import APIFlask
@@ -45,8 +40,8 @@ from apiflask import APIFlask
 app = APIFlask(__name__, docs_path=None)
 ```
 
-Similarly, you can set the `redoc_path` parameter to `None` to disable Redoc
-documentation:
+同样，你可以将 `redoc_path` 参数设置为 `None` 以禁用 Redoc
+文档：
 
 ```python
 from apiflask import APIFlask
@@ -54,7 +49,7 @@ from apiflask import APIFlask
 app = APIFlask(__name__, redoc_path=None)
 ```
 
-Or disable both:
+或者同时禁用两者：
 
 ```python
 from apiflask import APIFlask
@@ -63,25 +58,20 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 ```
 
 !!! tip
+    如果你想禁用应用程序的所有 OpenAPI 支持，
+    详情请参阅 *[禁用 OpenAPI 支持](/openapi/#disable-the-openapi-support)* 。
 
-    If you want to disable the whole OpenAPI support for the application,
-    see *[Disable the OpenAPI support](/openapi/#disable-the-openapi-support)*
-    for more details.
+## 禁用指定蓝本的 API 文档
 
+有关详细内容，请参阅 *[禁用指定蓝本的 OpenAPI 支持](/openapi/#disable-for-specific-blueprints)*。
 
-## Disable the API documentations for specific blueprints
+## 禁用指定视图函数的 API 文档
 
-See *[Disable the OpenAPI support for specific blueprints](/openapi/#disable-for-specific-blueprints)* for more details.
+有关详细内容，请参阅 *[禁用指定视图函数的 OpenAPI 支持](/openapi/#disable-for-specific-view-functions)*。
 
+## 配置 Swagger UI/Redoc
 
-## Disable the API documentations for specific view functions
-
-See *[Disable the OpenAPI support for specific view functions](/openapi/#disable-for-specific-view-functions)* for more details.
-
-
-## Configure Swagger UI/Redoc
-
-The following configuration variables can be used to config Swagger UI/Redoc:
+以下配置变量可用于配置 Swagger UI/Redoc：
 
 - `DOCS_FAVICON`
 - `REDOC_USE_GOOGLE_FONT`
@@ -90,46 +80,39 @@ The following configuration variables can be used to config Swagger UI/Redoc:
 - `SWAGGER_UI_CONFIG`
 - `SWAGGER_UI_OAUTH_CONFIG`
 
-See *[Configuration](/configuration/#swagger-ui-and-redoc)* for the
-introduction and examples of these configuration variables.
+请参阅 *[配置](/configuration/#swagger-ui-and-redoc)*
+来查看这些配置变量的介绍和示例。
 
+## 对 Swagger UI/Redoc 资源使用不同的 CDN 服务
 
-## Use different CDN server for Swagger UI/Redoc resources
-
-Each resource (JavaScript/CSS files) URL has a configuration variable. You can pass
-the URL from your preferred CDN server to the corresponding configuration variables:
+每个资源（JavaScript/CSS 文件）的 URL 都有一个配置变量。你可以传递你的首选 CDN 服务的 URL 到相应的配置变量上：
 
 - `REDOC_STANDALONE_JS`
 - `SWAGGER_UI_CSS`
 - `SWAGGER_UI_BUNDLE_JS`
 - `SWAGGER_UI_STANDALONE_PRESET_JS`
 
-See *[Configuration](/configuration/#swagger-ui-and-redoc)* for the
-introduction and examples of these configuration variables.
+请参阅 *[配置](/configuration/#swagger-ui-and-redoc)*
+来查看这些配置变量的介绍和示例。
 
+## 从本地资源提供 Swagger UI/Redoc 服务
 
-## Serve Swagger UI/Redoc from local resources
-
-Like what you need to do in the last section, to use local resources, you can pass
-the URL of local static files to the corresponding configuration variables:
+和上一节类似，如果想使用本地资源，可以传递本地静态文件的 URL 到相应的配置变量：
 
 - `REDOC_STANDALONE_JS`
 - `SWAGGER_UI_CSS`
 - `SWAGGER_UI_BUNDLE_JS`
 - `SWAGGER_UI_STANDALONE_PRESET_JS`
 
-For local resources, you can pass a relative URL. For example, if you want to host
-the Redoc standalone JavaScript file from a local file, follow the following steps:
+对于本地资源，你可以传递相对 URL。例如，如果你想在本地托管独立的 Redoc JavaScript 文件，请按照以下步骤操作：
 
-Manual download file:
+手动下载文件：
 
-- Download the file from [CDN server][_redoc_cdn]{target=_blank}.
-- Put the file in your `static` folder, name it as `redoc.standalone.js` or whatever
-you want.
-- Figure out the relative URL to your js file. If the file sits in the root of the
-`static` folder, then the URL will be `/static/redoc.standalone.js`. If you put it
-into a subfolder called `js`, then the URL will be `/static/js/redoc.standalone.js`.
-- Pass the URL to the corresponding config:
+- 从 [CDN 服务器][_redoc_cdn]{target=_blank} 下载文件。
+- 将文件放在你的 `static` 文件夹中，将其命名为 `redoc.standalone.js` 或其他任意名称。
+- 确定 js 文件的相对 URL。 如果文件在 `static` 文件夹中，那么 URL 将是 `/static/redoc.standalone.js`。如果你把它放到一个名为 `js` 的子文件夹里，那么 URL 则是 `/static/js/redoc.standalone.js`。
+- 将 URL 传递给相应的配置变量：
+
     ```python
     app.config['REDOC_STANDALONE_JS'] = '/static/js/redoc.standalone.js'
     ```
@@ -137,21 +120,19 @@ into a subfolder called `js`, then the URL will be `/static/js/redoc.standalone.
 [_redoc_cdn]: https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js
 
 !!! tip
-    The `static` part of the URL matches the `static_url_path` argument you passed
-    to the `APIFlask` class, defaults to `static`.
+    URL 的 `static` 部分将会匹配你传递的 `static_url_path` 参数到 `APIFlask` 类中，默认值为 `static`。
 
-Or with npm:
+或者使用 npm:
 
-- Initialize the npm in `static` folder with `npm init`.
-- Install the file via `npm i redoc` command.
-- Pass the URL to the corresponding config:
+- 使用 `npm init` 在 `static` 文件夹中初始化 npm。
+- 通过 `npm i redoc` 命令安装文件。
+- 将 URL 传递到相应的配置变量：
+
     ```python
     app.config['REDOC_STANDALONE_JS'] = 'static/node_modules/redoc/bundles/redoc.standalone.js'
     ```
 
 !!! tip
-
-    The resources of Swagger UI can be found at the `dist` folder of release assets at
-    [Swagger UI releases page][_swagger_ui_releases]{target=_blank}.
+    Swagger UI 的相关资源可以在 [Swagger UI 发行页][_swagger_ui_releases]{target=_blank} 中下载资源里的 `dist` 文件夹中找到。
 
     [_swagger_ui_releases]: https://github.com/swagger-api/swagger-ui/releases
