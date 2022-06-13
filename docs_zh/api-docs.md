@@ -135,4 +135,4 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 !!! tip
     Swagger UI 的相关资源可以在 [Swagger UI 发行页][_swagger_ui_releases]{target=_blank} 中下载资源里的 `dist` 文件夹中找到。
 
-[_swagger_ui_releases]: https://github.com/swagger-api/swagger-ui/releases
+    [_swagger_ui_releases]: https://github.com/swagger-api/swagger-ui/releases
