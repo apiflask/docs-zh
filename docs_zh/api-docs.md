@@ -93,7 +93,7 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 - `SWAGGER_UI_STANDALONE_PRESET_JS`
 
 请参阅 *[配置](/configuration/#swagger-ui-and-redoc)*
-来查看配置变量的介绍和示例。
+来查看这些配置变量的介绍和示例。
 
 ## 从本地资源提供 Swagger UI/Redoc 服务
 
