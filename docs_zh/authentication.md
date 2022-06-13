@@ -20,7 +20,7 @@
 
 使用 `HTTPBasicAuth`、`HTTPTokenAuth` 和 `app.auth_required` 实现安全认证时，APIFlask 可以自动生成 OpenAPI 安全规范。当你使用外部安全认证库，APIFlask 仍然提供手动设置 OpenAPI 规范的方式。
 
-你可以使用 `SECURITY_SCHEMES` 配置或 `app.security_schemes` 属性来设置 OpenAPI 安全方案：
+你可以使用 `SECURITY_SCHEMES` 配置或 `app.security_schemes` 属性来设置 OpenAPI security scheme：
 
 ```python
 app = APIFlask(__name__)
@@ -32,7 +32,7 @@ app.security_schemes = {  # 等同于 SECURITY_SCHEMES 配置
     }
 }
 ```
-然后你可以在 `app.doc()` 装饰器中使用 `security` 参数设置安全方案：
+然后你可以在 `app.doc()` 装饰器中使用 `security` 参数设置 security scheme：
 
 ```python hl_lines="5"
 @app.post('/pets')
