@@ -124,7 +124,7 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 
 或者使用 npm:
 
-- 使用 `npm init` 初始化 `static` 文件夹中的 npm。
+- 使用 `npm init` 在 `static` 文件夹中初始化 npm。
 - 通过 `npm i redoc` 命令安装文件。
 - 将 URL 传递到相应的配置变量：
 
