@@ -49,7 +49,7 @@ from apiflask import APIFlask
 app = APIFlask(__name__, redoc_path=None)
 ```
 
-或者同时禁用：
+或者同时禁用两者：
 
 ```python
 from apiflask import APIFlask
