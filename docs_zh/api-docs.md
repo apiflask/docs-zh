@@ -61,7 +61,7 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
     如果你想禁用应用程序的所有 OpenAPI 支持，
     详情请参阅 *[禁用 OpenAPI 支持](/openapi/#disable-the-openapi-support)* 。
 
-## 禁用指定蓝图的 API 文档
+## 禁用指定蓝本的 API 文档
 
 有关详细内容，请参阅 *[禁用指定蓝图的 OpenAPI 支持](/openapi/#disable-for-specific-blueprints)*。
 
