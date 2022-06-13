@@ -19,7 +19,7 @@ from apiflask import APIFlask
 app = APIFlask(__name__, redoc_path='/api-doc')
 ```
 
-`docs_path` 和 `redoc_path` 接受以斜杠开头的 URL 路径，因此您可以设置这样的前缀：
+`docs_path` 和 `redoc_path` 接受以斜杠开头的 URL 路径，因此你可以设置这样的前缀：
 
 ```python
 from apiflask import APIFlask
