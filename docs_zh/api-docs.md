@@ -63,7 +63,7 @@ app = APIFlask(__name__, docs_path=None, redoc_path=None)
 
 ## 禁用指定蓝本的 API 文档
 
-有关详细内容，请参阅 *[禁用指定蓝图的 OpenAPI 支持](/openapi/#disable-for-specific-blueprints)*。
+有关详细内容，请参阅 *[禁用指定蓝本的 OpenAPI 支持](/openapi/#disable-for-specific-blueprints)*。
 
 ## 禁用指定视图函数的 API 文档
 
