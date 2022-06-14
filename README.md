@@ -44,7 +44,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 - Swagger UI and Redoc (api-docs.md) [@Tridagger](https://github.com/Tridagger)
 - Configuration (configuration.md) [@z-t-y](https://github.com/z-t-y)
 - Error Handling (error-handling.md) [@yangfan9702](https://github.com/yangfan9702)
-- Examples (examples.md)
+- Examples (examples.md) [@Tridagger](https://github.com/Tridagger)
 - Comparison and Motivations (comparison.md)
 - Authors (authors.md)
 - Changelog (changelog.md)
