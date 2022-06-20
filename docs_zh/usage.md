@@ -587,7 +587,7 @@ With this schema, we declare that the input request body should appear in the
 following format:
 
 
-通过使用这个 schema，我们规定了输入的请求体需要满足下面的序列号格式：
+通过使用这个 schema，我们规定了输入的请求体需要满足下面的格式：
 
 ```json
 {
@@ -600,6 +600,9 @@ following format:
     Read the *[Data Schema](/schema)* chapter for the advanced topics on data schema.
 
 Now let's add it to the view function which used to create a new pet:
+
+现在让我们把它添加到一个用于创建新 pet 的视图函数中：
+
 
 ```python hl_lines="1 14"
 from apiflask import APIFlask, Schema, input
@@ -776,6 +779,9 @@ def delete_pet(pet_id):
 
 From version 0.4.0, you can use a empty dict to represent empty schema:
 
+从 0.4.0 版本开始，你可以在 input 中使用空字典来表示返回**空的响应体**：
+
+
 ```python hl_lines="2"
 @app.delete('/pets/<int:pet_id>')
 @app.output({}, 204)
@@ -808,11 +814,15 @@ def delete_pet(pet_id):
 
 Read the *[Response Formatting](/response)* chapter for the advanced topics on request formatting.
 
+阅读 *[响应格式化](/response)* 一章，了解关于请求格式化的高级主题。
 
 ## The return value of the view function(视图函数返回的内容)
 
 When you are using a `@app.output(schema)` decorator, you should return a dict or object
 that matches the schema you passed. For example, here is your schema:
+
+当你使用 `@app.output(schema)` 装饰器的时候，你应该返回一个与你定义的 schema 匹配的字典或对象。
+举个例子，加入你的 schema 类是这样：
 
 ```python
 from apiflask import Schema
@@ -826,6 +836,7 @@ class PetOutSchema(Schema):
 ```
 
 Now you can return a dict:
+现在要返回一个字典：
 
 ```python
 @app.get('/pets/<int:pet_id>')
@@ -840,6 +851,8 @@ def get_pet(pet_id):
 
 or you can return an ORM model instance directly:
 
+或者返回一个 ORM 模型实例：
+
 ```python hl_lines="5"
 @app.get('/pets/<int:pet_id>')
 @app.output(PetOutSchema)
@@ -849,6 +862,9 @@ def get_pet(pet_id):
 ```
 
 Notice your ORM model class should have the fields defined in the schema class:
+
+注意！你的 ORM 模型类应该有 schema 类中定义的字段。
+
 
 ```python
 class Pet(Model):
@@ -888,6 +904,10 @@ class Pet(Model):
 
 The default status code is `200`, if you want to use a different status code,
 you can pass a `status_code` argument in the `@app.output` decorator:
+
+
+默认的状态码是 `200`，如果你想使用
+
 
 ```python hl_lines="3"
 @app.post('/pets')
