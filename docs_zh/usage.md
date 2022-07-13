@@ -921,6 +921,8 @@ def create_pet(data):
 You don't need to return the same status code in the end of the view function
 (i.e., `return data, 201`):
 
+你不需要在视图函数的末尾返回相同的 HTTP 状态码（即：`return data, 201`）：
+
 ```python hl_lines="8"
 @app.post('/pets')
 @app.input(PetInSchema)
@@ -934,6 +936,8 @@ def create_pet(data):
 
 When you want to pass a header dict, you can pass the dict as the second element
 of the return tuple:
+
+当你想返回一个 HTTP header 字典时，你可以像下面的例子一样将其作为返回元组的第二个元素：
 
 ```python hl_lines="8"
 @app.post('/pets')
@@ -952,21 +956,27 @@ def create_pet(data):
     to use a non-200 status code. If there is a mismatch, the `status_code`
     passed in `@app.output` will be used in OpenAPI spec, while the actual response
     will use the status code you returned at the end of the view function.
-
+    当你想使用非 200 的状态码时，请确保在 `@app.output` 中设置了 `status_code` 参数。如果参数中使用了一个非 200 的状态码并且与返回值不匹配时，那么`@app.output`中的 `status_code` 将被用于OpenAPI规范，而实际响应的状态码将是你在视图函数结束时返回的状态码。
 
 ## The OpenAPI generating support and the `@app.doc` decorator(OpenAPI 生成与 `@app.doc` 装饰器使用方法)
 
 APIFlask provides automatic OpenAPI spec generating support, while also allows
 you to customize the spec:
 
+APIFlask 提供自动生成 OpenAPI 规范的支持，同时也允许你自定义规范。
+
 - Most of the fields of the `info` object and top-level field of `OpenAPI`
 objct are accessible with configuration variables.
+- `info` 对象的大部分字段和 `OpenAPI` 对象的顶级字段可通过配置变量访问。
 - The `tag` object, Operation `summary` and `description` will generated from
 the blueprint name, the view function name and docstring.
+- `标签对象`、`操作摘要` 和 `描述` 将根据蓝图名称、视图函数名称和文档字符串生成。
 - You can register a spec processor function to process the spec.
 - `requestBody` and `responses` fields can be set with the `input` and `output`
 decorator.
+- `requestBody` 和 `responses` 字段可以使用 `input` 和 `output` 装饰器来设置。
 - Other operation fields can be set with the `doc` decorator:
+- 其他操作字段可以用 `doc` 装饰器来设置。
 
 ```python hl_lines="1 7"
 from apiflask import APIFlask, doc
@@ -983,13 +993,16 @@ def hello():
 See *[Use the `doc` decorator](/openapi/#use-the-doc-decorator)* for more details
 about OpenAPI genenrating and the usage of the `doc` decorator.
 
+参见*[使用 `doc` 装饰器](/openapi/#use-the-doc-decorator)* 以了解更多关于 OpenAPI 生成和 `doc` 装饰器的用法。
+
 !!! warning
 
     Be sure to put the `@app.doc` decorator under the routes decorators
     (i.e., `app.route`, `app.get`, `app.post`, etc.).
+    请确保将`@app.doc`装饰器放在路由装饰器的下面（即`app.route`，`app.get`，`app.post`，等等）。
 
 
-## Use `@app.auth_required` to protect your views(使用 `@app.auth_required` 保护你的视图/为了你接口添加鉴权)
+## Use `@app.auth_required` to protect your views(使用 `@app.auth_required` 保护你的接口/为你的接口添加鉴权)
 
 Based on [Flask-HTTPAuth](https://github.com/miguelgrinberg/Flask-HTTPAuth), APIFlask
 provides three types of authentication:
