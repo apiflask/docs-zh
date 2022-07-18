@@ -605,14 +605,12 @@ app.config['AUTO_200_RESPONSE'] = False
 
 #### `AUTO_404_RESPONSE`
 
-If a view function's URL rule contains a variable. By default, APIFlask will add a
-404 response for this view into OpenAPI spec. Set this config to `False` to disable
-this behavior.
+如果一个视图函数的 URL 规则包含一个变量，在默认情况下，APIFlask 会向 OpenAPI spec 中添加
+一个 404 响应。将这个配置设置为 `False` 来禁用这种行为。
 
 !!! tip
 
-    You can change the description of the automatic 404 response with config
-    `NOT_FOUND_DESCRIPTION`.
+    你可以通过 `NOT_FOUND_DESCRIPTION` 配置来改编自动 404 相应的描述
 
 - 类型: `bool`
 - 默认值: `True`
@@ -629,9 +627,9 @@ app.config['AUTO_404_RESPONSE'] = False
 
 #### `AUTO_VALIDATION_ERROR_RESPONSE`
 
-If a view function uses `@app.input` to validate input request data, APIFlask will add a
-validation error response into OpenAPI spec for this view. Set this config to `False`
-to disable this behavior.
+如果一个视图函数使用 `@app.input` 来验证输入的请求数据，
+APIFlask 会向这个视图的 OpenAPI spec 中添加一个数据验证错误
+响应。
 
 - 类型: `bool`
 - 默认值: `True`
@@ -644,9 +642,9 @@ app.config['AUTO_VALIDATION_ERROR_RESPONSE'] = False
 
 #### `AUTO_AUTH_ERROR_RESPONSE`
 
-If a view function uses `@app.auth_required` to restrict the access, APIFlask will add
-an authentication error response into OpenAPI spec for this view. Set this
-config to `False` to disable this behavior.
+如果一个视图函数使用 `@app.auth_required` 来限制访问，
+APIFlask 会向这个视图的 OpenAPI spec 中添加一个安全认证错误。
+将这个配置设置为 `False` 来禁用这种行为。
 
 - 类型: `bool`
 - 默认值: `True`
@@ -657,14 +655,14 @@ app.config['AUTO_AUTH_ERROR_RESPONSE'] = False
 ```
 
 
-### Response customization
+### 响应自定义
 
-The following configuration variables are used to customize auto-responses.
+以下配置变量用来自定义自动化响应。
 
 
 #### `SUCCESS_DESCRIPTION`
 
-The default description of the 2XX responses.
+状态码为 2XX 的响应的默认描述。
 
 - 类型: `str`
 - 默认值: `Successful response`
@@ -681,7 +679,7 @@ app.config['SUCCESS_DESCRIPTION'] = 'Success!'
 
 #### `NOT_FOUND_DESCRIPTION`
 
-The default description of the 404 response.
+状态码为 404 的响应的默认描述。
 
 - 类型: `str`
 - 默认值: `Not found`
@@ -698,7 +696,7 @@ app.config['NOT_FOUND_DESCRIPTION'] = 'Missing'
 
 #### `VALIDATION_ERROR_STATUS_CODE`
 
-The status code of validation error response.
+数据验证错误响应的默认返回值。
 
 - 类型: `int`
 - 默认值: `400`
@@ -711,6 +709,7 @@ app.config['VALIDATION_ERROR_STATUS_CODE'] = 422
 
 #### `VALIDATION_ERROR_DESCRIPTION`
 
+数据验证错误响应的默认描述
 The description of validation error response.
 
 - 类型: `str`
@@ -724,8 +723,8 @@ app.config['VALIDATION_ERROR_DESCRIPTION'] = 'Invalid JSON body'
 
 #### `VALIDATION_ERROR_SCHEMA`
 
-The schema of validation error response, accepts a schema class or
-a dict of OpenAPI schema definition.
+数据验证错误响应的 schema。本配置接受一个 schema 类或一个
+OpenAPI schema 定义的字典。
 
 - 类型: `Union[Schema, dict]`
 - 默认值: `apiflask.schemas.validation_error_schema`
@@ -738,7 +737,7 @@ app.config['VALIDATION_ERROR_SCHEMA'] = CustomValidationErrorSchema
 
 #### `AUTH_ERROR_STATUS_CODE`
 
-The status code of authentication error response.
+安全认证错误响应的状态码。
 
 - 类型: `int`
 - 默认值: `401`
@@ -751,7 +750,7 @@ app.config['AUTH_ERROR_STATUS_CODE'] = 403
 
 #### `AUTH_ERROR_DESCRIPTION`
 
-The description of authentication error response.
+安全认证错误响应的描述。
 
 - 类型: `str`
 - 默认值: `'Authentication error'`
@@ -764,8 +763,8 @@ app.config['AUTH_ERROR_DESCRIPTION'] = 'Auth error'
 
 #### `HTTP_ERROR_SCHEMA`
 
-The schema of generic HTTP error response, accepts a schema class or
-a dict of OpenAPI schema definition.
+通用的 HTTP 错误响应的 schema。本配置接受一个 schema 类或
+一个 OpenAPI schema 定义的字典。
 
 - 类型: `Union[Schema, dict]`
 - 默认值: `apiflask.schemas.http_error_schema`
@@ -778,8 +777,8 @@ app.config['HTTP_ERROR_SCHEMA'] = CustomHTTPErrorSchema
 
 #### `BASE_RESPONSE_SCHEMA`
 
-The schema of base response schema, accepts a schema class or a dict of
-OpenAPI schema definition.
+基响应的 schema。本配置接受一个 schema 类或一个 OpenAPI
+schema 定义的字典
 
 - 类型: `Union[Schema, dict]`
 - 默认值: `None`
@@ -806,6 +805,7 @@ app.config['BASE_RESPONSE_SCHEMA'] = BaseResponseSchema
 
 #### `BASE_RESPONSE_DATA_KEY`
 
+基响应的数据键，它应该与响应 schema 的数据字段名相匹配。
 The data key of the base response, it should match the data field name in the base
 response schema.
 
@@ -822,15 +822,13 @@ app.config['BASE_RESPONSE_DATA_KEY'] = 'data'
     这个配置变量在 [0.9.0 版本](/changelog/#version-090) 中添加。
 
 
-### Swagger UI and Redoc
+### Swagger UI 和 Redoc
 
-The following configuration variables used to customize Swagger UI and
-Redoc documentation.
-
+以下配置变量被用来自定义 Swagger UI 和 Redoc 文档。
 
 #### `DOCS_FAVICON`
 
-The absolute or relative URL of the favicon image file of API documentations.
+API 文档图标文件的绝对或相对 URL。
 
 - 类型: `str`
 - 默认值: `'https://apiflask.com/_assets/favicon.png'`
@@ -843,7 +841,7 @@ app.config['DOCS_FAVICON'] = 'https://cdn.example.com/favicon.png'
 
 #### `REDOC_USE_GOOGLE_FONT`
 
-Enable or disable Google font in Redoc documentation.
+在 Redoc 文档中启用或禁用 Google 字体。
 
 - 类型: `bool`
 - 默认值: `True`
@@ -856,8 +854,8 @@ app.config['REDOC_USE_GOOGLE_FONT'] = False
 
 #### `REDOC_CONFIG`
 
-The configuration options pass to Redoc. See the available options in the
-[Redoc documentation]（https://github.com/Redocly/redoc#redoc-options-object），
+这个配置项将会传递给 Redoc。在
+[Redoc documentation](https://github.com/Redocly/redoc#redoc-options-object) 查看可配置项。
 
 - 类型: `dict`
 - 默认值: `None`
@@ -874,7 +872,7 @@ app.config['REDOC_CONFIG'] = {'disableSearch': True, 'hideLoading': True}
 
 #### `REDOC_STANDALONE_JS`
 
-The absolute or relative URL of the Redoc standalone JavaScript file.
+Redoc 独立 JavaScript 文件的绝对或相对 URL。
 
 - 类型: `str`
 - 默认值: `'https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js'`
@@ -887,7 +885,7 @@ app.config['REDOC_STANDALONE_JS'] = 'https://cdn.example.com/filename.js'
 
 #### `SWAGGER_UI_CSS`
 
-The absolute or relative URL of the Swagger UI CSS file.
+Swagger UI CSS 文件的绝对或相对 URL。
 
 - 类型: `str`
 - 默认值: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css'`
@@ -900,7 +898,7 @@ app.config['SWAGGER_UI_CSS'] = 'https://cdn.example.com/filename.js'
 
 #### `SWAGGER_UI_BUNDLE_JS`
 
-The absolute or relative URL of the Swagger UI bundle JavaScript file.
+Swagger UI JavaScript 打包文件的绝对或相对 URL。
 
 - 类型: `str`
 - 默认值: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js'`
@@ -913,7 +911,7 @@ app.config['SWAGGER_UI_BUNDLE_JS'] = 'https://cdn.example.com/filename.js'
 
 #### `SWAGGER_UI_STANDALONE_PRESET_JS`
 
-The absolute or relative URL of the Swagger UI standalone preset JavaScript file.
+Swagger UI 预设 JavaScript 文件的绝对或相对 URL。
 
 - 类型: `str`
 - 默认值: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-standalone-preset.js'`
@@ -926,7 +924,7 @@ app.config['SWAGGER_UI_STANDALONE_PRESET_JS'] = 'https://cdn.example.com/filenam
 
 #### `SWAGGER_UI_LAYOUT`
 
-The layout of Swagger UI, one of `'BaseLayout'` and `'StandaloneLayout'`.
+Swagger UI 的布局类型，可选项为`'BaseLayout'` 和 `'StandaloneLayout'` 中的一个。
 
 - 类型: `str`
 - 默认值: `'BaseLayout'`
@@ -939,13 +937,11 @@ app.config['SWAGGER_UI_LAYOUT'] = 'StandaloneLayout'
 
 #### `SWAGGER_UI_CONFIG`
 
-The config for Swagger UI, this config value will overwrite the existing config,
-such as `SWAGGER_UI_LAYOUT`.
+Swagger UI 的配置，这个值将会覆盖已经存在的配置，例如 `SWAGGER_UI_LAYOUT`。
 
 !!! tip
 
-    See *[Configuration][_swagger_conf]{target=_blank}* of the Swagger UI docs
-    for more details.
+    查看 Swagger UI 文档的 *[配置][_swagger_conf]{target=_blank}* 一节来获取更多信息。
 
 [_swagger_conf]: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
 
@@ -962,7 +958,7 @@ app.config['SWAGGER_UI_CONFIG'] = {
 
 #### `SWAGGER_UI_OAUTH_CONFIG`
 
-The config for Swagger UI OAuth:
+Swagger UI OAuth 的配置：
 
 ```js
 ui.initOAuth(yourConfig)
@@ -970,8 +966,7 @@ ui.initOAuth(yourConfig)
 
 !!! tip
 
-    See the *[OAuth 2.0 configuration][_swagger_oauth]{target=_blank}* in Swagger UI
-    docs for more details.
+    在 Swagger UI 文档的 *[OAuth 2.0 配置][_swagger_oauth]{target=_blank}* 一节查看更多信息。
 
 [_swagger_oauth]: https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/
 
@@ -986,9 +981,8 @@ app.config['SWAGGER_UI_OAUTH_CONFIG'] = {
 ```
 
 
-## Flask built-in configuration variables
+## Flask 内置配置变量
 
-See *[Builtin Configuration Values][_flask_config]{target:_blank}* for the
-built-in configuration variables provided by Flask.
+请参阅 *[Builtin Configuration Values][_flask_config]{target:_blank}* 来查看 Flask 提供的内置配置变量。
 
 [_flask_config]: https://flask.palletsprojects.com/config/#builtin-configuration-values
