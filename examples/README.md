@@ -1,11 +1,11 @@
-# Examples
+# 示例程序
 
-- Basic example: [/examples/basic/app.py][_basic]
-- Class-based view example: [/examples/cbv/app.py][_cbv]
-- ORM example (with Flask-SQLAlchemy): [/examples/orm/app.py][_orm]
-- Pagination example (with Flask-SQLAlchemy): [/examples/pagination/app.py][_pagination]
-- OpenAPI example: [/examples/openapi/app.py][_openapi]
-- Base response example: [/examples/base_response/app.py][_base_response]
+- 基础示例: [/examples/basic/app.py][_basic]
+- 基于类视图示例: [/examples/cbv/app.py][_cbv]
+- ORM 示例 (基于 Flask-SQLAlchemy): [/examples/orm/app.py][_orm]
+- 分页示例 (基于 Flask-SQLAlchemy): [/examples/pagination/app.py][_pagination]
+- OpenAPI 示例: [/examples/openapi/app.py][_openapi]
+- 基础响应示例: [/examples/base_response/app.py][_base_response]
 
 [_basic]: https://github.com/apiflask/apiflask/tree/main/examples/basic/app.py
 [_cbv]: https://github.com/apiflask/apiflask/tree/main/examples/cbv/app.py
@@ -14,17 +14,17 @@
 [_openapi]: https://github.com/apiflask/apiflask/tree/main/examples/openapi/app.py
 [_base_response]: https://github.com/apiflask/apiflask/tree/main/examples/base_response/app.py
 
-If you have built an application with APIFlask, feel free to submit a pull request to add the source link here.
+如果你已经使用 APIFlask 构建了一个程序，可随意提交一个拉取请求，在此处添加源链接。
 
-Follow the commands in the *Installation* section to run these examples on your computer.
-
-
-## Installation
+按照 *安装* 部分中的命令在计算机上运行这些示例。
 
 
-### Build the environment
+## 安装
 
-For macOS and Linux:
+
+### 构建环境
+
+对于 macOS 和 Linux:
 
 ```bash
 $ git clone https://github.com/apiflask/apiflask
@@ -34,7 +34,7 @@ $ source venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
 
-For Windows:
+对于 Windows:
 
 ```text
 > git clone https://github.com/apiflask/apiflask
@@ -45,29 +45,28 @@ For Windows:
 ```
 
 
-### Choose the application
+### 选择程序
 
-Each example application store in a sub-folder:
+每个示例程序存储在一个子文件夹中:
 
-- `/basic`: Basic example
-- `/cbv`: Classed-based view example
-- `/orm`: ORM example (with Flask-SQLAlchemy)
-- `/pagination`: Pagination example (with Flask-SQLAlchemy)
-- `/openapi`: OpenAPI example
-- `/base_response`: Base response example
+- `/basic`: 基础示例
+- `/cbv`: 基于类视图示例
+- `/orm`: ORM 示例 (基于 Flask-SQLAlchemy)
+- `/pagination`: 分页示例 (基于 Flask-SQLAlchemy)
+- `/openapi`: OpenAPI 示例
+- `/base_response`: 基础响应示例
 
-To run a specific example, you have to change into the corresponding folder.
-For example, if you want to run the basic example:
+要运行特定示例，必须更改为相应的文件夹。
+例如，如果你想运行基本示例:
 
 ```bash
 $ cd basic
 ```
 
 
-### Run, Flask, Run!
+### 运行程序
 
-After change into the desired folder, use `flask run` command to run
-the example application:
+切换到所需文件夹后，使用 `flask run` 命令运行示例程序:
 
 ```bash
 $ flask run
@@ -75,23 +74,23 @@ $ flask run
 ```
 
 
-## Try it out
+## 试试看
 
-When the application is running, now you can visit the interactive API documentation at <http://localhost:5000/docs> or <http://localhost:5000/redoc> . Inside the detail tab of each endpoint, you can click the "Try it out" button to test the APIs:
+当程序运行时，你可以访问位于 <http://localhost:5000/docs> 或 <http://localhost:5000/redoc> 的交互式 API 文档。在每个端点的详细信息选项卡中，你可以单击 “试用” 按钮来测试这些 API:
 
 ![](https://apiflask.com/_assets/try-it-out.png)
 
-Then click the "Execute" button, it will send a request to the related endpoint and retrieve the response back:
+然后单击 “执行” 按钮，它将向相关端点发送请求并取回响应：
 
 ![](https://apiflask.com/_assets/execute.png)
 
 
-## Do some experiment
+## 实验性运行
 
-If you want to do some experiment on the example application, just open the `app.py` with your favorite editor. To make the application reload every time after you change the code, use the `--reload` option for `flask run`:
+如果你想对示例程序进行一些实验，只需使用您喜欢的编辑器打开 `app.py`。如果想要在每次更改代码后重新加载程序，请使用 `flask run` 的 `--reload` 选项:
 
 ```bash
 $ flask run --reload
 ```
 
-Furthermore, you can run the application in debug mode; it will enable the reloader and debugger as default. To enable the debug mode, you will need to set the environment variable `FLASK_ENV` to `development` before executing `flask run`, see *[Debug Mode](https://flask.palletsprojects.com/en/main/quickstart/#debug-mode)* for more details.
+此外，你可以在调试模式下运行程序；它将默认启用重新加载器和调试器。要启用调试模式，您需要在执行 `flask run` 之前将环境变量 `FLASK_ENV` 设置为 `development`, 详情见 *[调试模式](https://flask.palletsprojects.com/en/main/quickstart/#debug-mode)*。
