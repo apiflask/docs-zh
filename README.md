@@ -3,7 +3,7 @@
 
 # APIFlask 中文文档
 
-[![Build status](https://github.com/apiflask/apiflask/workflows/build/badge.svg)](https://github.com/apiflask/apiflask/actions) [![codecov](https://codecov.io/gh/apiflask/apiflask/branch/main/graph/badge.svg?token=2CFPCZ1DMY)](https://codecov.io/gh/apiflask/apiflask)
+[![Build status](https://github.com/apiflask/apiflask/workflows/build/badge.svg)](https://github.com/apiflask/apiflask/actions) [![codecov](https://codecov.io/gh/apiflask/apiflask/branch/main/graph/badge.svg?token=2CFPCZ1DMY)](https://codecov.io/gh/apiflask/apiflask) [![Netlify Status](https://api.netlify.com/api/v1/badges/456180b4-55f0-417c-9c4e-88e407a24011/deploy-status)](https://app.netlify.com/sites/zh-apiflask/deploys)
 
 
 ## 翻译流程
