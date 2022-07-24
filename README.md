@@ -140,7 +140,7 @@ class PetOutSchema(Schema):
 
 @app.get('/')
 def say_hello():
-    # 返回字典等同于使用 jsonify()
+    # 返回字典或列表等同于使用 jsonify()
     return {'message': 'Hello!'}
 
 
@@ -265,9 +265,24 @@ $ flask run --reload
 
 ![](https://apiflask.com/_assets/swagger-ui.png)
 
-或是访问 <http://localhost:5000/redoc> 查看备用的 API 文档（Redoc）：
+或者你可以在创建 APIFlask 实例时通过 `docs_ui` 参数来设置 API 文档 UI
+([APIFlask 1.1+](https://apiflask.com/changelog/#version-110)):
+
+```py
+app = APIFlask(__name__, docs_ui='redoc')
+```
+
+现在 <http://localhost:5000/docs> 将会使用 Redoc 渲染 API 文档：
 
 ![](https://apiflask.com/_assets/redoc.png)
+
+支持的 `docs_ui` 选项（API 文档库）包括：
+
+- `swagger-ui`（默认值）：[Swagger UI](https://github.com/swagger-api/swagger-ui)
+- `redoc`：[Redoc](https://github.com/Redocly/redoc)
+- `elements`：[Elements](https://github.com/stoplightio/elements)
+- `rapidoc`：[RapiDoc](https://github.com/rapi-doc/RapiDoc)
+- `rapipdf`：[RapiPDF](https://github.com/mrin9/RapiPdf)
 
 注意：如果 API 文档页面加载不出来，大概率是因为 API 文档资源文件对应的 CDN 提供商被政府封锁，可以尝试
 [更换其他 CDN 提供商](https://apiflask.com/api-docs/#use-different-cdn-server-for-swagger-uiredoc-resources)，

@@ -20,6 +20,7 @@ The following location are supported:
 - `json` (default)
 - `form`
 - `query` (same with `querystring`)
+- `path` (same with `view_args`, added in APIFlask 1.0.2)
 - `cookies`
 - `headers`
 - `files`
@@ -61,7 +62,7 @@ def hello(query, data):
     pass
 ```
 
-!!! tips
+!!! tip
 
     The argument name (`query, data`) in the view function is defined by you, you can use anything you like.
 
@@ -75,7 +76,7 @@ def get_article(category, article_id, query, data):
     pass
 ```
 
-!!! tips
+!!! tip
 
     Notice the argument name for URL variables (`category, article_id`) must match the variable name.
 
