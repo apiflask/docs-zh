@@ -285,7 +285,7 @@ See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more detai
 ## Interactive API documentation
 
 Once you have created the app instance, the interactive API documentation will be
-available at <http://localhost:5000/docs> and <http://localhost:5000/redoc>. On
+available at <http://localhost:5000/docs>. On
 top of that, the OpenAPI spec file is available at <http://localhost:5000/openapi.json>.
 
 If you want to preview the spec or save the spec to a local file, use [the `flask spec`
@@ -293,6 +293,8 @@ command](/openapi/#the-flask-spec-command).
 
 You can refresh the documentation whenever you added a new route or added the input
 and output definition for the view function in the following sections.
+
+Read the *[API Documentations](/api-docs)* chapter for the advanced topics on API docs.
 
 
 ## Create a route with route decorators
@@ -598,6 +600,7 @@ argument for `@app.input()` decorator, the value can be:
 - Cookies: `'cookies'`
 - HTTP headers: `'headers'`
 - Query string: `'query'` (same as `'querystring'`)
+- Path variable (URL variable): `'path'` (same as `'view_args'`, added in APIFlask 1.0.2)
 
 !!! warning
 
@@ -839,7 +842,7 @@ def create_pet(data):
     return pet, {'FOO': 'bar'}
 ```
 
-!!! tips
+!!! tip
 
     Be sure to always set the `status_code` argument in `@app.output` when you want
     to use a non-200 status code. If there is a mismatch, the `status_code`
@@ -1032,7 +1035,7 @@ class Pet(MethodView):
     # ...
 ```
 
-!!! tips
+!!! tip
 
     If the `endpoint` argument isn't provided, the class name will be used as
     endpoint. You don't need to pass a `methods` argument, since Flask will handle
@@ -1217,7 +1220,7 @@ In the end, let's unpack the whole `apiflask` package to check out what it shipp
 - `app.route()`: A decorator used to register a route. It accepts a `methods`
 parameter to specify a list of accepted methods, default to *GET* only. It can also
 be used on the `MethodView`-based view class.
-- `$ flask run`: A command to output the spec to stdout or a file.
+- `$ flask spec`: A command to output the spec to stdout or a file.
 
 You can learn the details of these APIs in the [API reference](/api/app), or you can
 continue to read the following chapters.

@@ -10,7 +10,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
     from flask.wrappers import Response  # noqa: F401
     from flask.views import View  # noqa: F401
     from werkzeug.datastructures import Headers  # noqa: F401
-    from wsgiref.types import WSGIApplication  # noqa: F401
+    from _typeshed.wsgi import WSGIApplication  # noqa: F401
     from .fields import Field  # noqa: F401
     from .schemas import Schema  # noqa: F401
     from .security import HTTPBasicAuth  # noqa: F401
@@ -21,7 +21,9 @@ if t.TYPE_CHECKING:  # pragma: no cover
 DecoratedType = t.TypeVar('DecoratedType', bound=t.Callable[..., t.Any])
 RequestType = t.TypeVar('RequestType')
 
-ResponseBodyType = t.Union[str, bytes, t.Dict[str, t.Any], t.Generator[str, None, None], 'Response']
+ResponseBodyType = t.Union[
+    str, bytes, list, t.Dict[str, t.Any], t.Generator[str, None, None], 'Response'
+]
 ResponseStatusType = t.Union[str, int]
 _HeaderName = str
 _HeaderValue = t.Union[str, t.List[str], t.Tuple[str, ...]]

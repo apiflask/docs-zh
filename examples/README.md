@@ -1,11 +1,14 @@
 # 示例程序
 
 - 基础示例: [/examples/basic/app.py][_basic]
-- 基于类视图示例: [/examples/cbv/app.py][_cbv]
+- 类视图示例: [/examples/cbv/app.py][_cbv]
 - ORM 示例 (基于 Flask-SQLAlchemy): [/examples/orm/app.py][_orm]
 - 分页示例 (基于 Flask-SQLAlchemy): [/examples/pagination/app.py][_pagination]
 - OpenAPI 示例: [/examples/openapi/app.py][_openapi]
 - 基础响应示例: [/examples/base_response/app.py][_base_response]
+- Token 认证示例: [/examples/auth/token_auth/app.py][_token_auth]
+- Basic 认证示例: [/examples/auth/basic_auth/app.py][_basic_auth]
+- Dataclass 示例（基于 marshmallow-dataclass）: [/examples/dataclass/app.py][_dataclass]
 
 [_basic]: https://github.com/apiflask/apiflask/tree/main/examples/basic/app.py
 [_cbv]: https://github.com/apiflask/apiflask/tree/main/examples/cbv/app.py
@@ -13,8 +16,13 @@
 [_pagination]: https://github.com/apiflask/apiflask/tree/main/examples/pagination/app.py
 [_openapi]: https://github.com/apiflask/apiflask/tree/main/examples/openapi/app.py
 [_base_response]: https://github.com/apiflask/apiflask/tree/main/examples/base_response/app.py
+[_token_auth]: https://github.com/apiflask/apiflask/tree/main/examples/auth/token_auth/app.py
+[_basic_auth]: https://github.com/apiflask/apiflask/tree/main/examples/auth/basic_auth/app.py
+[_dataclass]: https://github.com/apiflask/apiflask/tree/main/examples/dataclass/app.py
 
 如果你已经使用 APIFlask 构建了一个程序，可随意提交一个拉取请求，在此处添加源链接。
+
+- [Flog](https://github.com/flog-team/flog-api-v4)（WIP）
 
 按照 *安装* 部分中的命令在计算机上运行这些示例。
 
@@ -55,6 +63,7 @@ $ pip3 install -r requirements.txt
 - `/pagination`: 分页示例 (基于 Flask-SQLAlchemy)
 - `/openapi`: OpenAPI 示例
 - `/base_response`: 基础响应示例
+- `/dataclass`: Dataclass 示例（基于 marshmallow-dataclass）
 
 要运行特定示例，必须更改为相应的文件夹。
 例如，如果你想运行基本示例:
@@ -76,7 +85,7 @@ $ flask run
 
 ## 试试看
 
-当程序运行时，你可以访问位于 <http://localhost:5000/docs> 或 <http://localhost:5000/redoc> 的交互式 API 文档。在每个端点的详细信息选项卡中，你可以单击 “试用” 按钮来测试这些 API:
+当程序运行时，你可以访问位于 <http://localhost:5000/docs> 的交互式 API 文档。在每个端点的详细信息选项卡中，你可以单击 “试用” 按钮来测试这些 API:
 
 ![](https://apiflask.com/_assets/try-it-out.png)
 

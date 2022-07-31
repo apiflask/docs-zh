@@ -53,6 +53,7 @@ extension is:
 - I have to rewrite the `Flask` class to ensure the natural order of the arguments
 injected into the view function.
 - I have to rewrite the `Flask` and the `Blueprint` class to add route shortcuts.
+- Possible to add more high-level features, such as support returning list as JSON response.
 
 See the following two sections for more details.
 
@@ -122,6 +123,7 @@ def create_pet():
 - Add authentication error response (401) for view functions that use `auth_required` decorator.
 - Add 404 response for view functions that contain URL variables.
 - Add response schema for potential error responses of view function passed with `doc` decorator. For example, `doc(responses=[404, 405])`.
+- etc.
 
 !!! tip
 
@@ -136,3 +138,4 @@ def create_pet():
 - Support to customize the API documentation config and CDN URLs.
 - Return JSON response for all HTTP errors and Auth errors as default.
 - Class-based view support.
+- etc.
