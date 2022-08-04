@@ -91,7 +91,8 @@ Read more about configuration management in
     ```
 
     However, when you define a data schema, there isn't an active application
-    context, so you can't use `current_app`. In this situation, you can access the configration variables from the module you store them:
+    context, so you can't use `current_app`. In this situation, you can access
+    the configration variables from the module you store them:
 
     ```python hl_lines="3 6"
     from apiflask import Schema
