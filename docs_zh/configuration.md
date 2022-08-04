@@ -75,7 +75,7 @@ app.config.from_pyfile('settings.py')
 !!! tip "在应用上下文之外读取配置"
 
     如果你想在应用上下文之外读取配置变量，你将看见：“在应用
-    上下文之外工作（Working outside of the application context“
+    上下文之外工作（Working outside of the application context）“
     的错误，这个错误通常在你采用应用工厂时出现。
 
     当你使用应用工厂时，你可以通过在视图函数中使用 `current_app.config`
