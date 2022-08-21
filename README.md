@@ -45,7 +45,7 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 - Configuration (configuration.md) [@z-t-y](https://github.com/z-t-y)
 - Error Handling (error-handling.md) [@yangfan9702](https://github.com/yangfan9702)
 - Examples (examples.md) [@Tridagger](https://github.com/Tridagger)
-- Comparison and Motivations (comparison.md)
+- Comparison and Motivations (comparison.md) [@Tridagger](https://github.com/Tridagger)
 - Authors (authors.md)
 - Changelog (changelog.md)
 - Contributing Guide (contributing.md)
