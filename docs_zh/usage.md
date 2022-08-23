@@ -1,18 +1,13 @@
 # Basic Usage(基本用法)
 
-This chapter will cover the primary usage of APIFlask.
-
-本章节涵盖了 APIFlask 的基本(主要)用法
+本章节涵盖了 APIFlask 的基本用法
 
 ## Prerequisites(前置准备/前提条件/环境要求)
 
 - Python 3.7+
 - Flask 1.1+
 
-You also need to know the basic of Flask. Here are some useful free resources
-to learn Flask:
-
-你还需要去学习一下 Flask 的基础知识(入门知识)。下面是一些有用且免费的 Flask 学习资源(这里有一些有用的免费资源来学习Flask)：
+在此之前，你需要了解一下 Flask 的基础知识。下面是一些高质量且免费的 Flask 学习资源：
 
 
 - [Flask's Documentation](https://flask.palletsprojects.com/){target=_blank}
@@ -59,10 +54,6 @@ to learn Flask:
 
 ## Create an `app` instance with `APIFlask` class(使用 `APIFlask` 创建一个 `app` 实例)
 
-Similar to what you did to create a Flask `app` instance, you will need to import
-`APIFlask` class from `apiflask` package, then create the `app` instance from
-the `APIFlask` class:
-
 与创建 Flask `app` 实例的操作类似，您需要导入 `apiflask` 包中的 `APIFlask` 类，然后使用
 `APIFlask` 来实例化 `app`：
 
@@ -77,9 +68,6 @@ def index():
     return {'message': 'hello'}
 ```
 
-The default title and version of the API will be `APIFlask` and `0.1.0`; you can
-pass the `title` and the `version` arguments to change these settings:
-
 API 项目的默认标题和版本是 `APIFlask` 和 `0.1.0`；你可以通过修改 `title` 和 `version` 参数来改变相应的内容。
 **译者注：这里的意思是指可以通过 title 和 version 两个参数来配置项目名与管理迭代版本，同时这两个参数也会影响到交互式 API 文档页面的内容**
 
@@ -87,17 +75,12 @@ API 项目的默认标题和版本是 `APIFlask` 和 `0.1.0`；你可以通过�
 app = APIFlask(__name__, title='Wonderful API', version='1.0')
 ```
 
-To run this application, you can save it as `app.py`, then run the `flask run` command:
-
-想要运行这个应用程序，你需要先将其保存为 `app.py` 文件，然后运行(使用) `flask run` 命令(来运行)：
+想要运行这个应用程序，你需要先将其保存为 `app.py` 文件，然后运行 `flask run` 命令：
 
 ```bash
 $ flask run
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
-
-If your script's name isn't `app.py`, you will need to declare which application
-should be started before execute `flask run`. See the note below for more details.
 
 如果你脚本的文件名不是 `app.py`，那么你需要在使用 `flask run` 命令启动应用程式前先声明它。更多详情请见下面的说明。
 
@@ -175,8 +158,6 @@ should be started before execute `flask run`. See the note below for more detail
 
     [_app_discovery]: https://flask.palletsprojects.com/cli/#application-discovery
 
-If you want to make the application restart whenever the code changes, you can enable
-reloader with `--reload` option:
 
 如果你想在修改代码时应用也随之重新启动，可以添加 `--reload` 选项开启 reloader：
 
@@ -200,8 +181,6 @@ $ flask run --reload
         > pip install watchdog
         ```
 
-We highly recommend enabling "debug mode" when developing Flask application. See the
-note below for the details.
 
 我们强烈建议在开发 Flask 应用的时候开启“调试模式”。更详细信息请看下面：
 
@@ -314,8 +293,6 @@ $ flask run
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
-See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more details.
-
 更多信息请浏览 *[Environment Variables From dotenv][_dotenv]{target=_blank}*。
 
 [_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
@@ -323,27 +300,15 @@ See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more detai
 
 ## Interactive API documentation(交互式API文档)
 
-Once you have created the app instance, the interactive API documentation will be
-available at <http://localhost:5000/docs> and <http://localhost:5000/redoc>. On
-top of that, the OpenAPI spec file is available at <http://localhost:5000/openapi.json>.
-
 当你创建应用程序后，你将可以在 <http://localhost:5000/docs> 和 <http://localhost:5000/redoc> 浏览交互式API文档。最重要的是，你可以访问 <http://localhost:5000/openapi.json> 获取 OpenAPI 规范文件。
 
-
-If you want to preview the spec or save the spec to a local file, use [the `flask spec`
-command](/openapi/#the-flask-spec-command).
 
 如果你想预览规范文件或者将其保存到本地文件，[可以使用 `flask spec`
 命令](/openapi/#the-flask-spec-command)。
 
-You can refresh the documentation whenever you added a new route or added the input
-and output definition for the view function in the following sections.
-
 当视图函数添加了新的路由或是 input 和 output 装饰器定义时，你可刷新文档页面来看到新增的内容。
 
 ## Create a route with route decorators(使用装饰器来创建路由/使用路由装饰器来创建路由)
-
-To create a view function, you can do exactly what you did with Flask:
 
 你可以像 Flask 一样创建视图函数：
 
@@ -457,10 +422,6 @@ def delete_pet(pet_id):
 
 ## Move to new API decorators(转移到新的 API 装饰器/使用新的 API 装饰器)
 
-From APIFlask 0.12, the four standalone API decorators (i.e. `@input`, `@output`,
-`@doc`, and `@auth_required`) were moved to `APIFlask` and `APIBlueprint` classes.
-Now access them with your application or blueprint instance:
-
 从 APIFlask 0.12 版本开始，四个单独的 API 装饰器（`@input`，`@output`，`@doc`，和 `@auth_required`）被迁移到 `APIFlask` 和 `APIBlueprint` 中。你现在可以通过应用实例或蓝图实例来使用它们：
 
 ```python
@@ -489,11 +450,7 @@ def hello():
     return {'message': 'Hello'}
 ```
 
-The old standalone decorators were deprecated since 0.12, and will be removed in the
-1.0 version. Notice all the usage in the docs are updated, you may want to
-[upgrade APIFlask](/changelog/) to update the usage.
-
-旧的独立装饰器将在 0.12 版本起弃用，并将在 1.0 版本被移除。请注意，文档中的所有用法都已更新，如有需要请阅读 [upgrade APIFlask](/changelog/) 以更新使用情况。
+旧的独立装饰器将在 0.12 版本弃用，并将在 1.0 版本被移除。请注意，文档中的所有用法都已更新，如有需要请阅读 [upgrade APIFlask](/changelog/) 以更新使用情况。
 
 ## Use `@app.input` to validate and deserialize request data(使用 `@app.input` 来校验与反序列化请求数据)
 
@@ -503,8 +460,6 @@ incoming data. If you already familiar with marshmallow, then you already know
 how to write a data schema.
 
 如果需要校验和反序列化请求体或请求查询参数，我们需要先创建一个 data schema 类。这个 schema 类将被视为传入数据的一种描述方式。如果你已经熟悉 marshmallow 这个库，那么相信你已经知道如何编写 data schema。
-
-Here is a simple input schema for a Pet input resource:
 
 这是一个简单的 input schema 示例，用于接收 Pet 类传入的数据：
 
@@ -524,8 +479,6 @@ class PetInSchema(Schema):
     See Schema and Fields chapter (WIP) for the details of how to write a schema and
     the examples for all the fields and validators.
 
-A schema class should inherit the `apiflask.Schema` class:
-
 schema 类应该继承自 `apiflask.Schema` 类：
 
 ```python hl_lines="1 6"
@@ -538,8 +491,6 @@ class PetInSchema(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
-
-fields are represented with field classes in `apiflask.fields`:
 
 
 字段需要引用自 `apiflask.fields` 的字段类：
@@ -555,10 +506,6 @@ class PetInSchema(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
-
-To validate a field with a specific rule, you can pass a validator or a list of
-validators (import them from `apiflask.validators`) to the `validate` argument
-of the field class:
 
 如果需要使用自定义的规则来验证字段，你可以通过 `validate` 参数来传递验证器或验证器列表（从 `apiflask.validators` 中导入）：
 
@@ -583,10 +530,6 @@ class PetInSchema(Schema):
     name = String(load_default='default name')
     ```
 
-With this schema, we declare that the input request body should appear in the
-following format:
-
-
 通过使用这个 schema，我们规定了输入的请求体需要满足下面的格式：
 
 ```json
@@ -599,7 +542,6 @@ following format:
 
     Read the *[Data Schema](/schema)* chapter for the advanced topics on data schema.
 
-Now let's add it to the view function which used to create a new pet:
 
 现在让我们把它添加到一个用于创建新 pet 的视图函数中：
 
@@ -624,20 +566,10 @@ def create_pet(data):
     return {'message': 'created'}, 201
 ```
 
-You just need to pass the schema class to the `@app.input` decorator. When a request
-was received, APIFlask will validate the request body against the schema.
 
 你只需要将 schema 类传递给 `@app.input` 装饰器即可。当接收到请求的时候，APIFlask会自动的根据 schema 类校验请求体。
 
-If the validation passed, the data will inject into the view function as
-a positional argument in the form of `dict`. Otherwise, an error response
-with the detail of the validation result will be returned.
-
 如果验证通过，请求体的数据将会以 `dict` 的形式输出到视图函数的参数中。否则就把验证结果的详细信息以错误响应的形式返回出去。
-
-In the example above, I use the name `data` to accept the input data dict.
-You can change the argument name to whatever you like. Since this is a dict,
-you can do something like this to create an ORM model instance:
 
 在这个示例中，我使用了一个名为 `data` 的参数来接收输入的数据字典。你可以将参数名称更改为你喜欢的任何名称。同时因为这是一个字典，你可以像下面示例中一样创建一个 ORM 实例：
 
@@ -649,9 +581,6 @@ def create_pet(pet_id, data):
     pet = Pet(**data)
     return pet
 ```
-
-or update an ORM model class instance like this:
-
 
 或者像这样更新一个 ORM 模型实例：
 
@@ -665,9 +594,6 @@ def update_pet(pet_id, data):
         setattr(pet, attr, value)
     return pet
 ```
-
-If you want to mark the input with a different location, you can pass a `location`
-argument for `@app.input()` decorator, the value can be:
 
 如果你想获取不同请求位置的输入请求数据，你可通过改变 `@app.input()` 装饰器的 `location` 参数来从下面的这些地方获取请求数据：
 
@@ -685,13 +611,9 @@ argument for `@app.input()` decorator, the value can be:
     (i.e., `app.route`, `app.get`, `app.post`, etc.).
 
 
-Read the *[Request Handling](/request)* chapter for the advanced topics on request handling.
-
 阅读 *[请求处理](/request)* 章节，了解更多有关请求处理的进阶用法。
 
 ## Use `@app.output` to format response data(使用 `@app.output` 来格式化响应数据)
-
-Similarly, we can define a schema for output data with `@app.output` decorator. Here is an example:
 
 同样的，我们可以使用 `@app.output` 装饰器配合定义好的 schema 来对响应的数据进行格式化，下面是一个简易的示例：
 
@@ -705,10 +627,8 @@ class PetOutSchema(Schema):
     category = String()
 ```
 
-Since APIFlask will not validate the output data, we only need to list all the field for the output
-schema.
-
 由于 APIFlask 不会对响应的数据内容进行校验，因此我们只需要列出响应体的结构即可。
+
 
 !!! tip
 
@@ -744,9 +664,6 @@ def get_pet(pet_id):
     }
 ```
 
-The default status code for output response is `200`, you can set a different
-status code with the `status_code` argument:
-
 默认的状态码是 `200`，你可以通过 `status_code` 参数来设置不同的默认值：
 
 ```python hl_lines="3"
@@ -764,8 +681,7 @@ def create_pet(data):
 @app.output(PetOutSchema, 201)
 ```
 
-If you want to return a 204 response, you can use the `EmptySchema` from `apiflask.schemas`:
-如果你想返回一个204响应，你可以使用 `apiflask.schemas` 中的 `EmptySchema` 
+如果你想返回一个204响应，你可以使用 `apiflask.schemas` 中的 `EmptySchema`：
 
 ```python hl_lines="1 5"
 from apiflask.schemas import EmptySchema
@@ -776,8 +692,6 @@ from apiflask.schemas import EmptySchema
 def delete_pet(pet_id):
     return ''
 ```
-
-From version 0.4.0, you can use a empty dict to represent empty schema:
 
 从 0.4.0 版本开始，你可以在 input 中使用空字典来表示返回**空的响应体**：
 
@@ -812,14 +726,9 @@ def delete_pet(pet_id):
     (i.e., `app.route`, `app.get`, `app.post`, etc.).
 
 
-Read the *[Response Formatting](/response)* chapter for the advanced topics on request formatting.
-
 阅读 *[响应格式化](/response)* 一章，了解关于请求格式化的高级主题。
 
 ## The return value of the view function(视图函数返回的内容)
-
-When you are using a `@app.output(schema)` decorator, you should return a dict or object
-that matches the schema you passed. For example, here is your schema:
 
 当你使用 `@app.output(schema)` 装饰器的时候，你应该返回一个与你定义的 schema 匹配的字典或对象。
 举个例子，加入你的 schema 类是这样：
@@ -835,7 +744,6 @@ class PetOutSchema(Schema):
     category = String()
 ```
 
-Now you can return a dict:
 现在要返回一个字典：
 
 ```python
@@ -849,8 +757,6 @@ def get_pet(pet_id):
     }
 ```
 
-or you can return an ORM model instance directly:
-
 或者返回一个 ORM 模型实例：
 
 ```python hl_lines="5"
@@ -860,8 +766,6 @@ def get_pet(pet_id):
     pet = Pet.query.get(pet_id)
     return pet
 ```
-
-Notice your ORM model class should have the fields defined in the schema class:
 
 注意！你的 ORM 模型类应该有 schema 类中定义的字段。
 
@@ -918,9 +822,6 @@ def create_pet(data):
     return pet
 ```
 
-You don't need to return the same status code in the end of the view function
-(i.e., `return data, 201`):
-
 你不需要在视图函数的末尾返回相同的 HTTP 状态码（即：`return data, 201`）：
 
 ```python hl_lines="8"
@@ -933,9 +834,6 @@ def create_pet(data):
     # return pet, 201
     return pet
 ```
-
-When you want to pass a header dict, you can pass the dict as the second element
-of the return tuple:
 
 当你想返回一个 HTTP header 字典时，你可以像下面的例子一样将其作为返回元组的第二个元素：
 
@@ -959,9 +857,6 @@ def create_pet(data):
     当你想使用非 200 的状态码时，请确保在 `@app.output` 中设置了 `status_code` 参数。如果参数中使用了一个非 200 的状态码并且与返回值不匹配时，那么`@app.output`中的 `status_code` 将被用于OpenAPI规范，而实际响应的状态码将是你在视图函数结束时返回的状态码。
 
 ## The OpenAPI generating support and the `@app.doc` decorator(OpenAPI 生成与 `@app.doc` 装饰器使用方法)
-
-APIFlask provides automatic OpenAPI spec generating support, while also allows
-you to customize the spec:
 
 APIFlask 提供自动生成 OpenAPI 规范的支持，同时也允许你自定义规范。
 
@@ -989,9 +884,6 @@ app = APIFlask(__name__)
 def hello():
     return 'Hello'
 ```
-
-See *[Use the `doc` decorator](/openapi/#use-the-doc-decorator)* for more details
-about OpenAPI genenrating and the usage of the `doc` decorator.
 
 参见*[使用 `doc` 装饰器](/openapi/#use-the-doc-decorator)* 以了解更多关于 OpenAPI 生成和 `doc` 装饰器的用法。
 
