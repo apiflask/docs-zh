@@ -6,13 +6,13 @@
 
 - APIFlask 使用 [webargs](https://github.com/marshmallow-code/webargs) 解析和验证请求。
 - 使用一个或多个 [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) 来声明请求数据来源，
-  并使用 `location` 来声明输入数据的位置。
+  并使用 `location` 来声明请求数据位置。
 - 假如解析与验证均成功，数据将会被传至视图函数，否则自动返回 400 错误响应。
 
 
 ## 请求数据的位置声明
 
-APIFlask 提供了以下位置的支持：
+APIFlask 提供了以下请求位置支持（`location` 参数）：
 
 - `json` （默认）
 - `form`
@@ -23,7 +23,7 @@ APIFlask 提供了以下位置的支持：
 - `form_and_files`
 - `json_or_form`
 
-你可以使用多个 `app.input` 装饰器声明多组输入数据。然而，你只能使用下面的其中一个来为视图函数声明一个请求体位置：
+你可以使用多个 `app.input` 装饰器声明多组输入数据。然而，你只能使用下面的其中一个来为视图函数声明一个请求体（request body）位置：
 
 - `json`
 - `form`
@@ -43,7 +43,7 @@ def hello(headers, query, data):
 
 ## 请求体的验证
 
-当你使用 `app.input` 声明一个输入时，APIFlask（Webargs）将会从指定的位置得到数据，并且依据 schema 的定义验证它。
+当你使用 `app.input` 声明一个输入时，APIFlask（webargs）将会从指定的位置获取数据，并依据 schema 的定义验证它。
 
 假如解析与验证均成功，数据将会被传至视图函数。当你声明多个输入时，参数的顺序从上到下依次排列：
 
@@ -59,7 +59,7 @@ def hello(query, data):
 
     视图函数的参数名称（`query, data`）由你来定义，你可以换成任何一个你喜欢的名字。
 
-如果你还定义了 URL 变量，参数的顺序在从上至下的基础上，还有从左到右：
+如果你还定义了 URL 变量，参数的顺序在从上至下的基础上，从左到右排列：
 
 ```python
 @app.get('/<category>/articles/<int:article_id>')  # category, article_id
@@ -73,16 +73,16 @@ def get_article(category, article_id, query, data):
 
     注意：URL 变量对应的参数名称（`category`, `article_id`）必须与变量名相同。
 
-否则，APIFlask 将会自动返回 400 错误响应。与其它错误响应相同，
+如果验证失败，APIFlask 将会自动返回 400 错误响应。与其它错误响应相同，
 这个错误响应将会有消息（`message`）和详情（`detail`）等部分。
 
 - 消息（`message`）
 
-它的值将会是 `Validation error`，你可以通过在配置（config）种更改 `VALIDATION_ERROR_DESCRIPTION` 来更改这个值。
+它的值将会是 `Validation error`，你可以通过在配置 `VALIDATION_ERROR_DESCRIPTION` 来更改这个值。
 
 - 详情（`detail`）
 
-这个字段中包含验证消息，它的格式如下：
+这个字段中包含错误消息，它的格式如下：
 
 ```python
 "<location>": {
@@ -96,11 +96,11 @@ def get_article(category, article_id, query, data):
 ...
 ```
 
-`<location>` 的值是验证错误发生的地方。
+`<location>` 的值是验证错误发生的请求数据位置。
 
 - 状态码
 
-默认的验证错误的状态码是 404，你可以在配置中更改 `AUTH_ERROR_STATUS_CODE` 的值来更改它。
+默认的验证错误的状态码是 400，你可以在配置中更改 `VALIDATION_ERROR_STATUS_CODE` 的值来更改它。
 
 
 ## 字典 Schema
@@ -131,7 +131,7 @@ from apiflask.fields import Integer
 @app.input(
     {'page': Integer(load_default=1), 'per_page': Integer(load_default=10)},
     location='query',
-    schema_name='PaginationQuerySchema'
+    schema_name='PaginationQuery'
 )
 @app.input(FooInSchema, location='json')
 def hello(query, data):
@@ -141,13 +141,14 @@ def hello(query, data):
 然而，为了使代码更易读并且能够被重用，我们还是建议你尽可能地创建 schema 类。
 
 
-## 上传文件
+## 文件上传
 
-!!! Warning "Version >= 1.0.0"
+!!! warning "Version >= 1.0.0"
 
     这个功能在 [1.0.0 版本](/changelog/#version-100) 中添加。
 
-你可以在输入 schema 使用 [`apiflask.fields.File`](/api/fields/#apiflask.fields.File) ，并在 `app.input` 中用 `files` 位置来创建一个文件字段：
+你可以在 schema 中使用 [`apiflask.fields.File`](/api/fields/#apiflask.fields.File) 创建一个文件字段，
+然后在 `app.input` 中用 `files` 位置：
 
 ```python
 import os
@@ -173,14 +174,14 @@ def upload_image(data):
 
 !!! tip
 
-    这里，我们使用了 `secure_filename` 来清理这些文件名，请注意，它只会保留 ASCII 字符。
-    你可能像为新文件创建一个随机的文件名, 这个
+    这里我们使用了 `secure_filename` 来清理这些文件名，请注意，它只会保留 ASCII 字符。
+    你可能想为新文件创建一个随机的文件名, 这个
     [StackOverflow 回答](https://stackoverflow.com/a/44992275/5511849) 可能会帮到你。
 
 文件对象是 `werkzeug.datastructures.FileStorage` 类的实例，
 如果要了解请移步 [Werkzeug 文档](https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage)。
 
-如果你想要在 schema 中同时加入文件和其它字段，请用 `form_and_files` 位置：
+如果你想要在 schema 中同时加入文件和其它表单字段，请用 `form_and_files` 位置：
 
 ```python
 import os
@@ -207,13 +208,13 @@ def create_profile(data):
     return {'message': 'profile created.'}
 ```
 
-目前功能的实现中，`files` 位置的数据将还会包含表单数据（相当于 `form_and_files`）。
+在目前的实现中，`files` 位置的数据将还会包含表单数据（相当于 `form_and_files`）。
 
 !!! notes
 
-    文件字段的验证器将在 1.1 版本中可用
-    （参见 [#253](https://github.com/apiflask/apiflask/issues/253)）。目前来说，
-    你可以在 schema 或者视图函数中手动验证这个文件：
+    文件字段的验证器将在后续版本中可用
+    （参见 [#253](https://github.com/apiflask/apiflask/issues/253)）。目前，
+    你可以在 schema 或者视图函数中手动验证文件：
 
     ```python
     class ImageSchema(Schema):
@@ -224,4 +225,4 @@ def create_profile(data):
 ## 请求示例
 
 你可以用 `example` 和 `examples` 参数在 OpenAPI spec 中设定请求的示例，要了解更多信息，
-参见「OpenAPI 支持」章节的 [这个部分](/openapi/#response-and-request-example)。
+参见《OpenAPI 支持》章节的 [这个部分](/openapi/#response-and-request-example)。
