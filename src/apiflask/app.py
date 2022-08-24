@@ -17,6 +17,7 @@ from flask import jsonify
 from flask import render_template_string
 from flask.config import ConfigAttribute
 from flask.globals import _request_ctx_stack
+from flask.wrappers import Response
 
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
@@ -51,7 +52,7 @@ from .openapi import get_auth_name
 from .openapi import get_argument
 from .openapi import get_security_and_security_schemes
 from .ui_templates import redoc_template
-from .ui_templates import swagger_ui_template
+from .ui_templates import ui_templates
 from .ui_templates import swagger_ui_oauth2_redirect_template
 from .scaffold import APIScaffold
 
@@ -264,10 +265,11 @@ class APIFlask(APIScaffold, Flask):
         import_name: str,
         title: str = 'APIFlask',
         version: str = '0.1.0',
-        spec_path: str = '/openapi.json',
-        docs_path: str = '/docs',
-        docs_oauth2_redirect_path: str = '/docs/oauth2-redirect',
-        redoc_path: str = '/redoc',
+        spec_path: t.Optional[str] = '/openapi.json',
+        docs_path: t.Optional[str] = '/docs',
+        docs_oauth2_redirect_path: t.Optional[str] = '/docs/oauth2-redirect',
+        docs_ui: str = 'swagger-ui',
+        redoc_path: t.Optional[str] = '/redoc',
         openapi_blueprint_url_prefix: t.Optional[str] = None,
         json_errors: bool = True,
         enable_openapi: bool = True,
@@ -293,9 +295,12 @@ class APIFlask(APIScaffold, Flask):
             spec_path: The path to OpenAPI Spec documentation. It
                 defaults to `/openapi.json`, if the path ends with `.yaml`
                 or `.yml`, the YAML format of the OAS will be returned.
-            docs_path: The path to Swagger UI documentation, defaults to `/docs`.
+            docs_path: The path to API UI documentation, defaults to `/docs`.
+            docs_ui: The UI of API documentation, one of `swagger-ui` (default), `redoc`,
+                `elements`, `rapidoc`, and `rapipdf`.
             docs_oauth2_redirect_path: The path to Swagger UI OAuth redirect.
-            redoc_path: The path to Redoc documentation, defaults to `/redoc`.
+            redoc_path: Deprecated since 1.1, set `APIFlask(docs_ui='redoc')` to use Redoc.
+                The path to Redoc documentation, defaults to `/redoc`.
             openapi_blueprint_url_prefix: The url prefix of the OpenAPI blueprint. This
                 prefix will append before all the OpenAPI-related paths (`sepc_path`,
                 `docs_path`, etc.), defaults to `None`.
@@ -304,9 +309,13 @@ class APIFlask(APIScaffold, Flask):
 
         Other keyword arguments are directly passed to `flask.Flask`.
 
+        *Version changed: 1.1.0*
+
+        - Add `docs_ui` parameter.
+
         *Version changed: 0.7.0*
 
-        - Add `openapi_blueprint_url_prefix` argument.
+        - Add `openapi_blueprint_url_prefix` parameter.
         """
         super().__init__(
             import_name,
@@ -327,6 +336,7 @@ class APIFlask(APIScaffold, Flask):
         self.title = title
         self.version = version
         self.spec_path = spec_path
+        self.docs_ui = docs_ui
         self.docs_path = docs_path
         self.redoc_path = redoc_path
         self.docs_oauth2_redirect_path = docs_oauth2_redirect_path
@@ -386,8 +396,8 @@ class APIFlask(APIScaffold, Flask):
 
         ```python
         @app.get('/pets/<name>/<int:pet_id>/<age>')  # -> name, pet_id, age
-        @app.input(QuerySchema)  # -> query
-        @app.output(PetSchema)  # -> pet
+        @app.input(Query)  # -> query
+        @app.output(Pet)  # -> pet
         def get_pet(name, pet_id, age, query, pet):
             pass
         ```
@@ -403,8 +413,8 @@ class APIFlask(APIScaffold, Flask):
         # if we provide automatic options for this URL and the
         # request came with the OPTIONS method, reply automatically
         if (  # pragma: no cover
-            getattr(rule, "provide_automatic_options", False)
-            and req.method == "OPTIONS"
+            getattr(rule, 'provide_automatic_options', False)
+            and req.method == 'OPTIONS'
         ):
             return self.make_default_options_response()  # pragma: no cover
         # otherwise dispatch to the handler for that endpoint
@@ -416,6 +426,19 @@ class APIFlask(APIScaffold, Flask):
             return view_function(**req.view_args)  # type: ignore
         else:
             return view_function(*req.view_args.values())  # type: ignore
+
+    # TODO: remove this function when we dropped the Flask 1.x support
+    # the list return values are supported in Flask 2.2
+    def make_response(self, rv) -> Response:
+        """Patch the make_response form Flask to allow returning list as JSON.
+
+        *Version added: 1.1.0*
+        """
+        if isinstance(rv, list):
+            rv = jsonify(rv)
+        elif isinstance(rv, tuple) and isinstance(rv[0], list):
+            rv = (jsonify(rv[0]), *rv[1:])
+        return super().make_response(rv)
 
     @staticmethod
     def _error_handler(
@@ -537,7 +560,11 @@ class APIFlask(APIScaffold, Flask):
         """Register a blueprint for OpenAPI support.
 
         The name of the blueprint is "openapi". This blueprint will hold the view
-        functions for spec file, Swagger UI and Redoc.
+        functions for spec file and API docs.
+
+        *Version changed: 1.1.0*
+
+        - Deprecate the redoc view at /redoc path.
 
         *Version changed: 0.7.0*
 
@@ -551,7 +578,7 @@ class APIFlask(APIScaffold, Flask):
 
         if self.spec_path:
             @bp.route(self.spec_path)
-            def spec() -> ResponseReturnValueType:
+            def spec():
                 if self.config['SPEC_FORMAT'] == 'json':
                     response = jsonify(self._get_spec('json'))
                     response.mimetype = self.config['JSON_SPEC_MIMETYPE']
@@ -560,23 +587,37 @@ class APIFlask(APIScaffold, Flask):
                     {'Content-Type': self.config['YAML_SPEC_MIMETYPE']}
 
         if self.docs_path:
+            if self.docs_ui not in ui_templates:
+                valid_values = list(ui_templates.keys())
+                raise ValueError(
+                    f'Invalid docs_ui value, expected one of {valid_values}, got "{self.docs_ui}".'
+                )
+
             @bp.route(self.docs_path)
-            def swagger_ui() -> str:
+            def docs():
                 return render_template_string(
-                    swagger_ui_template,
+                    ui_templates[self.docs_ui],
                     title=self.title,
                     version=self.version,
                     oauth2_redirect_path=self.docs_oauth2_redirect_path
                 )
 
-            if self.docs_oauth2_redirect_path:
-                @bp.route(self.docs_oauth2_redirect_path)
-                def swagger_ui_oauth_redirect() -> str:
-                    return render_template_string(swagger_ui_oauth2_redirect_template)
+            if self.docs_ui == 'swagger-ui':
+                if self.docs_oauth2_redirect_path:
+                    @bp.route(self.docs_oauth2_redirect_path)
+                    def swagger_ui_oauth_redirect() -> str:
+                        return render_template_string(swagger_ui_oauth2_redirect_template)
 
         if self.redoc_path:
             @bp.route(self.redoc_path)
-            def redoc() -> str:
+            def redoc():
+                warnings.warn(
+                    'The `/redoc` path and `redoc_path` parameter is deprecated '
+                    'and will be removed in 2.0, Set `APIFlask(docs_ui="redoc")` '
+                    'to use Redoc and then visit "/docs" instead.',
+                    UserWarning,
+                    stacklevel=2,
+                )
                 return render_template_string(
                     redoc_template,
                     title=self.title,
@@ -828,13 +869,13 @@ class APIFlask(APIScaffold, Flask):
                 'string', 'url'
             )
 
+        auth_names, auth_schemes = self._collect_security_info()
+        security, security_schemes = get_security_and_security_schemes(
+            auth_names, auth_schemes
+        )
+
         if self.config['SECURITY_SCHEMES'] is not None:
-            security_schemes = self.config['SECURITY_SCHEMES']
-        else:
-            auth_names, auth_schemes = self._collect_security_info()
-            security, security_schemes = get_security_and_security_schemes(
-                auth_names, auth_schemes
-            )
+            security_schemes.update(self.config['SECURITY_SCHEMES'])
 
         for name, scheme in security_schemes.items():
             spec.components.security_scheme(name, scheme)

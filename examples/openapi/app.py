@@ -9,7 +9,7 @@ app = APIFlask(__name__, title='Pet API', version='1.0')
 # app.description = '...'
 
 # openapi.info.description
-app.config['DESCRIPTION'] = '''
+app.config['DESCRIPTION'] = """
 The description for this API. It can be very long and **Markdown** is supported.
 
 In this example, the tags is manually set. However, in a real world application, it will be
@@ -25,7 +25,7 @@ $ flask run
 The source can be found at [examples/blueprint_tags/app.py][_blueprint_tags].
 
 [_blueprint_tags]: https://github.com/apiflask/apiflask/tree/main/examples/blueprint_tags/app.py
-'''
+"""
 
 # openapi.info.contact
 app.config['CONTACT'] = {
@@ -96,7 +96,7 @@ pets = [
 ]
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(
         required=True,
         validate=Length(0, 10),
@@ -109,7 +109,7 @@ class PetInSchema(Schema):
     )
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer(metadata={'title': 'Pet ID', 'description': 'The ID of the pet.'})
     name = String(metadata={'title': 'Pet Name', 'description': 'The name of the pet.'})
     category = String(metadata={'title': 'Pet Category', 'description': 'The category of the pet.'})
@@ -129,7 +129,7 @@ def say_hello():
 
 
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema, description='The pet with given ID')
+@app.output(PetOut, description='The pet with given ID')
 @app.doc(tags=['Pet'], operation_id='getPet')
 def get_pet(pet_id):
     """Get a Pet
@@ -142,7 +142,7 @@ def get_pet(pet_id):
 
 
 @app.get('/pets')
-@app.output(PetOutSchema(many=True), description='A list of pets')
+@app.output(PetOut(many=True), description='A list of pets')
 @app.doc(tags=['Pet'])
 def get_pets():
     """Get All Pet
@@ -153,9 +153,9 @@ def get_pets():
 
 
 @app.post('/pets')
-@app.input(PetInSchema)
+@app.input(PetIn)
 @app.output(
-    PetOutSchema,
+    PetOut,
     201,
     description='The pet you just created',
     links={'getPetById': {
@@ -178,8 +178,8 @@ def create_pet(data):
 
 
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetInSchema(partial=True))
-@app.output(PetOutSchema, description='The updated pet')
+@app.input(PetIn(partial=True))
+@app.output(PetOut, description='The updated pet')
 @app.doc(tags=['Pet'])
 def update_pet(pet_id, data):
     """Update a Pet
@@ -194,7 +194,7 @@ def update_pet(pet_id, data):
 
 
 @app.delete('/pets/<int:pet_id>')
-@app.output({}, 204, description='Empty')
+@app.output({}, status_code=204, description='Empty')
 @app.doc(tags=['Pet'])
 def delete_pet(pet_id):
     """Delete a Pet

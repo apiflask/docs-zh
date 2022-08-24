@@ -3,10 +3,11 @@ import warnings
 from collections.abc import Mapping as ABCMapping
 from functools import wraps
 
+import flask
 from flask import current_app
 from flask import jsonify
 from flask import Response
-from flask.views import MethodViewType
+from flask.views import MethodView
 from marshmallow import ValidationError as MarshmallowValidationError
 from webargs.flaskparser import FlaskParser as BaseFlaskParser
 from webargs.multidictproxy import MultiDictProxy
@@ -24,7 +25,9 @@ from .types import ResponseReturnValueType
 from .types import SchemaType
 
 BODY_LOCATIONS = ['json', 'files', 'form', 'form_and_files', 'json_or_form']
-SUPPORTED_LOCATIONS = BODY_LOCATIONS + ['query', 'headers', 'cookies', 'querystring']
+SUPPORTED_LOCATIONS = BODY_LOCATIONS + [
+    'query', 'headers', 'cookies', 'querystring', 'path', 'view_args'
+]
 
 
 class FlaskParser(BaseFlaskParser):
@@ -78,6 +81,18 @@ def _annotate(f: t.Any, **kwargs: t.Any) -> None:
         f._spec[key] = value
 
 
+def _ensure_sync(f):
+    if flask.__version__ < '2.' or hasattr(f, '_sync_ensured'):
+        return f
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        return current_app.ensure_sync(f)(*args, **kwargs)
+
+    wrapper._sync_ensured = True
+    return wrapper
+
+
 def _generate_schema_from_mapping(
     schema: DictSchemaType,
     schema_name: t.Optional[str]
@@ -101,7 +116,7 @@ class APIScaffold:
             raise RuntimeError('Use the "route" decorator to use the "methods" argument.')
 
         def decorator(f):
-            if isinstance(f, MethodViewType):
+            if isinstance(f, type(MethodView)):
                 raise RuntimeError(
                     'The route shortcuts cannot be used with "MethodView" classes, '
                     'use the "route" decorator instead.'
@@ -144,7 +159,7 @@ class APIScaffold:
         Examples:
 
         ```python
-        from apiflask import APIFlask, HTTPTokenAuth, auth_required
+        from apiflask import APIFlask, HTTPTokenAuth
 
         app = APIFlask(__name__)
         auth = HTTPTokenAuth()
@@ -192,6 +207,7 @@ class APIScaffold:
             _roles = roles
 
         def decorator(f):
+            f = _ensure_sync(f)
             _annotate(f, auth=auth, roles=_roles or [])
             return auth.login_required(role=_roles, optional=optional)(f)
         return decorator
@@ -217,12 +233,12 @@ class APIScaffold:
         Examples:
 
         ```python
-        from apiflask import APIFlask, input
+        from apiflask import APIFlask
 
         app = APIFlask(__name__)
 
         @app.get('/')
-        @app.input(PetInSchema)
+        @app.input(PetIn)
         def hello(parsed_and_validated_input_data):
             print(parsed_and_validated_input_data)
             return 'Hello'!
@@ -275,6 +291,7 @@ class APIScaffold:
             schema = schema()
 
         def decorator(f):
+            f = _ensure_sync(f)
             is_body_location = location in BODY_LOCATIONS
             if is_body_location and hasattr(f, '_spec') and 'body' in f._spec:
                 raise RuntimeError(
@@ -285,8 +302,8 @@ class APIScaffold:
             if location not in SUPPORTED_LOCATIONS:
                 raise ValueError(
                     'Unknown input location. The supported locations are: "json", "files",'
-                    ' "form", "cookies", "headers", "query" (same as "querystring"), and '
-                    f'"form_and_files". Got "{location}" instead.'
+                    ' "form", "cookies", "headers", "query" (same as "querystring"), "path"'
+                    f' (same as "view_args") and "form_and_files". Got "{location}" instead.'
                 )
             if location == 'json':
                 _annotate(f, body=schema, body_example=example, body_examples=examples)
@@ -340,12 +357,12 @@ class APIScaffold:
         Examples:
 
         ```python
-        from apiflask import APIFlask, output
+        from apiflask import APIFlask
 
         app = APIFlask(__name__)
 
         @app.get('/')
-        @app.output(PetOutSchema)
+        @app.output(PetOut)
         def hello():
             return the_dict_or_object_match_petout_schema
         ```
@@ -425,6 +442,7 @@ class APIScaffold:
             status_code = 204
 
         def decorator(f):
+            f = _ensure_sync(f)
             _annotate(f, response={
                 'schema': schema,
                 'status_code': status_code,
@@ -458,10 +476,7 @@ class APIScaffold:
 
             @wraps(f)
             def _response(*args: t.Any, **kwargs: t.Any) -> ResponseReturnValueType:
-                if hasattr(current_app, 'ensure_sync'):  # pragma: no cover
-                    rv = current_app.ensure_sync(f)(*args, **kwargs)
-                else:  # pragma: no cover
-                    rv = f(*args, **kwargs)  # for Flask < 2.0
+                rv = f(*args, **kwargs)
                 if isinstance(rv, Response):
                     return rv
                 if not isinstance(rv, tuple):
@@ -497,7 +512,7 @@ class APIScaffold:
         Examples:
 
         ```python
-        from apiflask import APIFlask, doc
+        from apiflask import APIFlask
 
         app = APIFlask(__name__)
 
@@ -577,6 +592,7 @@ class APIScaffold:
             _tags = tags
 
         def decorator(f):
+            f = _ensure_sync(f)
             _annotate(
                 f,
                 summary=summary,
