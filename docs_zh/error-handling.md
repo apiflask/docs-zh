@@ -151,7 +151,7 @@ def get_pet(pet_id):
     return {'message': 'Pet'}
 ```
 
-!!! tips "使用 Werkzeug 中的异常类"
+!!! tip "使用 Werkzeug 中的异常类"
 
     如果在创建 `app` 实例时没有将 `json_errors` 设置为 `False`，
     APIFlask 将捕获所有 Werkzeug 异常，包括被直接抛出的异常：

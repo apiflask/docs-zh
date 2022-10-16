@@ -1,57 +1,49 @@
-# OpenAPI Generating
+# OpenAPI 支持
 
-[OpenAPI](https://github.com/OAI/OpenAPI-Specification) (originally known as the
-Swagger Specification) is a popular description specification for REST API. APIFlask
-has built-in support for it. This chapter will cover the basic usage of OpenAPI generating
-in APIFlask.
+[OpenAPI](https://github.com/OAI/OpenAPI-Specification)（起初被称作 Swagger 规范）是 REST API 的一个热门的描述规范。
+APIFlask 对它有内置的支持。这个章节将会介绍在 APIFlask 中生成 OpenAPI 的基本用法。
 
-!!! note "Code-first or Design-first"
+!!! note "代码优先还是设计优先"
 
-    There are two approaches when working with OpenAPI: Code-first and Design-first.
-    APIFlask currently only supports the first way. It generates the OpenAPI spec
-    for you after you write the code. We will try to support the Design-first
-    approach after the 1.0 version is released.
+    使用 OpenAPI 的方法有两种：代码优先和设计优先。APIFlask 目前只支持第一种。在你写完代码之后，APIFlask
+    会为你生成 OpenAPI spec。我们将会在 1.0 版本之后尝试支持设计优先的方法。
 
 
-## A general view of the OpenAPI support
+## OpenAPI 支持概览
 
-APIFlask collects the information from the configuration values, registered routes, and
-the information you passed through decorators, then generates the OpenAPI spec based
-on these information.
+APIFlask 先收集来自配置、注册的路径，还有你在装饰器中传递的信息，然后基于这些信息生成 OpenAPI spec。
 
-Field Name | How APIFlask generating it  | How to customize it
------------|-----------------------------|---------------------
-openapi    | - | Use the configuration variable [`OPENAPI_VERSION`](/configuration/#openapi_version)
-info | - | See *[Meta information](#meta-information)*
-servers | - | Use the configuration variable [`SERVERS`](/configuration/#servers)
-paths | Generate based on the routes and decorators | Use `input`, `output`, `doc` decorators and docstring
-components | Generate from data schema | -
-security | Generate secuity info from the auth objects | Use the `auth_required` decorator
-tags | Generate from blueprint names | See *[Tags](#tags)*
-externalDocs | - | Use the configuration variable [`EXTERNAL_DOCS`](/configuration/#external_docs)
+字段名称 | APIFlask 如何生成  | 如何自定义
+------- |------------------|------------------
+openapi    | - | 使用配置变量 [`OPENAPI_VERSION`](/configuration/#openapi_version)
+info | - | 请阅读 [元信息](#meta-information)
+servers | - | 使用配置变量 [`SERVERS`](/configuration/#servers)
+paths | 基于路径与装饰器生成 | 使用 `input`, `output`, `doc` 装饰器，以及文档字符串
+components | 从数据 schema 生成 | -
+security | 从安全验证对象生成安全信息 | 使用 `auth_required` 装饰器
+tags | 从蓝图名称生成 | 见 [标签](#tags)
+externalDocs | - | 使用配置变量 [`EXTERNAL_DOCS`](/configuration/#external_docs)
 
-It provides three ways to obtain the spec document file:
+APIFlask 提供三种获得 spec 文档文件的方法：
 
-- An `app.spec` attribute that returns the dict spec.
-- A spec endpoint that serves the spec.
-- A `flask spec` command to output the spec to stdout or file.
+- 一个返回字典 spec 的 `app.spec` 属性。
+- 一个为 spec 提供服务的端点。
+- 一个将 spec 输出到文件或标准输出的 `flask spec` 命令。
 
-Besides, it also provides an `app.spec_processor` decorator, which you can use to register
-a spec process function to update the spec before it returns. See
-*[Register a spec processor](#register-a-spec-processor)* for more details.
+另外，APIFlask 也提供了一个你可以注册在返回值前更新 spec 的 spec 处理器的 `app.spec_processor` 装饰器，
+要了解更多信息，请移步 [注册一个 spec 处理器](#register-a-spec-processor) 。
 
 
-### The spec format
+### spec 格式
 
-The default format of the OpenAPI spec is JSON, while YAML is also supported.
-If you want to enable the YAML support, install APIFlask with the `yaml` extra
-(it will install `PyYAML`):
+默认的 OpenAPI spec 格式是 JSON，但 YAML 也有提供支持。如果你希望启用 YAML 支持，请
+安装 APIFlask 的时候一并安装 `yaml` 额外依赖包：
 
 ```
 $ pip install apiflask[yaml]
 ```
 
-Now you can change the format via the `SPEC_FORMAT` config:
+现在，你可以通过配置变量 `SPEC_FORMAT` 来更改格式：
 
 ```python
 from apiflask import APIFlask
@@ -60,8 +52,7 @@ app = APIFlask(__name__)
 app.config['SPEC_FORMAT'] = 'yaml'
 ```
 
-The default URL path for spec endpoint is `/openapi.json`, you may also want to update
-it when you want to use YAML format:
+spec 端点的默认 URL 路径是 `/openapi.json`，你可能还希望在使用 YAML 格式时更新路径：
 
 ```python hl_lines="3"
 from apiflask import APIFlask
@@ -70,27 +61,25 @@ app = APIFlask(__name__, spec_path='/openapi.yaml')
 app.config['SPEC_FORMAT'] = 'yaml'
 ```
 
-The `SPEC_FORMAT` config will also control the spec format output of the `flask spec` command.
+`SPEC_FORMAT` 配置变量还会控制 `flask spec` 命令中的 spec 格式输出。
 
 
-### The indentation of the JSON spec
+### JSON spec 的缩进
 
-When you view the spec from your browser via `/openapi.json`, if you enabled the
-debug mode or set the configuration variable `JSONIFY_PRETTYPRINT_REGULAR` to
-`True`, the indentation will set to `2`. Otherwise, the JSON spec will be sent
-without indentation and spaces to save the bandwidth and speed the request.
+当你从浏览器通过 `/openapi.json` 查看 spec 的时候，假如你启用了调试模式，或者将
+配置变量 `JSONIFY_PRETTYPRINT_REGULAR` 设置为 `True`，缩进空格将会设置为 `2`。
+否则，JSON spec 会以无缩进，无空格的形式被输出，以节省带宽和加快请求速度。
 
-The indentation of the local spec file is enabled by default. The default indentation
-is the default value of the `LOCAL_SPEC_JSON_INDENT` config (i.e., `2`). When you
-use the `flask spec` command, you can change the indentation with the `--indent`
-or `-i` option.
+本地 spec 文件的缩进默认启用。默认的缩进就是变量 `LOCAL_SPEC_JSON_INDENT`
+ 的默认值，也就是 `2`。当你使用 `flask spec` 命令时，你可以用 `--indent`
+ 或 `-i` 选项来改变缩进的空格数。
 
-The indentation of the YAML spec is always `2`, and it can't be changed for now.
+YAML spec 的缩进始终是 `2`，而且目前不能更改。
 
 
-## The `app.spec` attribute
+## `app.spec` 属性
 
-You can get the spec in dict format with the `app.spec` attribute. It will always return the latest spec:
+你可以通过 `app.spec` 属性得到一个字典。它始终会返回最新的 spec：
 
 ```python
 >>> from apiflask import APIFlask
@@ -107,10 +96,10 @@ You can get the spec in dict format with the `app.spec` attribute. It will alway
 ```
 
 
-## The spec endpoint
+## spec 端点
 
-By default, the spec is in JSON format and available at the URL path `/openapi.json`,
-you can change the URL rule of the spec endpoint with the `spec_path` parameter:
+默认情况下，spec 符合 JSON 格式，且可以在 URL 路径 `/openapi.json` 中获得，
+你可以使用 `spec_path` 参数来更换 spec 端点的 URL 规则：
 
 ```python
 from apiflask import APIFlask
@@ -118,54 +107,49 @@ from apiflask import APIFlask
 app = APIFlask(__name__, spec_path='/spec')
 ```
 
-Then the spec will be available at http://localhost:5000/spec.
+然后你可以在 http://localhost:5000/spec 得到 spec。
 
-!!! tips
+!!! tip
 
-    You can configure the MIME type of the spec response with the configuration
-    variable `YAML_SPEC_MIMETYPE` and `JSON_SPEC_MIMETYPE`, see details in the
-    [configuration docs](/configuration#json_spec_mimetype).
+    你可以用配置变量 `YAML_SPEC_MIMETYPE` 与 `JSON_SPEC_MIMETYPE` 自定义 spec 响应的
+     MIME 类型，在 [配置](/configuration#json_spec_mimetype) 中了解更多信息。
 
 
-## The `flask spec` command
+## `flask spec` 命令
 
 !!! warning "Version >= 0.7.0"
 
-    This feature was added in the [version 0.7.0](/changelog/#version-070).
+    该功能在 [版本 0.7.0](/changelog/#version-070) 中添加。
 
-The `flask spec` command will output the spec to stdout when you execute
-the command:
+当你执行 `flask spec` 命令时，它将会把 spec 输出到标准输出：
 
 ```
 $ flask spec
 ```
 
-See the output of `flask spec --help` for the full API reference of this
-command:
+通过 `flask spec --help` 查看该命令的完整 API 参考：
 
 ```
 $ flask spec --help
 ```
 
-You can skip the next three sections if you have executed the above command.
+假如你执行了上面的命令，以下三个部分你可以跳过。
 
 
-### Output the spec to a file
+### 将 spec 输出到文件
 
-If you provide a path with the `--output` or `-o` option, APIFlask will write
-the spec to the given path:
+假如你为选项 `--option` 或 `-o` 提供了路径，APIFlask 将会在提供的路径中写入 spec：
 
 ```
 $ flask spec --output openapi.json
 ```
 
-!!! note "No such file or directory?"
+!!! note "指定的文件或目录不存在？"
 
-    If the given path does not exist, you have to create the directory by yourself,
-    then APIFlask will create the file for you.
+    假如指定的路径不存在，你必须手动创建目录，然后 APIFlask 将会为你创建文件。
 
-You can also set the path with the configuration variable `LOCAL_SPEC_PATH`, then the
-value will be used in `flask spec` command when the `--output/-o` option is not passed:
+你也可以通过配置变量 `LOCAL_SPEC_PATH` 来设置路径，假如 `--output/-o` 选项没有
+被传递，`flask spec` 命令将会使用它的值：
 
 ```python
 from apiflask import APIFlask
@@ -179,18 +163,16 @@ $ flask spec
 ```
 
 
-### Change the spec format
+### 更改 spec 格式
 
-Similarly, the spec format can be set with the `--format` or `-f` option
-(defaults to `json`):
+类似地，spec 格式可以通过 `--format` or `-f` 选项改变（默认是 `json`）：
 
 ```
 $ flask spec --format json
 ```
 
-You can also set the format with the configuration variable `SPEC_FORMAT` (defaults
-to `'json'`), then the value will be used in `flask spec` command when the
-`--format/-f` option is not passed:
+你也可以通过配置变量 `SPEC_FORMAT`（默认是 `json`）来设定格式，假如 `--format/-f` 选项没有
+被传递，`flask spec` 命令将会使用它的值：
 
 ```python
 from apiflask import APIFlask
@@ -204,19 +186,17 @@ $ flask spec
 ```
 
 
-### Change the indentation of the local JSON spec
+### 更改本地 JSON spec 的缩进
 
-For the local spec file, the indentation is always needed for readability and
-easy to trace the changes. The indentation can be set with the `--indent` or
-`-i` option:
+对于本地的 spec 文件，为了可读性且方便追踪更改，缩进总是必要的。通过 `--indent` 或者 `-i`
+ 选项可以设置缩进：
 
 ```
 $ flask spec --indent 4
 ```
 
-You can also set the indentation with the configuration variable
-`LOCAL_SPEC_JSON_INDENT` (defaults to `2`), then the value will be used in
-the `flask spec` command when the `--indent/-i` option is not passed:
+你也可以通过配置变量 `LOCAL_SPEC_JSON_INDENT`（默认是 `2`）来设置缩进，当
+ `--indent/-i` 选项没有传递时，`flask spec` 命令将会使用它的值：
 
 ```python
 from apiflask import APIFlask
@@ -230,16 +210,16 @@ $ flask spec
 ```
 
 
-## Keep the local spec in sync
+## 同步本地 spec
 
 !!! warning "Version >= 0.7.0"
 
-    This feature was added in the [version 0.7.0](/changelog/#version-070).
+    该功能在 [版本 0.7.0](/changelog/#version-070) 中添加。
 
-With the `flask spec` command, you can easily generate the spec to a local file.
-While it will be handy if the spec file is in sync with the project code.
-To achieve this, you need to set a path to the config `LOCAL_SPEC_PATH`,
-then enable the sync by setting the config `SYNC_LOCAL_SPEC` to `True`:
+通过 `flask spec` 命令，你可以轻松在本地文件生成 spec。
+假如 spec 文件与项目的源码同步的话，生成的工作将会很方便。
+要实现这个，你需要在配置变量 `LOCAL_SPEC_PATH` 中设定一个路径，
+然后通过将 `SYNC_LOCAL_SPEC` 设为 `True` 来启用同步。
 
 ```python
 from apiflask import APIFlask
@@ -252,11 +232,10 @@ app.config['LOCAL_SPEC_PATH'] = 'openapi.json'
 
 !!! warning
 
-    If the path you passed is relative, do not put a leading slash in it.
+    假如传递的路径是相对路径，别在开头加斜杠。
 
-APIFlask will create the file at your current working directory (where you execute the
-`flask run` command). We recommend using an absolute path. For example, you can use
-`app.root_path`, which stores the absolute root path to your app module:
+APIFlask 将会在你运行 `flask run` 命令时，在当前的工作目录下创建文件，我们推荐你使用绝对路径，
+例如，你可以使用储存了 app 模块绝对路径的 `app.root_path`。
 
 ```python
 from pathlib import Path
@@ -266,14 +245,13 @@ app.config['SYNC_LOCAL_SPEC'] = True
 app.config['LOCAL_SPEC_PATH'] = Path(app.root_path) / 'openapi.json'
 ```
 
-!!! tips
+!!! tip
 
-    You can also use
+    你也可以使用
     [`app.instance_path`](https://flask.palletsprojects.com/config/#instance-folders){target=_blank},
-    it will be useful if your app is inside a package since it returns the path to
-    the instance folder located at the project root path.
+    假如你的应用被包含在一个包内，这个很有用，因为它会返回根目录下 instance 文件夹的绝对路径。
 
-Or use the `os` module:
+或者使用 `os` 模块:
 
 ```python
 import os
@@ -283,18 +261,16 @@ app.config['SYNC_LOCAL_SPEC'] = True
 app.config['LOCAL_SPEC_PATH'] = os.path.join(app.root_path, 'openapi.json')
 ```
 
-You can also find the project root path manually based on the current module's
-`__file__` variable when you are using an application factory. In this case,
-you normally put the config into a file called `config.py` located at the
-project root path:
+当你使用应用工厂函数时，你也可以根据当前模块的 `__file__` 变量找到项目的根目录。
+在这种情况下，你可以在根目录下 `config.py` 文件中正常放入配置数据。
 
 ```
-- my_project/ -> project folder
-  - app/ -> application package
-  - config.py -> config file
+- my_project/ -> 项目文件夹
+  - app/ -> 应用包
+  - config.py -> 配置文件
 ```
 
-So you can find the base path like this:
+这样，你就可以找到根目录：
 
 ```python
 from pathlib import Path
@@ -308,7 +284,7 @@ SYNC_LOCAL_SPEC = True
 LOCAL_SPEC_PATH = base_path / 'openapi.json'
 ```
 
-Or use the `os` module:
+或者使用 `os` 模块：
 
 ```python
 import os
@@ -323,9 +299,9 @@ LOCAL_SPEC_PATH = os.path.join(base_path, 'openapi.json')
 ```
 
 
-## Meta information
+## 元信息
 
-The `title` and `version` field can be passed when creating the `APIFlask` instance:
+创建 `APIFlask` 示例时，可以传递 `title` 与 `version` 字段：
 
 ```python
 from apiflask import APIFlask
@@ -333,30 +309,28 @@ from apiflask import APIFlask
 app = APIFlask(__name__, title='My API', version='1.0')
 ```
 
-Other fields in the `info` object are available with the following configuration
-variables:
+`info` 对象中其它字段可以通过下列配置变量支持：
 
 - `DESCRIPTION`
 - `TERMS_OF_SERVICE`
 - `CONTACT`
 - `LICENSE`
 
-You can also set all these four fields with [`INFO`](/configuration#info).
+你也可以直接用 [`INFO`](/configuration#info) 设置四个字段。
 
-See the [OpenAPI fields](/configuration#openAPI-fields) section in the configuration
-docs for the details.
+具体请参阅配置文档中 [OpenAPI 字段](/configuration#openAPI-fields) 部分。
 
 
-## Tags
+## 标签
 
-By default, the `tag` object is generated automatically based on the blueprints:
+默认来说，`tag` 对象会基于蓝图自动生成：
 
-- A blueprint generates a tag, the name of the blueprint in title form will become
-the name of the tag.
-- All routes under the blueprint will be tagged with the corresponding tag automatically.
+- 一个蓝图生成一个标签，蓝图名称中每一个单词首字母大写处理，
+得到的就是标签的名称。
+- 蓝图下所有路径将会被自动标记相应的标签。
 
-If you want to use a custom tag name for a blueprint or want to add more details for
-the tag, you can use the `APIBlueprint(tag=...)` parameter to pass a new name:
+如果你想要自定义蓝图的标签名称或者想要给标签添加更多信息，你可以使用
+ `APIBlueprint(tag=...)` 参数来传递一个新名称：
 
 ```python
 from apiflask import APIBlueprint
@@ -370,14 +344,14 @@ This parameter also accepts a dict:
 bp = APIBlueprint(__name__, 'foo', tag={'name': 'New Name', 'description': 'blah...'})
 ```
 
-If you don't like this blueprint-based tagging system, surely you can do it manually.
-You can pass a list of tag names to the configuration variable `TAGS`:
+假如你不喜欢这种基于蓝图的标签系统，你当然可以手动操作。
+你可以向配置变量 `TAGS` 传递一个标签名列表，就像这样：
 
 ```python
 app.config['TAGS'] = ['foo', 'bar', 'baz']
 ```
 
-It also accepts a list of dicts if you want to add details about tags:
+这个变量同时也支持接收一个字典组成的列表，假如说你希望为标签添加更多信息：
 
 ```python
 app.config['TAGS'] = [
@@ -387,29 +361,26 @@ app.config['TAGS'] = [
 ]
 ```
 
-!!! tips
+!!! tip
 
-    The `app.tags` attribute is equals to the configuration variable `TAGS`, so you
-    can also use:
+    `app.tags` 属性等价于配置变量 `TAGS`，因此你也可以使用：
 
     ```python
     app.tags = ['foo', 'bar', 'baz']
     ```
 
-When the `TAGS` is set, you can now add tags for each route (OpenAPI operation) with
-the `doc` decorator, see [Operation `tags`](#operation-tags)
+当 `TAGS` 的值被设置后，你可以用 `doc` 装饰器为每一个路径加入标签（OpenAPI 操作），具体见 [`tags` 操作](#operation-tags) 。
 
 
-## Path items and operations
+## 路径项目与操作
 
-Most of the information in `path` and `operation` object is generated from
-your view functions or view classes automatically, while you may want to change some of them.
+`path` 与 `operation` 对象中大部分的信息是自动从你的视图函数/视图类中自动生成的，
+而你可能希望去更改其中一部分。
 
 
-### Operation `responses`
+### `responses` 操作
 
-The operation `responses` will be generated when you add the `output` decorator
-on the view function:
+当你为视图函数添加 `output` 装饰器后，会生成 `responses` 操作：
 
 ```python hl_lines="2"
 @app.get('/pets/<int:pet_id>')
@@ -418,8 +389,7 @@ def get_pet(pet_id):
     return pets[pet_id]
 ```
 
-You can set the `description` and `status_code` (default to `200`) through the
-corresponding parameters in the `output` decorator:
+你可以通过 `output` 装饰器中相应的参数设置 `description` 与 `status_code`（默认是 200）
 
 ```python hl_lines="2"
 @app.get('/pets/<int:pet_id>')
@@ -428,25 +398,19 @@ def get_pet(pet_id):
     return pets[pet_id]
 ```
 
-There are some automatic behaviors on operation `responses` object:
+`responses` 操作有以下自动行为：
 
-- If the `input` decorator is added to the view function, APIFlask will add
-a `400` response.
-- When the `auth_required` decorator is added to the view function, APIFlask will
-add a `401` response.
-- If the view function only use the route decorator, APIFlask will add a default
-`200` response.
-- If the route URL contains a variable (e.g., `'/pets/<int:pet_id>'`), APIFlask will
-add a `404` response (Version >= 0.8).
+- 假如 `input` 加入了视图函数，APIFlask 将会添加 `400` 响应。
+- 假如 `auth_required` 装饰器加入了视图函数，APIFlask 将会添加 `401` 响应。
+- 假如视图函数只用了路径装饰器，APIFlask 会添加一个默认的 `200` 响应。
+- （需要 0.8 以上版本）假如路径的 URL 包含变量（例如：`'/pets/<int:pet_id>'`），APIFlask 将会添加一个 `404` 响应。
 
-You can disable these behaviors or configure them through related
-[configuration variables](/configuration#automation-behavior-control).
+你可以通过更改相关的 [配置变量](/configuration#automation-behavior-control) 来禁用，或者自定义这些行为。
 
 
-### Operation `requestBody` and `parameters`
+### `requestBody` 与 `parameters` 操作
 
-The operation `requestBody` will be generated when you add the `input` decorator
-on the view function:
+当你在视图函数中加入 `input` 装饰器时，APIFlask 将会生成 `requestBody` 操作。
 
 ```python hl_lines="2"
 @app.post('/pets')
@@ -455,8 +419,7 @@ def create_pet(pet_id):
     pass
 ```
 
-When you specify a request data location other than `json`, the operation `parameters`
-will be generated instead:
+当你使用不同于 `json` 的位置指定一个请求时，APIFlask 会生成 `parameters` 操作，而不是 `requestBody`。
 
 ```python hl_lines="2"
 @app.get('/pets')
@@ -466,14 +429,12 @@ def get_pets():
 ```
 
 
-### Operation `summary` and `description`
+### `summary` 和 `description` 操作
 
-By default, APIFlask will use the name of the view function as the operation summary.
-If your view function is named with `get_pet`, then the `summary` will be "Get Pet".
+默认来说，APIFlask 会使用视图函数的名称作为 summary 操作。
+假如你的视图函数叫做 `get_pet`，`summary` 将会是「Get Pet」。
 
-If the view function has docstring, then the first line of the docstring will be used
-as the `summary`, the lines after the empty line of the docstring will be used as
-the `description`.
+假如视图函数有文档字符串，那么文档字符串的第一行将会被用作 `summary`，空行之后的其它行将会作为 `description`。
 
 !!! note "The precedence of summary setting"
 
@@ -481,7 +442,7 @@ the `description`.
     @app.doc(summary='blah') > the first line of docstring > the view function name
     ```
 
-Here is an example of set `summary` and `description` with docstring:
+这里是使用文档字符串设定 `summary` 和 `description` 的一个示例：
 
 ```python hl_lines="3 5"
 @app.get('/hello')
@@ -494,20 +455,19 @@ def hello():
 ```
 
 
-### Response and request `schema`
+### 响应与请求 `schema`
 
-APIFlask (with apispec) will generate the operation `schema` object from the data schema
-you passed.
+APIFlask 会从你传递的数据 schema，使用 apispec 自动生成 `schema` 操作对象。
 
-To set the OpenAPI spec for schema fields, you can pass a dict with the `metadata` keyword:
+要设定 schema 字段的 OpenAPI spec，你可以传递一个关键词为 `metadata` 的字典：
 
 ```python
 class PetInSchema(Schema):
-    name = String(metatdata={'description': 'The name of the pet.'})
+    name = String(metadata={'description': 'The name of the pet.'})
 ```
 
-You can pass the OpenAPI schema field name as the key in this metadata dict. Currently,
-the following fields are supported:
+你可以以元数据字典的键的形式传递 OpenAPI schema 字段名称。
+目前受支持的字段有下面这些：
 
 - `format`
 - `title`
@@ -540,14 +500,14 @@ the following fields are supported:
 - `example`
 - `nullable`
 - `deprecated`
-- Any custom field starts with `x-` prefix
+- 任何以 `x-` 开头的字段
 
-See the details of these fields at
-[OpenAPI docs](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject).
+在 [OpenAPI 文档](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject)
+ 查看这些字段的信息。
 
-However, most of these fields will be generated when you set up the schema field.
-For example, if you set `required` to `True`, pass a `Length(0, 10)` validator
-to `validate`:
+然而，当你设定 schema 字段的时候，大部分字段将会被生成。
+举个例子，假如你将 `required` 设定为 `True`，并且传递了
+一个 `Length(0, 10)` 验证器来验证它：
 
 ```python
 from apiflask import Schema
@@ -561,8 +521,7 @@ class PetInSchema(Schema):
      )
 ```
 
-Then in the final spec, the `type`, `maxLength`, `minLength` and `required` field will have
-the right value:
+然后在最后的 spec 中，`type`、`maxLength`、`minLength` 和 `required` 字段将会得到正确的值：
 
 ```json
 "PetIn": {
@@ -581,26 +540,28 @@ the right value:
 }
 ```
 
-Normally, you only need to set the following fields manually with the `metadata` dict:
+通常来说，你只需要使用 `metadata` 字典手动设置下列字段：
 
-- `description`: Some description for this field.
-- `title`: The title of the field.
-- `example`: A example value for this field (property-level example).
-- `deprecated`: If true, indicates this field is deprecated.
-- `externalDocs`: A link points to the external documentation for this field.
-- `xml`: Adds additional metadata to describe the XML representation format of this field.
-See details in
-*[OpenAPI XML object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#xmlObject)*.
+- `description`: 这个字段的描述。
+- `title`: 字段的标题。
+- `example`: 字段的示例值（针对属性的示例）。
+- `deprecated`: 假如它的值是 true，这表明这个字段已经弃用了。
+- `externalDocs`: 一个指向该字段外部文档的链接。
+- `xml`: 添加一些附加的元数据，来描述字段的 XML 表示格式。
+在
+[OpenAPI XML 对象](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#xmlObject)
+ 中了解更多信息。
 
-!!! tips
+!!! tip
 
-    If the schema class' name ends with `Schema`, then it will be striped in the spec.
+    假如 schema 类的名称以 `Schema` 结尾，它会在 spec 中被剥离。
 
 
-### Response and request example
+### 响应与请求示例
 
-When rendering the spec in the API documentation, the docs tool will generate a default
-example for you. If you want to add a custom example, you can use the `example` parameter to pass a dict as the response `example` in the `input`/`output` decorator:
+在 API 文档中渲染 spec 时，文档工具会为你生成一个默认示例。
+假如你想要添加一个自定义示例，你可以使用 `example` 参数来
+传递一个字典作为 `input`/`output` 装饰器的响应 `example`。
 
 ```python hl_lines="6"
 from apiflask import APIFlask, input
@@ -613,8 +574,8 @@ def create_pet():
     pass
 ```
 
-For multiple examples, use the `examples` parameter and pass a dict of dict, every
-example dict maps a unique name:
+对于多个示例，你可以使用 `examples` 参数，并传递一个由字典组成的字典，
+每个示例字典映射一个独一无二的名称：
 
 ```python hl_lines="17"
 from apiflask import APIFlask, output
@@ -640,9 +601,8 @@ def get_pets():
 
 !!! note
 
-    Currently, the `example`/`examples` parameter in the `input` decorator is only
-    support JSON body. When you need to set a custom example for query data,
-    you can set the field example (property-level example) in the data schema:
+    目前，`input` 装饰器中的 `example`/`examples` 参数只支持 JSON 请求体。
+    当你需要自定义请求数据的示例时，你可以在数据 schema 中设定字段的示例（针对属性的示例）：
 
     ```python
     class PetQuerySchema(Schema):
@@ -650,13 +610,13 @@ def get_pets():
     ```
 
 
-## Response `links`
+## 响应 `links`
 
 !!! warning "Version >= 0.10.0"
 
-    This feature was added in the [version 0.10.0](/changelog/#version-0100).
+    该功能在 [版本 0.10.0](/changelog/#version-0100) 中添加。
 
-You can pass the links with `links` keyword in the `output` decorator:
+你可以在 `output` 装饰器中使用 `links` 关键词传递链接：
 
 ```python
 pet_links = {
@@ -674,7 +634,7 @@ def new_pet(data):
     pass
 ```
 
-Or you can also add links to components then reference it in operation:
+你也可以在组件中加入链接，随后在操作中引用：
 
 ```python
 links = {
@@ -699,14 +659,14 @@ def new_pet(data):
 ```
 
 
-## Use the `doc` decorator
+## 使用 `doc` 装饰器
 
-There is also a `doc` decorator that can be used to set operation fields explicitly.
+APIFlask 还提供可以明确设定操作字段的 `doc` 装饰器。
 
 
-### Operation `summary` and `description`
+### `summary` 和 `description` 装饰器
 
-Here is the example of using the `doc` decorator to set `summary` and `description`:
+这是使用 `doc` 装饰器设置 `summary` 和 `description` 的方法：
 
 ```python hl_lines="6"
 from apiflask import APIFlask, doc
@@ -720,14 +680,13 @@ def hello():
 ```
 
 
-### Operation `tags`
+### `tags` 操作
 
-When you are using blueprints in your application, APIFlask provides an automatic tagging system,
-see [Tags](#tags) for more details.
+当你在应用中使用蓝图时，APIFlask 提供自动标签系统。
+具体见 [标签](#tags) 。
 
-You only need to set the tag if you are not using a blueprint or you want to control the tags by
-yourself. The `tags` parameter accepts a list of tag name string, they should match the values you
-passed in `TAGS` config or `app.tags` attribute:
+假如你不使用蓝图，或者说想要自己控制标签，你只需要直接设置标签。
+`tags` 参数接收一个标签名列表，它们应该符合你在配置变量 `TAGS` 或者 `app.tags` 属性设定的值。
 
 ```python hl_lines="2"
 @app.get('/')
@@ -737,18 +696,15 @@ def hello():
 ```
 
 
-### Alternative operation `responses`
+### 可选的 `responses` 操作
 
-As described above, APIFlask will add some responses based on the decorators you added
-on the view function (200, 400, 401, 404). Sometimes you may want to add alternative
-responses the view function will return, then you can use the `@app.doc(responses=...)`
-parameter, it accepts the following values:
+就像上面所说的一样，APIFlask 将会根据你在视图函数上添加的装饰器加入一些响应。
+有时你可能想要加入一些视图函数会返回的可选响应，你可以使用 `@app.doc(responses=...)` 参数。它接收下面这些值：
 
-- A list of status code int, for example, `[404, 418]`.
-- A dict in a format of `{<STATUS_CODE>: <DESCRIPTION>}`, this will allow you to
-set a custom description for each status, for example,
-`{404: 'Not Found', 418: 'Blah...'}`. If a response with the same status code is
-already exist, the existing description will be overwritten.
+- 一个状态码数字的列表，例如，`[404, 418]`
+- 一个字典。格式符合 `{<STATUS_CODE>: <DESCRIPTION>}`，这将会
+使你能够设定每一个状态的自定义描述，例如 `{404: 'Not Found', 418: 'Blah...'}`。
+假如相同的状态码的响应已经存在，这个存在的描述会被覆盖。
 
 ```python hl_lines="2"
 @app.get('/')
@@ -758,9 +714,9 @@ def hello():
 ```
 
 
-### Mark an operation as `deprecated`
+### 将一个操作标记为 `deprecated`（弃用）
 
-You can mark an operation as deprecated with the `deprecated` parameter:
+你可以使用 `deprecated` 参数将一个操作标记为弃用：
 
 ```python hl_lines="2"
 @app.get('/')
@@ -770,13 +726,13 @@ def hello():
 ```
 
 
-### Set `operationId`
+### 设定 `operationId`
 
 !!! warning "Version >= 0.10.0"
 
-    This feature was added in the [version 0.10.0](/changelog/#version-0100).
+    该功能在 [版本 0.10.0](/changelog/#version-0100) 中添加。
 
-You can set `operationId` for a view funtion (operation) with the `operation_id` parameter:
+你可以用 `operation_id` 参数为一个视图函数（操作）设定 `operationId`。
 
 ```python hl_lines="2"
 @app.get('/')
@@ -785,20 +741,18 @@ def hello():
     return 'Hello'
 ```
 
-APIFlask supports to generate operationId automatically. The auto-generating behavior is disabled
-as default, you can enable it by setting the following configuration variable to `True`:
+APIFlask 支持自动生成 operationId。这个自动生成的操作默认禁用，你可以通过将以下配置变量设定为 True 来启用它：
 
 ```python
 app.config['AUTO_OPERATION_ID'] = True
 ```
 
-The auto-operationId will in the format of `{HTTP method}_{endpoint of the view}` (e.g. `get_hello`).
+自动生成的 operationId 将会符合格式 `{HTTP method}_{endpoint of the view}`，例如，`get_hello`。
 
 
-## Security information
+## 安全信息
 
-APIFlask will generate the `security` object and operation `security` field based on
-the auth object passed with the `auth_required` decorator:
+APIFlask 将会基于 `auth_required` 装饰器中传递的安全对象生成 `security` 对象和 `security` 字段操作：
 
 ```python hl_lines="4 7"
 from apiflask import APIFlask, HTTPTokenAuth, auth_required
@@ -812,7 +766,7 @@ def hello():
     return 'Hello'!
 ```
 
-You can use the `description` parameter to set the description for auth objects:
+你可以使用 `description` 参数来设定安全对象的描述：
 
 ```python hl_lines="4"
 from apiflask import APIFlask, HTTPTokenAuth
@@ -822,13 +776,13 @@ auth = HTTPTokenAuth(description='some description')
 ```
 
 
-## Disable the OpenAPI support
+## 禁用 OpenAPI 支持
 
 
-### Disable globally
+### 全局禁用
 
-If you want to disable the whole OpenAPI support for the whole application, you
-can set `enable_openapi` parameter to `False` when creating the `APIFlask` instance:
+假如你想要禁用整个应用的 OpenAPI 支持，在创建 `APIFlask` 实例时，
+你可以将 `enable_openapi` 参数设为 `False`。
 
 ```python
 from apiflask import APIFlask
@@ -836,16 +790,16 @@ from apiflask import APIFlask
 app = APIFlask(__name__, enable_openapi=False)
 ```
 
-!!! tips
+!!! tip
 
-    If you only need to disable the API documentation, see
-    *[Disable the API documentations globally](/api-docs/#disable-the-api-documentations-globally)*.
+    如果你只需要禁用 API 文档，请移步 [全局禁用 API 文档](/api-docs/#disable-the-api-documentations-globally) 。
 
 
-### Disable for specific blueprints
+### 禁用指定蓝图的 OpenAPI 支持
 
-To hide blueprints from API documentations (and OpenAPI spec), you can
-set `enable_openapi` parameter to `False` when creating the `APIBlueprint` instance:
+要隐藏 API 文档（以及 OpenAPI spec）中的蓝图，
+在创建 `APIBlueprint` 实例时，
+你可以将 `enable_openapi` 参数设为 `False`
 
 ```python
 from apiflask import APIBlueprint
@@ -853,16 +807,15 @@ from apiflask import APIBlueprint
 bp = APIBlueprint(__name__, 'foo', enable_openapi=False)
 ```
 
-!!! tips
+!!! tip
 
-    APIFlask will skip a blueprint if the blueprint is created by other Flask
-    extensions.
+    假如蓝图是由其它 Flask 扩展创建的，APIFlask 会跳过它。
 
 
-### Disable for specific view functions
+### 禁用指定视图函数的 OpenAPI 支持
 
-To hide a view function from API documentations (and OpenAPI spec), you
-can set the `hide` parameter to `True` in the `doc` decorator:
+要在 API 文档（以及 OpenAPI spec）中隐藏视图函数，
+你可以在 `doc` 装饰器中把 `hide` 参数设为 `True`：
 
 ```python hl_lines="6"
 from apiflask import APIFlask, doc
@@ -877,21 +830,18 @@ def some_secret():
 
 !!! note
 
-    By default, APIFlask will add a view function into API documentations
-    (and OpenAPI spec) even if the view function doesn't use `input`, `output`,
-    and `doc` decorator. If you want to disable this behavior, set configruration
-    variable `AUTO_200_RESPONSE` to `False`:
+    默认来说，即使视图函数不适用 `input`、`output` 和 `doc` 装饰器，APIFlask 也会自动把视图函数加入 API 文档（以及 OpenAPI spec）中。假如你要禁用这一行为，请把配置变量 `AUTO_200_RESPONSE` 设为 `False`：
 
     ```python
     app.config['AUTO_200_RESPONSE'] = False
     ```
 
 
-## Register a spec processor
+## 注册一个 spec 处理器
 
-You can register a function with the `app.spec_processor` decorator to update the
-spec. The callback function should accept the spec as an argument and return it
-in the end. The callback function will be called when generating the spec file.
+你可以通过 `app.spec_processor` 装饰器来更新 spec。回调函数应该将
+ spec 接受为一个参数，并在最后返回它。在生成 spec 文件时，回调函数
+会被调用：
 
 ```python
 from apiflask import APIFlask
@@ -904,11 +854,10 @@ def update_spec(spec):
     return spec
 ```
 
-Notice the format of the spec depends on the value of the configuration
-variable `SPEC_FORMAT` (defaults to `'json'`):
+注意，spec 的格式取决于配置变量 `SPEC_FORMAT`（默认为 `json`）：
 
-- `'json'` -> dict
-- `'yaml'` -> string
+- `'json'` -> 字典
+- `'yaml'` -> 字符串
 
-Check out [the example application](https://github.com/apiflask/apiflask/tree/main/examples/openapi/app.py)
-for OpenAPI support, see [the examples page](/examples) for running the example application.
+请移步 OpenAPI 支持的 [示例应用](https://github.com/apiflask/apiflask/tree/main/examples/openapi/app.py)
+要运行示例应用，请查看 [示例页面](/examples)。
