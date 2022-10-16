@@ -8,14 +8,14 @@ The error handling in APIFlask is based on the following basic concepts:
 - Use `APIFlask.abort()` function or raise `HTTPError` classes to generate an error response.
 - Use `app.error_processor` (`app` is an instance of `apiflask.APIFlask`) to register a
   custom error response processor.
-- Use `auth.error_processor` (`app` is an instance of `apiflask.HTTPBasicAuth` or
+- Use `auth.error_processor` (`auth` is an instance of `apiflask.HTTPBasicAuth` or
   `apiflask.HTTPTokenAuth`) to register a custom auth error response processor.
 - Subclass `HTTPError` to create custom error classes for your errors.
 
 !!! tip
 
     The error handler registered with `app.errorhandler` for specific HTTP errors will be
-    used over the custom error response processor.
+    used over the custom error response processor registered with `app.error_processor`.
 
 
 ## Automatic JSON error response
@@ -253,9 +253,9 @@ so you can get error information via its attributes:
     ...
     ```
 
-    The value of `location` can be `json` (i.e., request body) or `query`
-    (i.e., query string) depending on the place where the validation error
-    happened.
+    The value of `location` can be `json` (i.e., request body), `query`
+    (i.e., query string) or other values depending on the place where the
+    validation error happened (it matches the value you passed in `app.input`).
 
 - headers: The value will be `{}` unless you pass it in `HTTPError` or `abort`.
 - extra_data: Additional error information passed with `HTTPError` or `abort`.
@@ -275,7 +275,7 @@ def my_error_processor(error):
 
 !!! tip
 
-    I would recommend keeping the `detail` in the response since it contains
+    I would recommend keeping the `error.detail` data in the response since it contains
     the detailed information about the validation error when it happened.
 
 After you change the error response, you have to update the corresponding OpenAPI schema

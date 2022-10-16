@@ -51,12 +51,12 @@ class File(Field):
     from apiflask.fields import File
 
 
-    class ImageSchema(Schema):
+    class Image(Schema):
         image = File()
 
 
     @app.post('/images')
-    @app.input(ImageSchema, location='files')
+    @app.input(Image, location='files')
     def upload_image(data):
         f = data['image']
         # use `secure_filename` to clean the filename, notice it will only keep ascii characters
@@ -66,7 +66,7 @@ class File(Field):
         return {'message': f'file {filename} saved.'}
     ```
     The file object is an instance of `werkzeug.datastructures.FileStorage`, see more details in the
-    [docs](https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage)  # noqa: B950, E501
+    [docs](https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage).  # noqa: B950, E501
 
     Use `form_and_files` location if you want to put both files
     and other normal fields in one schema.
@@ -78,12 +78,12 @@ class File(Field):
     from apiflask.fields import String, File
 
 
-    class ProfileInSchema(Schema):
+    class ProfileIn(Schema):
         name = String()
         avatar = File()
 
     @app.post('/profiles')
-    @app.input(ProfileInSchema, location='form_and_files')
+    @app.input(ProfileIn, location='form_and_files')
     def create_profile(data):
         avatar_file = data['avatar']
         name = data['name']

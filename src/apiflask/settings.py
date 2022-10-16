@@ -44,17 +44,26 @@ VALIDATION_ERROR_SCHEMA: OpenAPISchemaType = validation_error_schema
 HTTP_ERROR_SCHEMA: OpenAPISchemaType = http_error_schema
 BASE_RESPONSE_SCHEMA: t.Optional[OpenAPISchemaType] = None
 BASE_RESPONSE_DATA_KEY: str = 'data'
-# Swagger UI and Redoc
+# API docs
 DOCS_FAVICON: str = 'https://apiflask.com/_assets/favicon.png'
 REDOC_USE_GOOGLE_FONT: bool = True
-REDOC_STANDALONE_JS: str = 'https://cdn.jsdelivr.net/npm/redoc@next/bundles/\
-redoc.standalone.js'
+REDOC_STANDALONE_JS: str = 'https://cdn.redoc.ly/redoc/latest/bundles/\
+redoc.standalone.js'  # TODO: rename to REDOC_JS
 REDOC_CONFIG: t.Optional[dict] = None
-SWAGGER_UI_CSS: str = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css'
-SWAGGER_UI_BUNDLE_JS: str = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/\
-swagger-ui-bundle.js'
-SWAGGER_UI_STANDALONE_PRESET_JS: str = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/\
-swagger-ui-standalone-preset.js'
+SWAGGER_UI_CSS: str = 'https://unpkg.com/swagger-ui-dist/swagger-ui.css'
+SWAGGER_UI_BUNDLE_JS: str = 'https://unpkg.com/swagger-ui-dist/\
+swagger-ui-bundle.js'  # TODO: rename to SWAGGER_UI_JS
+SWAGGER_UI_STANDALONE_PRESET_JS: str = 'https://unpkg.com/swagger-ui-dist/\
+swagger-ui-standalone-preset.js'  # TODO: rename to SWAGGER_UI_STANDALONE_JS
 SWAGGER_UI_LAYOUT: str = 'BaseLayout'
 SWAGGER_UI_CONFIG: t.Optional[dict] = None
 SWAGGER_UI_OAUTH_CONFIG: t.Optional[dict] = None
+ELEMENTS_JS: str = 'https://unpkg.com/@stoplight/elements/web-components.min.js'
+ELEMENTS_CSS: str = 'https://unpkg.com/@stoplight/elements/styles.min.css'
+ELEMENTS_LAYOUT: str = 'sidebar'
+ELEMENTS_CONFIG: t.Optional[dict] = None
+RAPIDOC_JS: str = 'https://unpkg.com/rapidoc/dist/rapidoc-min.js'
+RAPIDOC_THEME: str = 'light'
+RAPIDOC_CONFIG: t.Optional[dict] = None
+RAPIPDF_JS: str = 'https://unpkg.com/rapipdf/dist/rapipdf-min.js'
+RAPIPDF_CONFIG: t.Optional[dict] = None

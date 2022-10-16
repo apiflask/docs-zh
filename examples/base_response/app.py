@@ -5,13 +5,13 @@ from apiflask.validators import Length, OneOf
 app = APIFlask(__name__)
 
 
-class BaseResponseSchema(Schema):
-    message = String()
-    status_code = Integer()
+class BaseResponse(Schema):
     data = Field()  # the data key
+    message = String()
+    code = Integer()
 
 
-app.config['BASE_RESPONSE_SCHEMA'] = BaseResponseSchema
+app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
 # the data key should match the data field name in the base response schema
 # defaults to "data"
 app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
@@ -23,66 +23,80 @@ pets = [
 ]
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer()
     name = String()
     category = String()
 
 
-def make_resp(message, status_code, data):
-    # the return value should match the base response schema
-    # and the data key should match
-    return {'message': message, 'status_code': status_code, 'data': data}
-
-
 @app.get('/')
 def say_hello():
     data = {'message': 'Hello!'}
-    return make_resp('Success!', 200, data)
+    return {
+        'data': data,
+        'message': 'Success!',
+        'code': 200
+    }
 
 
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
     if pet_id > len(pets) - 1 or pets[pet_id].get('deleted'):
         abort(404)
-    return make_resp('Success!', 200, pets[pet_id])
+    return {
+        'data': pets[pet_id],
+        'message': 'Success!',
+        'code': 200,
+    }
 
 
 @app.get('/pets')
-@app.output(PetOutSchema(many=True))
+@app.output(PetOut(many=True))
 def get_pets():
-    return make_resp('Success!', 200, pets)
+    return {
+        'data': pets,
+        'message': 'Success!',
+        'code': 200,
+    }
 
 
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
+@app.input(PetIn)
+@app.output(PetOut, status_code=201)
 def create_pet(data):
     pet_id = len(pets)
     data['id'] = pet_id
     pets.append(data)
-    return make_resp('Pet created.', 201, pets[pet_id])
+    return {
+        'data': pets[pet_id],
+        'message': 'Pet created.',
+        'code': 201
+    }
 
 
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetInSchema(partial=True))
-@app.output(PetOutSchema)
+@app.input(PetIn(partial=True))
+@app.output(PetOut)
 def update_pet(pet_id, data):
     if pet_id > len(pets) - 1:
         abort(404)
     for attr, value in data.items():
         pets[pet_id][attr] = value
-    return make_resp('Pet updated.', 200, pets[pet_id])
+    return {
+        'data': pets[pet_id],
+        'message': 'Pet updated.',
+        'code': 200
+    }
 
 
 @app.delete('/pets/<int:pet_id>')
-@app.output({}, 204)
+@app.output({}, status_code=204)
 def delete_pet(pet_id):
     if pet_id > len(pets) - 1:
         abort(404)

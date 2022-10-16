@@ -1,33 +1,29 @@
-# Request Handling
+# 请求处理
 
-Read [this section](/usage/#use-appinput-to-validate-and-deserialize-request-data)
-in the Basic Usage chapter first for the basics on request handling.
+要了解请求处理的基本用法，请移步《基本用法》章节的 [这个小节](/usage/#use-appinput-to-validate-and-deserialize-request-data)。
 
-Basic concepts on request handling:
+首先是几个请求处理的基本概念：
 
-- APIFlask uses [webargs](https://github.com/marshmallow-code/webargs) to handle request
-  parsing and validating.
-- Use one or more [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) to declare
-  an input source, and use the `location` to declare the input location.
-- If the parsing and validating success, the data will pass to the view function.
-  Otherwise, a 400 error response will be returned automatically.
+- APIFlask 使用 [webargs](https://github.com/marshmallow-code/webargs) 解析和验证请求。
+- 使用一个或多个 [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) 来声明请求数据来源，
+  并使用 `location` 来声明请求数据位置。
+- 假如解析与验证均成功，数据将会被传至视图函数，否则自动返回 400 错误响应。
 
 
-## Request locations
+## 请求数据的位置声明
 
-The following location are supported:
+APIFlask 提供了以下请求位置支持（`location` 参数）：
 
-- `json` (default)
+- `json` （默认）
 - `form`
-- `query` (same with `querystring`)
+- `query` （与 `querystring` 相同）
 - `cookies`
 - `headers`
 - `files`
 - `form_and_files`
 - `json_or_form`
 
-You can declare multiple input data with multiple `app.input` decorators. However,
-you can only declare one body location for your view function, one of:
+你可以使用多个 `app.input` 装饰器声明多组输入数据。然而，你只能使用下面的其中一个来为视图函数声明一个请求体（request body）位置：
 
 - `json`
 - `form`
@@ -45,13 +41,11 @@ def hello(headers, query, data):
 ```
 
 
-## Request body validating
+## 请求体的验证
 
-When you declared an input with `app.input` decorator, APIFlask (webargs) will get the data
-from specified location and validate it against the schema definition.
+当你使用 `app.input` 声明一个输入时，APIFlask（webargs）将会从指定的位置获取数据，并依据 schema 的定义验证它。
 
-If the parsing and validating success, the data will pass to the view function. When you
-declared multiple inputs, the order will be from top to bottom:
+假如解析与验证均成功，数据将会被传至视图函数。当你声明多个输入时，参数的顺序从上到下依次排列：
 
 ```python
 @app.get('/')
@@ -63,9 +57,9 @@ def hello(query, data):
 
 !!! tip
 
-    The argument name (`query, data`) in the view function is defined by you, you can use anything you like.
+    视图函数的参数名称（`query, data`）由你来定义，你可以换成任何一个你喜欢的名字。
 
-If you also defined some URL variables, the order will be from left to right (plus from top to bottom):
+如果你还定义了 URL 变量，参数的顺序在从上至下的基础上，从左到右排列：
 
 ```python
 @app.get('/<category>/articles/<int:article_id>')  # category, article_id
@@ -77,19 +71,18 @@ def get_article(category, article_id, query, data):
 
 !!! tip
 
-    Notice the argument name for URL variables (`category, article_id`) must match the variable name.
+    注意：URL 变量对应的参数名称（`category`, `article_id`）必须与变量名相同。
 
-Otherwise, a 400 error response will be returned automatically. Like any other error response,
-this error response will contain `message` and `detail` fields:
+如果验证失败，APIFlask 将会自动返回 400 错误响应。与其它错误响应相同，
+这个错误响应将会有消息（`message`）和详情（`detail`）等部分。
 
-- `message`
+- 消息（`message`）
 
-The value will be `Validation error`, you can change this via the config
-`VALIDATION_ERROR_DESCRIPTION`.
+它的值将会是 `Validation error`，你可以通过在配置 `VALIDATION_ERROR_DESCRIPTION` 来更改这个值。
 
-- `detail`
+- 详情（`detail`）
 
-The detail field contains the validation information in the following format:
+这个字段中包含错误消息，它的格式如下：
 
 ```python
 "<location>": {
@@ -103,17 +96,16 @@ The detail field contains the validation information in the following format:
 ...
 ```
 
-The value of `<location>` is where the validation error happened.
+`<location>` 的值是验证错误发生的请求数据位置。
 
-- status code
+- 状态码
 
-The default status code of validation error is 404, you can change this via the
-config `AUTH_ERROR_STATUS_CODE`.
+默认的验证错误的状态码是 400，你可以在配置中更改 `VALIDATION_ERROR_STATUS_CODE` 的值来更改它。
 
 
-## Dict schema
+## 字典 Schema
 
-When passing the schema to `app.input`, you can also use a dict instead of a schema class:
+当你向 `app.input` 传递一个 schema 时，除了使用 schema 类，你也可以使用一个字典（`dict`）：
 
 ```python
 from apiflask.fields import Integer
@@ -129,8 +121,7 @@ def hello(query, data):
     pass
 ```
 
-The dict schema's name will be something like `"Generated"`. To specify a schema
-name, use the `schema_name` parameter:
+字典 schema 的名字将会类似于 `"Generated"`，如果你要指定一个 schema 的名字，请使用 `schema_name` 参数：
 
 ```python hl_lines="7"
 from apiflask.fields import Integer
@@ -140,25 +131,24 @@ from apiflask.fields import Integer
 @app.input(
     {'page': Integer(load_default=1), 'per_page': Integer(load_default=10)},
     location='query',
-    schema_name='PaginationQuerySchema'
+    schema_name='PaginationQuery'
 )
 @app.input(FooInSchema, location='json')
 def hello(query, data):
     pass
 ```
 
-However, we recommend creating a schema class whenever possible to make the
-code easy to read and reuse.
+然而，为了使代码更易读并且能够被重用，我们还是建议你尽可能地创建 schema 类。
 
 
-## File uploading
+## 文件上传
 
 !!! warning "Version >= 1.0.0"
 
-    This feature was added in the [version 1.0.0](/changelog/#version-100).
+    这个功能在 [1.0.0 版本](/changelog/#version-100) 中添加。
 
-You can use [`apiflask.fields.File`](/api/fields/#apiflask.fields.File) to create a file
-field in the input schema and use the `files` location for `app.input`:
+你可以在 schema 中使用 [`apiflask.fields.File`](/api/fields/#apiflask.fields.File) 创建一个文件字段，
+然后在 `app.input` 中用 `files` 位置：
 
 ```python
 import os
@@ -184,17 +174,14 @@ def upload_image(data):
 
 !!! tip
 
-    Here we use `secure_filename` to clean the filename, notice it will only keep ASCII characters.
-    You may want to create a random filename for the newly uploaded file, this
-    [SO answer](https://stackoverflow.com/a/44992275/5511849) may be helpful.
+    这里我们使用了 `secure_filename` 来清理这些文件名，请注意，它只会保留 ASCII 字符。
+    你可能想为新文件创建一个随机的文件名, 这个
+    [StackOverflow 回答](https://stackoverflow.com/a/44992275/5511849) 可能会帮到你。
 
-The file object is an instance of `werkzeug.datastructures.FileStorage`, see more details
-[in Werkzeug's docs][_docs].
+文件对象是 `werkzeug.datastructures.FileStorage` 类的实例，
+如果要了解请移步 [Werkzeug 文档](https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage)。
 
-[_docs]: https://werkzeug.palletsprojects.com/datastructures/#werkzeug.datastructures.FileStorage
-
-Use `form_and_files` location if you want to put both files
-and other normal fields in one schema:
+如果你想要在 schema 中同时加入文件和其它表单字段，请用 `form_and_files` 位置：
 
 ```python
 import os
@@ -221,14 +208,13 @@ def create_profile(data):
     return {'message': 'profile created.'}
 ```
 
-In the current implementation, `files` location data will also include
-the form data (equals to `form_and_files`).
+在目前的实现中，`files` 位置的数据将还会包含表单数据（相当于 `form_and_files`）。
 
 !!! notes
 
-    Validators for the file field will be available in the version 1.1
-    ([#253](https://github.com/apiflask/apiflask/issues/253)). For now,
-    you can manually validate the file in the view function or the schema:
+    文件字段的验证器将在后续版本中可用
+    （参见 [#253](https://github.com/apiflask/apiflask/issues/253)）。目前，
+    你可以在 schema 或者视图函数中手动验证文件：
 
     ```python
     class ImageSchema(Schema):
@@ -236,8 +222,7 @@ the form data (equals to `form_and_files`).
     ```
 
 
-## Request examples
+## 请求示例
 
-You can set request examples for OpenAPI spec with the `example` and `examples`
-parameters, see [this section](/openapi/#response-and-request-example) in the
-OpenAPI Generating chapter for more details.
+你可以用 `example` 和 `examples` 参数在 OpenAPI spec 中设定请求的示例，要了解更多信息，
+参见《OpenAPI 支持》章节的 [这个部分](/openapi/#response-and-request-example)。

@@ -20,6 +20,7 @@ The following location are supported:
 - `json` (default)
 - `form`
 - `query` (same with `querystring`)
+- `path` (same with `view_args`, added in APIFlask 1.0.2)
 - `cookies`
 - `headers`
 - `files`
@@ -37,9 +38,9 @@ you can only declare one body location for your view function, one of:
 
 ```python
 @app.get('/')
-@app.input(FooHeaderSchema, location='headers')  # header
-@app.input(FooQuerySchema, location='query')  # query string
-@app.input(FooInSchema, location='json')  # JSON data (body location)
+@app.input(FooHeader, location='headers')  # header
+@app.input(FooQuery, location='query')  # query string
+@app.input(FooIn, location='json')  # JSON data (body location)
 def hello(headers, query, data):
     pass
 ```
@@ -55,8 +56,8 @@ declared multiple inputs, the order will be from top to bottom:
 
 ```python
 @app.get('/')
-@app.input(FooQuerySchema, location='query')  # query
-@app.input(FooInSchema, location='json')  # data
+@app.input(FooQuery, location='query')  # query
+@app.input(FooIn, location='json')  # data
 def hello(query, data):
     pass
 ```
@@ -69,8 +70,8 @@ If you also defined some URL variables, the order will be from left to right (pl
 
 ```python
 @app.get('/<category>/articles/<int:article_id>')  # category, article_id
-@app.input(ArticleQuerySchema, location='query')  # query
-@app.input(ArticleInSchema, location='json')  # data
+@app.input(ArticleQuery, location='query')  # query
+@app.input(ArticleIn, location='json')  # data
 def get_article(category, article_id, query, data):
     pass
 ```
@@ -124,7 +125,7 @@ from apiflask.fields import Integer
     {'page': Integer(load_default=1), 'per_page': Integer(load_default=10)},
     location='query'
 )
-@app.input(FooInSchema, location='json')
+@app.input(FooIn, location='json')
 def hello(query, data):
     pass
 ```
@@ -140,9 +141,9 @@ from apiflask.fields import Integer
 @app.input(
     {'page': Integer(load_default=1), 'per_page': Integer(load_default=10)},
     location='query',
-    schema_name='PaginationQuerySchema'
+    schema_name='PaginationQuery'
 )
-@app.input(FooInSchema, location='json')
+@app.input(FooIn, location='json')
 def hello(query, data):
     pass
 ```
@@ -167,12 +168,12 @@ from werkzeug.utils import secure_filename
 from apiflask.fields import File
 
 
-class ImageSchema(Schema):
+class Image(Schema):
     image = File()
 
 
 @app.post('/images')
-@app.input(ImageSchema, location='files')
+@app.input(Image, location='files')
 def upload_image(data):
     f = data['image']
 
@@ -203,12 +204,12 @@ from werkzeug.utils import secure_filename
 from apiflask.fields import String, File
 
 
-class ProfileInSchema(Schema):
+class ProfileIn(Schema):
     name = String()
     avatar = File()
 
 @app.post('/profiles')
-@app.input(ProfileInSchema, location='form_and_files')
+@app.input(ProfileIn, location='form_and_files')
 def create_profile(data):
     avatar_file = data['avatar']
     name = data['name']
@@ -231,7 +232,7 @@ the form data (equals to `form_and_files`).
     you can manually validate the file in the view function or the schema:
 
     ```python
-    class ImageSchema(Schema):
+    class Image(Schema):
         image = File(validate=lambda f: f.mimetype in ['image/jpeg', 'image/png'])
     ```
 

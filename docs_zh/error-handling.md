@@ -1,57 +1,49 @@
-# Error Handling
+# 错误处理
 
-The error handling in APIFlask is based on the following basic concepts:
+APIFlask 中的错误处理基于以下基本概念：
 
-- All the automatic errors (404, 405, 500) will be in JSON format by default.
-- Errors are built on top of the [`HTTPError`](/api/exceptions/#apiflask.exceptions.HTTPError)
-  base exception class.
-- Use `APIFlask.abort()` function or raise `HTTPError` classes to generate an error response.
-- Use `app.error_processor` (`app` is an instance of `apiflask.APIFlask`) to register a
-  custom error response processor.
-- Use `auth.error_processor` (`app` is an instance of `apiflask.HTTPBasicAuth` or
-  `apiflask.HTTPTokenAuth`) to register a custom auth error response processor.
-- Subclass `HTTPError` to create custom error classes for your errors.
+- 默认情况下，所有自动抛出的错误（404、405、500）响应都将采用 JSON 格式。
+- 所有错误都建立在基本异常类 [`HTTPError`](/api/exceptions/#apiflask.exceptions.HTTPError) 之上。
+- 使用 `APIFlask.abort()` 函数或抛出 `HTTPError` 类来生成一个错误响应。
+- 使用 `app.error_processor`（`app` 是 `apiflask.APIFlask` 的一个实例）来注册一个自定义的错误响应处理器。
+- 使用 `auth.error_processor` （`auth`是`apiflask.HTTPBasicAuth`或 `apiflask.HTTPTokenAuth` 的
+  一个实例）来注册一个自定义的认证错误响应处理器。
+- 子类化 `HTTPError` 来创建自定义的错误类。
 
 !!! tip
 
-    The error handler registered with `app.errorhandler` for specific HTTP errors will be
-    used over the custom error response processor.
+    为处理特定的 HTTP 错误而使用 `app.errorhandler` 注册的错误处理器优先级高于使用 `app.error_processor`
+    注册的自定义错误响应处理器。
 
 
-## Automatic JSON error response
+## JSON 错误响应
 
-In Flask, for 400/404/405/500 errors, a default error response will be generated.
-The default error response will be in HTML format with a default error message and error
-description. However, in APIFlask, these errors will be returned in JSON format with
-the following preset fields:
+Flask 会对 400/404/405/500 错误生成默认的错误响应。这个错误响应采用 HTML 格式，并带有默认的错误信息和描述。
+但在 APIFlask 中，这些错误都将以 JSON 格式返回，并带有以下的预设字段：
 
-- `message`: The HTTP reason phrase or a custom error description.
-- `detail`: An empty dict (404/405/500) or the error details of the request validation (400).
+- `message`：HTTP 原因短语或自定义的错误描述。
+- `detail`：空字典（404/405/500）或校验请求时产生的详细错误信息（400）。
 
-You can control this behavior with the `json_errors` parameter when creating the APIFlask
-instance, and it defaults to `True`:
+你可以在创建 APIFlask 实例时使用 `json_errors` 参数来控制这个行为，`json_errors` 的默认值为 `True`。
 
 ```python
 from apiflask import APIFlask
 
-# this will disable the automatic JSON error response
+# 这将会关闭自动返回 JSON 错误响应的特性
 app = APIFlask(__name__, json_errors=False)
 ```
 
-You can use the `app.error_processor` decorator to register a custom error processor
-to customize the error response body. See more details
-[here](/error-handling/#custom-error-response-processor).
+如需自定义错误响应的主体，可以使用 `app.error_processor` 装饰器来注册自定义的错误处理器。
+详见 [这一节](error-handling/#自定义错误响应处理器)。
 
 
-## Make an error response with `abort` and `HTTPError`
+## 使用 `abort` 和 `HTTPError` 生成错误响应
 
-There are two ways to abort the request handling process and return an error response
-in the view function:
+在视图函数中有两种方式可以中止请求处理过程并返回错误响应：
 
-- Call the `abort` function
+- 调用 `abort` 函数
 
-Just like what you do in a normal Flask view function, but this `abort` function is
-provided by APIFlask:
+和在普通的 Flask 视图函数中所做的一样，只不过这个 `abort` 函数是由 APIFlask 提供：
 
 ```python
 from apiflask import abort
@@ -60,14 +52,14 @@ from apiflask import abort
 @app.route('/')
 def hello():
     abort(400, message='Something is wrong...')
-    return 'Hello, world!'  # this line will never be reached
+    return 'Hello, world!'  # 这一行将不会被执行到
 ```
 
-It will raise an `HTTPError` behind the scene, so it will take the same arguments (see below).
+它会在幕后抛出一个 `HTTPError`，所以 `abort` 和 `HTTPError` 会接收相同的参数（见下文）。
 
-- Raise the `HTTPError` class
+- 抛出 `HTTPError` 类
 
-Raise `HTTPError` will do the same thing:
+抛出 `HTTPError` 将会做相同的事情：
 
 ```python
 from apiflask import HTTPError
@@ -76,10 +68,10 @@ from apiflask import HTTPError
 @app.route('/')
 def hello():
     raise HTTPError(400, message='Something is wrong...')
-    return 'Hello, world!'  # this line will never be reached
+    return 'Hello, world!'  # 这一行将不会被执行到
 ```
 
-The call will generate an error response like this:
+这个调用将生成如下的错误响应：
 
 ```json
 {
@@ -88,10 +80,10 @@ The call will generate an error response like this:
 }
 ```
 
-See [`HTTPError`'s API docs](/api/exceptions/#apiflask.exceptions.HTTPError) for
-all the parameters you can pass to `abort` and `HTTPError`.
+所有可以传递给 `abort` 和 `HTTPError` 的参数，参阅
+[`HTTPError 的 API 文档`](/api/exceptions/#apiflask.exceptions.HTTPError)。
 
-The `extra_data` is useful when you want to add more fields to the response body, for example:
+如果想向响应主体中添加更多字段，可以使用 `extra_data` 参数，例如：
 
 ```python
 abort(
@@ -103,7 +95,8 @@ abort(
     }
 )
 ```
-will produce the below response:
+
+这将产生如下的响应：
 
 ```json
 {
@@ -114,19 +107,18 @@ will produce the below response:
 }
 ```
 
-In most cases, you should create custom error classes with preset values instead of passing them to
-`abort` or `HTTPError` directly. See more details in the section below.
+在大多数情况下，应该使用预设值来创建自定义错误类，而不是直接将它们传递给 `abort` 或
+`HTTPError`。详见下一节。
 
 
-## Custom error classes
+## 自定义错误类
 
 !!! warning "Version >= 0.11.0"
 
-    This feature was added in the [version 0.11.0](/changelog/#version-0110).
+    这个特性在 [版本 0.11.0](/changelog/#version-0110) 中加入。
 
-To reuse errors, you can create custom error classes with preset error information. The
-custom error classes should be inherited from `HTTPError`, and you can use the following attributes
-in the error class:
+你可以使用预设的错误信息创建自定义错误类来重用 API 错误。这个自定义错误类应该继承自
+`HTTPError`，在这个错误类中可以使用以下属性：
 
 - status_code
 - message
@@ -134,7 +126,7 @@ in the error class:
 - extra_data
 - headers
 
-Here is a simple example:
+这是个简单的示例：
 
 ```python
 from apiflask import HTTPError
@@ -148,7 +140,7 @@ class PetNotFound(HTTPError):
     }
 ```
 
-Then you can `raise` this exception class in your view function:
+之后可以在视图函数中 `raise` 这个异常类：
 
 ```python hl_lines="5"
 @app.get('/pets/<pet_id>')
@@ -159,11 +151,10 @@ def get_pet(pet_id):
     return {'message': 'Pet'}
 ```
 
-!!! tip "Use exception classes from Werkzeug"
+!!! tip "使用 Werkzeug 中的异常类"
 
-    If you didn't set the `json_errors` to `False` when creating `app` instance,
-    APIFlask will catch all the Werkzeug exceptions, including the one you raised
-    directly:
+    如果在创建 `app` 实例时没有将 `json_errors` 设置为 `False`，
+    APIFlask 将捕获所有 Werkzeug 异常，包括被直接抛出的异常：
 
     ```python
     from werkzeug.exceptions import NotFound
@@ -175,42 +166,37 @@ def get_pet(pet_id):
         return {'message': 'Hello!'}
     ```
 
-    However, the `description` and `body` of the exception will be discarded.
+    但是，这个异常的 `description` 和 `body` 将被丢弃。
 
 
-## Custom error status code and description
+## 自定义错误状态码和描述
 
-The following configuration variables can be used to customize the validation and
-authentication errors:
+下面的配置变量可用于自定义请求校验和认证错误：
 
 - `VALIDATION_ERROR_DESCRIPTION`
 - `AUTH_ERROR_DESCRIPTION`
 - `VALIDATION_ERROR_STATUS_CODE`
 - `AUTH_ERROR_STATUS_CODE`
 
-See the [Response customization](/configuration#response-customization) section in the
-configuration docs for the details.
+详见配置文档中 [自定义响应](/configuration#自定义响应) 章节。
 
 
-## Custom error response processor
+## 自定义错误响应处理器
 
-You can use the `app.error_processor` decorator to register a custom error response
-processor function. It's a global error processor for all HTTP errors.
+你可以使用 `app.error_processor` 装饰器来注册自定义错误响应处理器函数。
+它是一个全局错误处理器，会处理所有的 HTTP 错误。
 
-The decorated callback function will be called in the following situations:
+在以下情境下，被装饰的回调函数将被调用：
 
-- Any HTTP exception is raised by Flask when `APIFlask(json_errors=True)` (default).
-- A validation error happened when parsing a request.
-- An exception triggered with [`HTTPError`][apiflask.exceptions.HTTPError]
-- An exception triggered with [`abort`][apiflask.exceptions.abort].
+- 当 `APIFlask(json_errors=True)`（默认情况）时，有任何 Flask 抛出的 HTTP 异常。
+- 解析请求时发生校验错误。
+- 使用 [`HTTPError`][apiflask.exceptions.HTTPError] 触发的异常。
+- 使用 [`abort`][apiflask.exceptions.abort] 触发的异常。
 
-You can still register a specific error handler for a specific error code or
-exception with the `app.errorhandler(code_or_exection)` decorator. In that case,
-the return value of the error handler will be used as the response when the
-corresponding error or exception happens.
+你仍然可以使用 `app.errorhandler(code_or_exection)` 装饰器来为特定的异常或错误状态码注册错误处理器。
+在这种情况下，这些错误处理器的返回值将用作相应错误或异常发生时的响应。
 
-The callback function must accept an error object as an argument and return a valid
-response:
+回调函数必须接受一个错误对象作为参数，并返回一个有效响应：
 
 ```python
 from apiflask import APIFlask
@@ -227,19 +213,15 @@ def my_error_processor(error):
     }, error.status_code, error.headers
 ```
 
-The error object is an instance of [`HTTPError`][apiflask.exceptions.HTTPError],
-so you can get error information via its attributes:
+这个错误对象是 [`HTTPError`][apiflask.exceptions.HTTPError] 的一个实例，
+因此可以通过其属性来获取错误信息：
 
-- status_code: If the error is triggered by a validation error, the value will be
-    400 (default) or the value you passed in config `VALIDATION_ERROR_STATUS_CODE`.
-    If the error is triggered by [`HTTPError`][apiflask.exceptions.HTTPError]
-    or [`abort`][apiflask.exceptions.abort], it will be the status code
-    you passed. Otherwise, it will be the status code set by Werkzueg when
-    processing the request.
-- message: The error description for this error, either you passed or grabbed from
-    Werkzeug.
-- detail: The detail of the error. When the validation error happens, it will
-    be filled automatically in the following structure:
+- status_code：如果这个错误是由请求校验错误触发的，该值将是 400（默认）或是配置
+  `VALIDATION_ERROR_STATUS_CODE` 的值。如果这个错误是由
+  [`HTTPError`][apiflask.exceptions.HTTPError] 或 [`abort`][apiflask.exceptions.abort]
+  触发，该值将是传入的状态码。其他情况下，该值将是 `Werkzueg` 处理请求时设置的状态码。
+- message：这个错误的描述，由你手动传入或是从 Werkzeug 中获取。
+- detail：这个错误的其他详细信息。当请求校验错误触发时，它将是下面的结构：
 
     ```python
     "<location>": {
@@ -253,14 +235,13 @@ so you can get error information via its attributes:
     ...
     ```
 
-    The value of `location` can be `json` (i.e., request body) or `query`
-    (i.e., query string) depending on the place where the validation error
-    happened.
+    `location` 的值会是 `json`（即请求主体）、`query`（即查询字符串）或其他值，这取决于请求校验错误发生的位置
+    (它匹配你在 `app.input` 装饰器传入的 `location` 参数值)。
 
-- headers: The value will be `{}` unless you pass it in `HTTPError` or `abort`.
-- extra_data: Additional error information passed with `HTTPError` or `abort`.
+- headers：在 `HTTPError` 或是 `abort` 中设置的值，默认为 `{}` 。
+- extra_data：通过 `HTTPError` 或 `abort` 传入的额外错误信息。
 
-If you want, you can rewrite the whole response body to anything you like:
+如果你想的话，可以将整个响应主体重写为任何你喜欢的格式：
 
 ```python
 @app.error_processor
@@ -275,39 +256,33 @@ def my_error_processor(error):
 
 !!! tip
 
-    I would recommend keeping the `detail` in the response since it contains
-    the detailed information about the validation error when it happened.
+    建议在响应中保留 `error.detail` 数据，因为它包含请求校验错误的详细信息。
 
-After you change the error response, you have to update the corresponding OpenAPI schema
-for error responses so the API docs will match your custom error response schema.
+在更改错误响应后，为了让 API 文档能正确匹配自定义错误响应的 schema，
+还必须更新该错误响应对应的 OpenAPI schema（见下一节）。
 
 
-## Update the OpenAPI schema of error responses
+## 更新错误响应的 OpenAPI Schema
 
-There are two error schemas in APIFlask: one for generic errors (including auth errors),
-and one for validation errors. They can be configured with `HTTP_ERROR_SCHEMA` and
-`VALIDATION_ERROR_SCHEMA`, respectively.
+APIFlask 中有两种用于错误的 schema：一种用于一般错误（包括认证错误），另一种用于请求校验错误。
+可以依次由 `HTTP_ERROR_SCHEMA` 和 `VALIDATION_ERROR_SCHEMA` 进行配置。
 
-!!! question "Why do we need two schemas for error responses?"
+!!! question "为什么在错误响应中需要两种 schema？"
 
-    The reason behind a separate schema for the validation error response is that the `detail`
-    field of the validation errors will always have values. While for generic HTTP errors,
-    the `detail` field will be empty unless you passed something with `HTTPError` and
-    `abort`.
+    给请求校验错误的响应设置一个单独的 schema 背后的原因是为了保证校验错误中的 `detail` 字段始终有值。
+    对于一般的 HTTP 错误，除非手动通过 `HTTPError` 和 `abort` 传入了一些内容，否则 `detail` 字段将会是空值。
 
-When you change the error response body with `error_processor`, you will also need
-to update the error response schema, so it will update the OpenAPI spec of the error
-response. The schema can be a dict of OpenAPI schema or a marshmallow schema class.
-Here is an example that adds a `status_code` field to the default error response
-and renames the existing fields (with OpenAPI schema dict):
+当使用 `app.error_processor` 更改错误响应的主体时，还需要更新错误响应的 schema，如此它将更新错误响应的
+OpenAPI spec。其中 schema 可以是一个 OpenAPI schema 的字典形式，也可以是一个 marshmallow 的 schema 类。
+下面是一个将 `status_code` 字段添加到默认错误响应并重命名现有字段的示例（使用 OpenAPI schema 字典形式）：
 
 ```python
-# use the built-in `validation_error_detail_schema` for the `detail` field
+# 使用内置的 `validation_error_detail_schema` 作为 `detail` 字段的值
 from apiflask import APIFlask
 from apiflask.schemas import validation_error_detail_schema
 
 
-# schema for generic error response, including auth errors
+# 一般错误响应的 schema，包括认证错误
 http_error_schema = {
     "properties": {
         "error_detail": {
@@ -324,7 +299,7 @@ http_error_schema = {
 }
 
 
-# schema for validation error response
+# 请求校验错误的响应 schema
 validation_error_schema = {
     "properties": {
         "error_detail": validation_error_detail_schema,
@@ -344,24 +319,20 @@ app.config['HTTP_ERROR_SCHEMA'] = http_error_schema
 ```
 
 
-## Handling authentication errors
+## 处理认证错误
 
-When you set the `json_errors` to `True` when creating the APIFlask instance (defaults to `True`),
-APIFlask will return JSON errors for auth errors and use the built-in errors callback or the
-error processor you created with `app.error_processor`.
+在创建 APIFlask 实例时将 `json_errors` 设置为 `True` 时（默认即为 `True`），APIFlask 会针对认证错误返回
+JSON 格式的错误，并调用内置的错误回调或通过 `app.error_processor` 创建的错误处理器。
 
-In the following situations, you need to register a separate error processor for auth
-errors:
+对于以下情况，你需要为认证错误注册一个单独的错误处理器：
 
-- If you want to make some additional process for 401/403 error, instead of using
-  `app.errorhandler(401)` or `app.errorhandler(403)` to register a specific error
-  handler, you have to use `auth.error_processor` to register an auth error processor.
-- If you have set `json_errors` to `False`, but also want to customize the error
-  response, you also need to register a custom auth error processor since the global
-  error processor will not be used.
+- 如果想对 401/403 错误做一些额外的处理，但不想使用`app.errorhandler(401)` 或
+  `app.errorhandler(403)` 注册特定的错误处理器，这时就必须使用 `auth.error_processor`
+  来注册一个认证错误处理器。
+- 如果已将 `json_errors` 设置为 `False`，但还想自定义错误响应，由于全局错误处理器将不被使用，
+  这时就得注册一个自定义的认证错误处理器。
 
-You can use the `auth.error_processor` decorator to register an auth error processor. It
-works just like `app.error_processor`:
+你可以使用 `auth.error_processor` 装饰器来注册一个认证错误处理器。它的用法很像 `app.error_processor`：
 
 ```python
 from apiflask import HTTPTokenAuth
@@ -379,11 +350,9 @@ def my_auth_error_processor(error):
     return body, error.status_code, error.headers
 ```
 
-If you registered an auth error processor when `json_error` is `True`, it will overwrite the
-global error processor.
+如果在 `json_error` 为 `True` 时注册了认证错误处理器，那么它将覆盖全局错误处理器。
 
-!!! question "Why do we need a separate error processor for auth errors?"
+!!! question "为什么需要一个单独的错误处理器来处理认证错误？"
 
-    APIFlask's authentication feature is backed with Flask-HTTPAuth. Since Flask-HTTPAuth
-    uses a separate error handler for its errors, APIFlask has to add a separate
-    error processor to handle it. We may figure out a simple way for this in the future.
+    APIFlask 的认证功能由 Flask-HTTPAuth 提供。由于 Flask-HTTPAuth 对其错误使用了单独的错误处理函数，
+    APIFlask 必须添加单独的错误处理器来处理它。将来我们可能会想出一个简单的方式来解决这个问题。

@@ -1,39 +1,30 @@
-# Authentication
+# 安全认证
 
-Read [this section](/usage/#use-appauth_required-to-protect-your-views)
-in the Basic Usage chapter first for the basics on authentication support.
+首先阅读基本用法中的 [这一部分](/usage/#use-appauth_required-to-protect-your-views)
+来了解安全认证支持的基础知识。
 
-Basic concepts on the authentication support:
+安全认证支持的基本概念：
 
-- APIFlask uses Flask-HTTPAuth to implement the authentication support.
-- Use [`apiflask.HTTPBasicAuth`](/api/security/#apiflask.security.HTTPBasicAuth)
-  for the HTTP Basic authentication.
-- Use [`apiflask.HTTPTokenAuth`](/api/security/#apiflask.security.HTTPTokenAuth)
-  for the HTTP Bearer or API Keys authentication.
-- Read [Flask-HTTPAuth's documentation](https://flask-httpauth.readthedocs.io/)
-  for the implemention of each authentication types.
-- Make sure to import `HTTPBasicAuth` and `HTTPTokenAuth` from APIFlask and use the
-  `app.auth_required` decorator to protect the views.
-- `auth.current_user` works just like `auth.current_user()`, but shorter.
+- APIFlask 使用 Flask-HTTPAuth 来实现认证支持。
+- 使用 [`apiflask.HTTPBasicAuth`](/api/security/#apiflask.security.HTTPBasicAuth) 来进行 HTTP 基本身份验证（HTTP Basic Auth）。
+- 使用 [`apiflask.HTTPTokenAuth`](/api/security/#apiflask.security.HTTPTokenAuth) 来进行 HTTP Bearer 或 API 密钥认证。
+- 阅读 [Flask-HTTPAuth 的文档](https://flask-httpauth.readthedocs.io/) 来实现各种安全认证方式。
+- 请确保从 APIFlask 导入 `HTTPBasicAuth` 和 `HTTPTokenAuth` 并使用 `app.auth_required` 装饰器来保护视图。
+- `auth.current_user` 的工作方式与 `auth.current_user()` 类似，但长度更短。
 
-
-## Use external authentication library
+## 使用外部安全认证库
 
 !!! warning "Version >= 1.0.0"
 
-    This feature was added in the [version 1.0.0](/changelog/#version-100).
+    这个特性在 [1.0.0 版本](/changelog/#version-100) 中添加。
 
-When using the `HTTPBasicAuth`, `HTTPTokenAuth`, and `app.auth_required` to implement
-the authentication, APIFlask can generate the OpenAPI security spec automatically. When
-you use the external authentication library, APIFlask still offers the way to set the
-OpenAPI spec.
+使用 `HTTPBasicAuth`、`HTTPTokenAuth` 和 `app.auth_required` 实现安全认证时，APIFlask 可以自动生成 OpenAPI 安全规范。当你使用外部安全认证库，APIFlask 仍然提供手动设置 OpenAPI 规范的方式。
 
-You can use the `SECURITY_SCHEMES` config or the `app.security_schemes` attribute to
-set the OpenAPI security schemes:
+你可以使用 `SECURITY_SCHEMES` 配置或 `app.security_schemes` 属性来设置 OpenAPI security scheme：
 
 ```python
 app = APIFlask(__name__)
-app.security_schemes = {  # equals to use config SECURITY_SCHEMES
+app.security_schemes = {  # 等同于 SECURITY_SCHEMES 配置
     'ApiKeyAuth': {
       'type': 'apiKey',
       'in': 'header',
@@ -41,12 +32,11 @@ app.security_schemes = {  # equals to use config SECURITY_SCHEMES
     }
 }
 ```
-
-Then you can set the security scheme with the `security` parameter in `app.doc()` decorator:
+然后你可以在 `app.doc()` 装饰器中使用 `security` 参数设置 security scheme：
 
 ```python hl_lines="5"
 @app.post('/pets')
-@my_auth_lib.protect  # protect the view with the decorator provided by external authentication library
+@my_auth_lib.protect  # 使用外部安全认证库提供的装饰器保护路由
 @app.input(PetInSchema)
 @app.output(PetOutSchema, 201)
 @app.doc(security='ApiKeyAuth')
@@ -58,7 +48,6 @@ def create_pet(data):
 ```
 
 
-## Handle authentication errors
+## 处理安全认证错误
 
-See [this section](/error-handling/#handling-authentication-errors) in the Error Handling chapter for
-handling authentication errors.
+请参见错误处理章节中的 [这一部分](/error-handling/#handling-authentication-errors) 来处理安全认证错误。

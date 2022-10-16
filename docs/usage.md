@@ -77,15 +77,21 @@ $ flask run
 If your script's name isn't `app.py`, you will need to declare which application
 should be started before execute `flask run`. See the note below for more details.
 
-??? note "Assign the specific application to run with `FLASK_APP`"
+??? note "Assign the specific application to run"
 
     In default, Flask will look for an application instance called `app` or `application`
     or application factory function called `create_app` or `make_app` in module/package
     called `app` or `wsgi`. That's why I recommend naming the file as `app.py`. If you
     use a different name, then you need to tell Flask the application module path via the
-    environment variable `FLASK_APP`. For example, if your application instance stored in
-    a file called `hello.py`, then you will need to set `FLASK_APP` to the module name
-    `hello`:
+    `--app` (Flask 2.2+) option or the environment variable `FLASK_APP`. For example, if
+    your application instance stored in a file called `hello.py`, then you will need to
+    set `--app` or `FLASK_APP` to the module name `hello`:
+
+    ```
+    $ flask --app hello run
+    ```
+
+    or:
 
     === "Bash"
 
@@ -106,7 +112,11 @@ should be started before execute `flask run`. See the note below for more detail
         ```
 
     Similarly, If your application instance or application factory function stored in
-    `mypkg/__init__.py`, you can set  `FLASK_APP` to the package name:
+    `mypkg/__init__.py`, you can pass the package name:
+
+    ```
+    $ flask --app mypkg run
+    ```
 
     === "Bash"
 
@@ -127,7 +137,13 @@ should be started before execute `flask run`. See the note below for more detail
         ```
 
     However, if the application instance or application factory function store in
-    `mypkg/myapp.py`, you will need to set  `FLASK_APP` to:
+    `mypkg/myapp.py`, you will need to use:
+
+    ```
+    $ flask --app mypkg.myapp run
+    ```
+
+    or:
 
     === "Bash"
 
@@ -177,29 +193,35 @@ $ flask run --reload
 We highly recommend enabling "debug mode" when developing Flask application. See the
 note below for the details.
 
-??? note "Enable the debug mode with `FLASK_ENV`"
+??? note "Enable the debug mode"
 
     Flask can automatically restart and reload the application when code changes
     and display useful debug information for errors. To enable these features
-    in your Flask application, we will need to set the environment variable
-    `FLASK_ENV` to `development`:
+    in your Flask application, we will need to use the `--debug` option:
+
+    ```
+    $ flask --debug run
+    ```
+
+    If you are not using the latest Flask version (>2.2), you will need to set
+    the environment variable `FLASK_DEBUG` to `True` instead:
 
     === "Bash"
 
         ```bash
-        $ export FLASK_ENV=development
+        $ export FLASK_DEBUG=True
         ```
 
     === "Windows CMD"
 
         ```
-        > set FLASK_ENV=development
+        > set FLASK_DEBUG=True
         ```
 
     === "Powershell"
 
         ```
-        > $env:FLASK_APP="development"
+        > $env:FLASK_DEBUG="True"
         ```
 
     See *[Debug Mode][_debug_mode]{target=_blank}* for more details.
@@ -285,7 +307,7 @@ See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more detai
 ## Interactive API documentation
 
 Once you have created the app instance, the interactive API documentation will be
-available at <http://localhost:5000/docs> and <http://localhost:5000/redoc>. On
+available at <http://localhost:5000/docs>. On
 top of that, the OpenAPI spec file is available at <http://localhost:5000/openapi.json>.
 
 If you want to preview the spec or save the spec to a local file, use [the `flask spec`
@@ -293,6 +315,8 @@ command](/openapi/#the-flask-spec-command).
 
 You can refresh the documentation whenever you added a new route or added the input
 and output definition for the view function in the following sections.
+
+Read the *[API Documentations](/api-docs)* chapter for the advanced topics on API docs.
 
 
 ## Create a route with route decorators
@@ -419,8 +443,8 @@ from apiflask import APIFlask
 app = APIFlask(__name__)
 
 @app.get('/')
-@app.input(FooSchema)
-@app.output(BarSchema)
+@app.input(Foo)
+@app.output(Bar)
 def hello():
     return {'message': 'Hello'}
 ```
@@ -433,8 +457,8 @@ from apiflask import APIFlask, input, output
 app = APIFlask(__name__)
 
 @app.get('/')
-@input(FooSchema)
-@output(BarSchema)
+@input(Foo)
+@output(Bar)
 def hello():
     return {'message': 'Hello'}
 ```
@@ -459,7 +483,7 @@ from apiflask.fields import Integer, String
 from apiflask.validators import Length, OneOf
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
@@ -477,7 +501,7 @@ from apiflask.fields import Integer, String
 from apiflask.validators import Length, OneOf
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
@@ -490,7 +514,7 @@ from apiflask.fields import Integer, String
 from apiflask.validators import Length, OneOf
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
@@ -505,7 +529,7 @@ from apiflask.fields import Integer, String
 from apiflask.validators import Length, OneOf
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
@@ -543,13 +567,13 @@ from apiflask.validators import Length, OneOf
 app = APIFlask(__name__)
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 
 
 @app.post('/pets')
-@app.input(PetInSchema)
+@app.input(PetIn)
 def create_pet(data):
     print(data)
     return {'message': 'created'}, 201
@@ -568,8 +592,8 @@ you can do something like this to create an ORM model instance:
 
 ```python hl_lines="5"
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema)
+@app.input(PetIn)
+@app.output(PetOut)
 def create_pet(pet_id, data):
     pet = Pet(**data)
     return pet
@@ -579,8 +603,8 @@ or update an ORM model class instance like this:
 
 ```python hl_lines="6 7"
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetInSchema)
-@app.output(PetOutSchema)
+@app.input(PetIn)
+@app.output(PetOut)
 def update_pet(pet_id, data):
     pet = Pet.query.get(pet_id)
     for attr, value in data.items():
@@ -598,6 +622,7 @@ argument for `@app.input()` decorator, the value can be:
 - Cookies: `'cookies'`
 - HTTP headers: `'headers'`
 - Query string: `'query'` (same as `'querystring'`)
+- Path variable (URL variable): `'path'` (same as `'view_args'`, added in APIFlask 1.0.2)
 
 !!! warning
 
@@ -616,7 +641,7 @@ Similarly, we can define a schema for output data with `@app.output` decorator. 
 from apiflask.fields import String, Integer
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer()
     name = String()
     category = String()
@@ -642,14 +667,14 @@ from apiflask.fields import String, Integer
 app = APIFlask(__name__)
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer()
     name = String()
     category = String()
 
 
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
     return {
         'name': 'Coco',
@@ -662,8 +687,8 @@ status code with the `status_code` argument:
 
 ```python hl_lines="3"
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema, status_code=201)
+@app.input(PetIn)
+@app.output(PetOut, status_code=201)
 def create_pet(data):
     data['id'] = 2
     return data
@@ -672,7 +697,7 @@ def create_pet(data):
 Or just:
 
 ```python
-@app.output(PetOutSchema, 201)
+@app.output(PetOut, status_code=201)
 ```
 
 If you want to return a 204 response, you can use the `EmptySchema` from `apiflask.schemas`:
@@ -682,7 +707,7 @@ from apiflask.schemas import EmptySchema
 
 
 @app.delete('/pets/<int:pet_id>')
-@app.output(EmptySchema, 204)
+@app.output(EmptySchema, status_code=204)
 def delete_pet(pet_id):
     return ''
 ```
@@ -691,7 +716,7 @@ From version 0.4.0, you can use a empty dict to represent empty schema:
 
 ```python hl_lines="2"
 @app.delete('/pets/<int:pet_id>')
-@app.output({}, 204)
+@app.output({}, status_code=204)
 def delete_pet(pet_id):
     return ''
 ```
@@ -706,8 +731,8 @@ def delete_pet(pet_id):
 
     ```python hl_lines="4"
     @app.put('/pets/<int:pet_id>')
-    @app.input(PetInSchema)
-    @app.output(PetOutSchema)  # 200
+    @app.input(PetIn)
+    @app.output(PetOut)  # 200
     @app.doc(responses=[204, 404])
     def update_pet(pet_id, data):
         pass
@@ -732,7 +757,7 @@ from apiflask import Schema
 from apiflask.fields import String, Integer
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer()
     name = String()
     category = String()
@@ -742,7 +767,7 @@ Now you can return a dict:
 
 ```python
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
     return {
         'id': 1,
@@ -755,7 +780,7 @@ or you can return an ORM model instance directly:
 
 ```python hl_lines="5"
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
     pet = Pet.query.get(pet_id)
     return pet
@@ -784,7 +809,7 @@ class Pet(Model):
     `data_key` to declare the actual key name to dump to:
 
     ```python
-    class UserOutSchema(Schema):
+    class UserOut(Schema):
         phone = String(data_key='phone_number')
     ```
 
@@ -793,7 +818,7 @@ class Pet(Model):
     Similarly, you can tell APIFlask to load from different key in input schema:
 
     ```python
-    class UserInSchema(Schema):
+    class UserIn(Schema):
         phone = String(data_key='phone_number')
     ```
 
@@ -804,8 +829,8 @@ you can pass a `status_code` argument in the `@app.output` decorator:
 
 ```python hl_lines="3"
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
+@app.input(PetIn)
+@app.output(PetOut, status_code=201)
 def create_pet(data):
     # ...
     return pet
@@ -816,8 +841,8 @@ You don't need to return the same status code in the end of the view function
 
 ```python hl_lines="8"
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
+@app.input(PetIn)
+@app.output(PetOut, status_code=201)
 def create_pet(data):
     # ...
     # equals to:
@@ -830,8 +855,8 @@ of the return tuple:
 
 ```python hl_lines="8"
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
+@app.input(PetIn)
+@app.output(PetOut, status_code=201)
 def create_pet(data):
     # ...
     # equals to:
@@ -1094,19 +1119,19 @@ instead of class:
 @app.route('/pets/<int:pet_id>', endpoint='pet')
 class Pet(MethodView):
 
-    @app.output(PetOutSchema)
+    @app.output(PetOut)
     @app.doc(summary='Get a Pet')
     def get(self, pet_id):
         # ...
 
     @app.auth_required(auth)
-    @app.input(PetInSchema)
-    @app.output(PetOutSchema)
+    @app.input(PetIn)
+    @app.output(PetOut)
     def put(self, pet_id, data):
         # ...
 
-    @app.input(PetInSchema(partial=True))
-    @app.output(PetOutSchema)
+    @app.input(PetIn(partial=True))
+    @app.output(PetOut)
     def patch(self, pet_id, data):
         # ...
 ```
@@ -1121,19 +1146,19 @@ class Pet(MethodView):
 
     decorators = [auth_required(auth), doc(responses=[404])]
 
-    @app.output(PetOutSchema)
+    @app.output(PetOut)
     @app.doc(summary='Get a Pet')
     def get(self, pet_id):
         # ...
 
     @app.auth_required(auth)
-    @app.input(PetInSchema)
-    @app.output(PetOutSchema)
+    @app.input(PetIn)
+    @app.output(PetOut)
     def put(self, pet_id, data):
         # ...
 
-    @app.input(PetInSchema(partial=True))
-    @app.output(PetOutSchema)
+    @app.input(PetIn(partial=True))
+    @app.output(PetOut)
     def patch(self, pet_id, data):
         # ...
 ```
@@ -1217,7 +1242,7 @@ In the end, let's unpack the whole `apiflask` package to check out what it shipp
 - `app.route()`: A decorator used to register a route. It accepts a `methods`
 parameter to specify a list of accepted methods, default to *GET* only. It can also
 be used on the `MethodView`-based view class.
-- `$ flask run`: A command to output the spec to stdout or a file.
+- `$ flask spec`: A command to output the spec to stdout or a file.
 
 You can learn the details of these APIs in the [API reference](/api/app), or you can
 continue to read the following chapters.
