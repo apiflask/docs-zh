@@ -1,8 +1,8 @@
-# Basic Usage(基本用法)
+# 基础用法
 
 本章节涵盖了 APIFlask 的基本用法
 
-## Prerequisites(前置准备/前提条件/环境要求)
+## 前置准备
 
 - Python 3.7+
 - Flask 1.1+
@@ -16,7 +16,7 @@
 - [Flask for Beginners](https://github.com/greyli/flask-tutorial){target=_blank} (Chinese)
 
 
-## Installation(安装/安装APIFlask)
+## 安装 APIFlask
 
 === "Linux/macOS"
 
@@ -30,20 +30,9 @@
     > pip install apiflask
     ```
 
-!!! tip "Python dependency management tools"
 
-    The command above use [pip][_pip]{target=_blank} to install APIFlask, you can also use
-    other dependencies management tools such as [Poetry][_poetry]{target=_blank},
-    [Pipenv][_pipenv]{target=_blank}, [PDM][_pdm]{target=_blank}, etc.
-
-    [_pip]: https://pip.pypa.io/
-    [_poetry]: https://python-poetry.org/
-    [_pipenv]: https://pipenv.pypa.io/
-    [_pdm]: https://pdm.fming.dev/
-
-<!-- 翻译tips -->
 !!! tip "Python的包(依赖)管理工具"
-    在命令行上使用 [pip][_pip]{target=_blank} 来安装 APIFlask，你也可以使用其他的依赖管理工具。比如：[Poetry][_poetry]{target=_blank}、
+    在终端（命令行）中使用 [pip][_pip]{target=_blank} 来安装 APIFlask，你也可以使用其他的依赖管理工具。比如：[Poetry][_poetry]{target=_blank}、
     [Pipenv][_pipenv]{target=_blank}、[PDM][_pdm]{target=_blank} 等等。
 
     [_pip]: https://pip.pypa.io/
@@ -52,9 +41,9 @@
     [_pdm]: https://pdm.fming.dev/
 
 
-## Create an `app` instance with `APIFlask` class(使用 `APIFlask` 创建一个 `app` 实例)
+## 使用 `APIFlask` 创建一个 `app` 实例
 
-与创建 Flask `app` 实例的操作类似，您需要导入 `apiflask` 包中的 `APIFlask` 类，然后使用
+与创建 Flask 的 `app` 实例操作类似，您需要导入 `apiflask` 包中的 `APIFlask` 类，然后使用
 `APIFlask` 来实例化 `app`：
 
 ```python hl_lines="1 3"
@@ -69,6 +58,8 @@ def index():
 ```
 
 API 项目的默认标题和版本是 `APIFlask` 和 `0.1.0`；你可以通过修改 `title` 和 `version` 参数来改变相应的内容。
+
+
 **译者注：这里的意思是指可以通过 title 和 version 两个参数来配置项目名与管理迭代版本，同时这两个参数也会影响到交互式 API 文档页面的内容**
 
 ```python
@@ -82,17 +73,14 @@ $ flask run
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
-如果你脚本的文件名不是 `app.py`，那么你需要在使用 `flask run` 命令启动应用程式前先声明它。更多详情请见下面的说明。
+如果你脚本的文件名不是 `app.py`，那么你需要在使用 `flask run` 命令启动应用程式前先向声明它。更多详情请见下面的说明。
 
 ??? note "Assign the specific application to run with `FLASK_APP`"
 
-    In default, Flask will look for an application instance called `app` or `application`
-    or application factory function called `create_app` or `make_app` in module/package
-    called `app` or `wsgi`. That's why I recommend naming the file as `app.py`. If you
-    use a different name, then you need to tell Flask the application module path via the
-    environment variable `FLASK_APP`. For example, if your application instance stored in
-    a file called `hello.py`, then you will need to set `FLASK_APP` to the module name
-    `hello`:
+    默认情况下，Flask 将在名为 `app` 或 `wsgi` 的模块/包中寻找一个名为 `app` 或 `application` 的应用
+    程序实例或者是名为 `create_app` 或 `make_app` 的工厂函数。这就是为什么我建议将文件命名为 `app.py`。
+    如果使用不同的名称，则需要通过环境变量 `FLASK_APP` 告诉 Flask 应用程序模块路径。例如：如果你的程序实例
+    存储在名为 `hello.py` 的文件中，则需要将 `FLASK_APP` 设置为模块的名称 `hello`：
 
     === "Bash"
 
@@ -112,8 +100,7 @@ $ flask run
         > $env:FLASK_APP="hello"
         ```
 
-    Similarly, If your application instance or application factory function stored in
-    `mypkg/__init__.py`, you can set  `FLASK_APP` to the package name:
+    同样，如果你的程序实例或工厂函数存储在 `mypkg/__init__.py` 中，则可以将 `FLASK_APP` 设置为包名：
 
     === "Bash"
 
@@ -133,8 +120,7 @@ $ flask run
         > $env:FLASK_APP="mypkg"
         ```
 
-    However, if the application instance or application factory function store in
-    `mypkg/myapp.py`, you will need to set  `FLASK_APP` to:
+    但是，如果程序实例或工厂函数存储在 `mypkg/myapp.py` 中，则需要将 ·FLASK_APP` 设置为：
 
     === "Bash"
 
