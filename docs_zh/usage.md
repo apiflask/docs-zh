@@ -31,9 +31,9 @@
     ```
 
 
-!!! tip "Python的包(依赖)管理工具"
-    在终端（命令行）中使用 [pip][_pip]{target=_blank} 来安装 APIFlask，你也可以使用其他的依赖管理工具。比如：[Poetry][_poetry]{target=_blank}、
-    [Pipenv][_pipenv]{target=_blank}、[PDM][_pdm]{target=_blank} 等等。
+!!! tip "Python的包管理工具"
+    在命令行中使用 [pip][_pip]{target=_blank} 来安装 APIFlask，你也可以使用其他的依赖管理工具。
+    比如：[Poetry][_poetry]{target=_blank}、[Pipenv][_pipenv]{target=_blank}、[PDM][_pdm]{target=_blank} 等等。
 
     [_pip]: https://pip.pypa.io/
     [_poetry]: https://python-poetry.org/
@@ -57,29 +57,27 @@ def index():
     return {'message': 'hello'}
 ```
 
-API 项目的默认标题和版本是 `APIFlask` 和 `0.1.0`；你可以通过修改 `title` 和 `version` 参数来改变相应的内容。
-
-
-**译者注：这里的意思是指可以通过 title 和 version 两个参数来配置项目名与管理迭代版本，同时这两个参数也会影响到交互式 API 文档页面的内容**
+API 项目的默认标题和版本分别是 `APIFlask` 和 `0.1.0`；你可以通过修改 `title` 和 `version` 参数来改变其内容。
+<!-- **译者注：这里的意思是指可以通过 title 和 version 两个参数来配置项目名与管理迭代版本，同时这两个参数也会影响到交互式 API 文档页面的内容** -->
 
 ```python
 app = APIFlask(__name__, title='Wonderful API', version='1.0')
 ```
 
-想要运行这个应用程序，你需要先将其保存为 `app.py` 文件，然后运行 `flask run` 命令：
+想要运行这个应用程序，需要先将其保存为 `app.py` 文件，然后运行 `flask run` 命令：
 
 ```bash
 $ flask run
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
-如果你脚本的文件名不是 `app.py`，那么你需要在使用 `flask run` 命令启动应用程式前先向声明它。更多详情请见下面的说明。
+如果你脚本的文件名不是 `app.py`，那么需要在使用 `flask run` 命令启动应用程式前先向声明它。更多详情请见下面的说明。
 
 ??? note "Assign the specific application to run with `FLASK_APP`"
 
-    默认情况下，Flask 将在名为 `app` 或 `wsgi` 的模块/包中寻找一个名为 `app` 或 `application` 的应用
-    程序实例或者是名为 `create_app` 或 `make_app` 的工厂函数。这就是为什么我建议将文件命名为 `app.py`。
-    如果使用不同的名称，则需要通过环境变量 `FLASK_APP` 告诉 Flask 应用程序模块路径。例如：如果你的程序实例
+    默认情况下，Flask 将在名为 `app` 或 `wsgi` 的模块/包中寻找一个名为 `app` 或 `application`
+    的应用程序实例或者是名为 `create_app` 或 `make_app` 的工厂函数。这就是为什么我建议将文件命名为 `app.py`。
+    如果使用不同的名称，则需要通过环境变量 `FLASK_APP` 告诉 Flask 应用程序模块路径。举个例子：如果你的程序实例
     存储在名为 `hello.py` 的文件中，则需要将 `FLASK_APP` 设置为模块的名称 `hello`：
 
     === "Bash"
@@ -168,9 +166,9 @@ $ flask run --reload
         ```
 
 
-我们强烈建议在开发 Flask 应用的时候开启“调试模式”。更详细信息请看下面：
+我们强烈建议在开发 Flask 应用的时候开启“调试模式”，更多用法请留意下面的提示：
 
-??? note "Enable the debug mode with `FLASK_ENV`"
+??? note "通过 `FLASK_ENV` 开启调试模式"
     
     Flask 可以在代码更改时自动重启和加载应用并显示游泳的错误调试信息。我们只需要设置环境变量 `FLASK_ENV` 为 `development` 即可开启这些功能：
 
@@ -207,13 +205,13 @@ or reboot the computer. That's why we need to use python-dotenv, and Flask also
 has special support for it.
 
 <!-- 翻译一 -->
-由于环境变量只会存在于当前终端会话中，因此每次建立一个新的终端会话都需要重新手动设置一遍环境变量，这样太不方便了。所以我们需要用到 python-dotenv 包来帮我们自动加载环境变量，并且 Flask 也对它做了优化。
+由于环境变量只会存在于当前终端会话中，因此每次建立一个新的终端会话都需要重新手动设置一遍环境变量，这样太不方便了。
+所以我们需要用到 python-dotenv 包来帮我们自动加载环境变量，另外 Flask 也对它做了优化。
 
 <!-- 翻译二 -->
-~~变量一般只会存在终端当前会话中，每次打开新终端会话都需要重新设计环境变量，因此手动设置环境变量是很麻烦的一件事情。~~
+<!-- ~~变量一般只会存在终端当前会话中，每次打开新终端会话都需要重新设计环境变量，因此手动设置环境变量是很麻烦的一件事情。~~ -->
 
-
-Install `python-dotenv` with pip:
+使用 pip 安装 `python-dotenv`：
 
 === "Linux/macOS"
 
@@ -227,11 +225,12 @@ Install `python-dotenv` with pip:
     > pip install python-dotenv
     ```
 
-Now we can store environment variables in .env files. Flask-related environment
-variables should keep in a file called `.flaskenv`:
+<!-- 原文 -->
+<!-- Now we can store environment variables in .env files. Flask-related environment
+variables should keep in a file called `.flaskenv`: -->
 
-现在，我们可以将环境变量写到一个名为 .env 的文件中，Flask 相关的环境变量则应该存储在 .flaskenv 中：
-（后续翻阅《Flask开发实战》中的对应部分进行微调）（译者注：此处的 Flask 指我们写的 Flask 程序，其意思是「与我们程序运行相关的配置信息应该写在 `.flaskenv` 文件中，如 **项目名称**、**项目运行的环境标识** 等不敏感的内容。」）
+现在，我们可以将环境变量写到一个名为 .env 的文件中，与 Flask 相关的环境变量则应该存储在 .flaskenv 中：
+<!-- （后续翻阅《Flask开发实战》中的对应部分进行微调）（译者注：此处的 Flask 指我们写的 Flask 程序，其意思是「与我们程序运行相关的配置信息应该写在 `.flaskenv` 文件中，如 **项目名称**、**项目运行的环境标识** 等不敏感的内容。」） -->
 
 ```ini
 # save as .flaskenv
@@ -255,7 +254,7 @@ FOO_APP_KEY=some-app-key # 某些应用的密钥
 
 现在，在应用程序中我们可以使用 `os.getenv(key, default_value)` 来读取这些变量：
 
-```python hl_lines="1 5"
+```python hl_lines="1 6"
 import os
 
 from apiflask import APIFlask
@@ -284,10 +283,10 @@ $ flask run
 
 ## 交互式API文档
 
-当你创建应用程序后，你将可以在 <http://localhost:5000/docs> 和 <http://localhost:5000/redoc> 浏览交互式API文档。最重要的是，你可以访问 <http://localhost:5000/openapi.json> 获取 OpenAPI 规范文件。
+当你创建应用程序后，可以在 <http://localhost:5000/docs> 和 <http://localhost:5000/redoc> 浏览交互式API文档。更重要的是，可以访问 <http://localhost:5000/openapi.json> 获取 OpenAPI 规范文件。
 
 
-如果你想预览规范文件或者将其保存到本地文件，[可以使用 `flask spec`
+如果想预览规范文件或者将其保存到本地文件，[可以使用 `flask spec`
 命令](/openapi/#the-flask-spec-command)。
 
 当视图函数添加了新的路由或是 input 和 output 装饰器定义时，你可刷新文档页面来看到新增的内容。
@@ -332,9 +331,9 @@ def delete_pet(pet_id):
     return '', 204
 ```
 
-However, with APIFlask, instead of setting `methods` argument for each route, you can
-also use the following shortcuts decorators:
-然而在 Flask 中，你不用为每个路由设置 `methods` 参数，而是使用下列的快捷路由装饰器：
+<!-- However, with APIFlask, instead of setting `methods` argument for each route, you can
+also use the following shortcuts decorators: -->
+然而在 APIFlask 中，你不用为每个路由设置 `methods` 参数，而是使用下列的快捷路由装饰器：
 
 - `app.get()`: 注册一个接受 *GET* 请求的路由。
 - `app.post()`: 注册一个接受 *POST* 请求的路由。
@@ -382,18 +381,14 @@ def delete_pet(pet_id):
 
 !!! note "Handling multiple HTTP methods in one view function"
 
-    You can't pass the `methods` argument to route shortcuts. If you want the
-    view function to accept multiple HTTP methods, you will need to use the
-    `app.route()` decorator to pass the `methods` argument:
-    你不能向快捷路由传递 `methods` 参数。如果该视图函数需要接受多个 HTTP 方法，你仍然需要使用 `app.route()` 装饰器来传递 `methods` 参数：
+    你不能向快捷路由装饰器传递 `methods` 参数。如果该视图函数需要接受多个 HTTP 方法，你仍然需要使用 `app.route()` 来传递 `methods` 参数：
 
     ```python
     @app.route('/', methods=['GET', 'POST'])
     def index():
         return {'message': 'hello'}
     ```
-    或者你可以这么做：（译者不推荐）
-    Or you can do something like this:
+    或者你也可以这么做：
 
     ```python
     @app.get('/')
@@ -402,9 +397,7 @@ def delete_pet(pet_id):
         return {'message': 'hello'}
     ```
 
-    By the way, you can mix the use of `app.route()` with the shortcuts in your
-    application.
-    顺便说一下，你可以在程序中混合使用 `app.route()` 和 快捷路由装饰器。
+    顺带提一下，你可以在程序中混合使用 `app.route()` 和 快捷路由装饰器。
 
 
 ## Move to new API decorators(转移到新的 API 装饰器/使用新的 API 装饰器)
@@ -587,7 +580,7 @@ def update_pet(pet_id, data):
 
 !!! warning
 
-    请确保将 `@app.input` 装饰器放在路由装饰器下面。
+    请确保将 `@app.input` 装饰器放在路由装饰器下面
     (i.e., `app.route`, `app.get`, `app.post`, etc.).
 
 
@@ -595,7 +588,7 @@ def update_pet(pet_id, data):
 
 ## 使用 `@app.output` 来序列化响应数据
 
-同样的，我们可以使用 `@app.output` 装饰器配合定义好的 schema 来对响应的数据进行序列化，下面是一个简易的示例：
+同样的，我们可以使用 `@app.output` 装饰器配合定义好的 schema 来对响应的数据进行序列化，下面是一个示例：
 
 ```python
 from apiflask.fields import String, Integer
@@ -617,9 +610,8 @@ class PetOutSchema(Schema):
     name = String(dump_default='default name')
     ```
 
-Now add it to the view function which used to get a pet resource:
 
-现在让我们将它添加到用于获取 Pet 资源的视图函数中：
+现在让我们把它添加到用于获取 Pet 资源的视图函数中：
 
 ```python hl_lines="1 14"
 from apiflask import APIFlask, output
@@ -672,8 +664,7 @@ def delete_pet(pet_id):
     return ''
 ```
 
-从 0.4.0 版本开始，你可以在 input 中使用空字典来表示返回**空的响应体**：
-
+从 0.4.0 版本开始，你可以使用空字典来替代 `EmptySchema`：
 
 ```python hl_lines="2"
 @app.delete('/pets/<int:pet_id>')
@@ -827,17 +818,13 @@ def create_pet(data):
 
 APIFlask 提供自动生成 OpenAPI 规范的支持，同时也允许你自定义规范。
 
-- Most of the fields of the `info` object and top-level field of `OpenAPI`
-objct are accessible with configuration variables.
-- `info` 对象的大部分字段和 `OpenAPI` 对象的顶级字段可通过配置变量访问。
+- `info` 对象的大部分字段和 `OpenAPI` 对象的顶级字段都可通过配置变量来修改。
 - The `tag` object, Operation `summary` and `description` will generated from
 the blueprint name, the view function name and docstring.
-- `标签对象`、`操作摘要` 和 `描述` 将根据蓝图名称、视图函数名称和文档字符串生成。
+- `tag` 对象、`操作摘要` 和 `描述` 将根据蓝图名称、视图函数名称和文档字符串生成。（这里的 tag 对象不好翻译，故保留原文）
 - You can register a spec processor function to process the spec.
-- `requestBody` and `responses` fields can be set with the `input` and `output`
-decorator.
+<!-- - 你可以注册一个规范处理函数来处理这些规范 -->
 - `requestBody` 和 `responses` 字段可以使用 `input` 和 `output` 装饰器来设置。
-- Other operation fields can be set with the `doc` decorator:
 - 其他操作字段可以用 `doc` 装饰器来设置。
 
 ```python hl_lines="1 7"
@@ -862,8 +849,7 @@ def hello():
 
 ## 使用 `@app.auth_required` 为你的接口添加鉴权
 
-Based on [Flask-HTTPAuth](https://github.com/miguelgrinberg/Flask-HTTPAuth), APIFlask
-provides three types of authentication:
+基于 [Flask-HTTPAuth](https://github.com/miguelgrinberg/Flask-HTTPAuth)，APIFlask 提供三种认证方式：
 
 <!-- 感觉该子标题可以不译 -->
 ### HTTP Basic (HTTP Basic 认证)
