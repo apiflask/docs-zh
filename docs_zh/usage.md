@@ -1153,12 +1153,9 @@ def hello(name):
 
 `abort()` 和 `HTTPError` 接受以下参数：
 
-- `status_code`: The status code of the error (4XX and 5xx).
-- `message`: The simple description of the error. If not provided,
-    the reason phrase of the status code will be used.
-- `detail`: The detailed information of the error, it can be used to
-    provide additional information such as custom error code, documentation
-    URL, etc.
+- `status_code`: 错误的状态码 (4XX and 5xx).
+- `message`: 错误原因的简单描述。如果不填写，默认值为状态码
+- `detail`: 错误的详细信息，可用于提供如自定义错误码、文档 URL等额外的信息。
 - `headers`: A dict of headers used in the error response.
 
 !!! warning
