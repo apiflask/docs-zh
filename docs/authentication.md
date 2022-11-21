@@ -47,8 +47,8 @@ Then you can set the security scheme with the `security` parameter in `app.doc()
 ```python hl_lines="5"
 @app.post('/pets')
 @my_auth_lib.protect  # protect the view with the decorator provided by external authentication library
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
+@app.input(PetIn)
+@app.output(PetOut, status_code=201)
 @app.doc(security='ApiKeyAuth')
 def create_pet(data):
     pet_id = len(pets)
@@ -56,6 +56,12 @@ def create_pet(data):
     pets.append(data)
     return pets[pet_id]
 ```
+
+With [APIFlask 1.0.2](/changelog/#version-102), when using the built-in auth support and external auth
+library at the same time, the security schemes will be combined.
+
+`app.auth_required` will generate the operation security automatically, if you use the `@doc(security=...)`
+with a view that already used `app.auth_required`, then the value passed in `@doc(security=...)` will be used.
 
 
 ## Handle authentication errors

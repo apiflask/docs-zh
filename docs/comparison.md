@@ -13,14 +13,16 @@ differences between APIFlask and similar projects.
 ## APIFlask vs FastAPI
 
 - For the web part, FastAPI builds on top of Starlette, while APIFlask builts on top of
-Flask.
+  Flask.
 - For the data part (serialization/deserialization, OpenAPI support), FastAPI relies
-on Pydantic, while APIFlask uses marshmallow-code projects (marshmallow, webargs, apispec).
+  on Pydantic, while APIFlask uses marshmallow-code projects (marshmallow, webargs, apispec).
 - APIFlask builds on top of Flask, so it's compatible with Flask extensions.
 - FastAPI support async. APIFlask will have the basic async support with Flask 2.0.
 - APIFlask provides more decorators to help organize things better.
 - FastAPI injects the input data as an object, while APIFlask passes it as a dict.
 - APIFlask has built-in class-based views support based on Flask's `MethodView`.
+- On top of Swagger UI and Redoc, APIFlask supports more API documentation tools:
+  Elements, RapiDoc, and RapiPDF.
 
 
 ## APIFlask vs APIFairy/flask-smorest
@@ -53,6 +55,7 @@ extension is:
 - I have to rewrite the `Flask` class to ensure the natural order of the arguments
 injected into the view function.
 - I have to rewrite the `Flask` and the `Blueprint` class to add route shortcuts.
+- Possible to add more high-level features, such as support returning list as JSON response.
 
 See the following two sections for more details.
 
@@ -67,8 +70,8 @@ Assume a view like this:
 
 ```python
 @app.get('/<category>/articles/<int:article_id>')  # category, article_id
-@app.input(ArticleQuerySchema, location='query')  # query
-@app.input(ArticleInSchema)  # data
+@app.input(ArticleQuery, location='query')  # query
+@app.input(ArticleIn)  # data
 def get_article(category, article_id, query, data):
     pass
 ```
@@ -122,6 +125,7 @@ def create_pet():
 - Add authentication error response (401) for view functions that use `auth_required` decorator.
 - Add 404 response for view functions that contain URL variables.
 - Add response schema for potential error responses of view function passed with `doc` decorator. For example, `doc(responses=[404, 405])`.
+- etc.
 
 !!! tip
 
@@ -136,3 +140,4 @@ def create_pet():
 - Support to customize the API documentation config and CDN URLs.
 - Return JSON response for all HTTP errors and Auth errors as default.
 - Class-based view support.
+- etc.

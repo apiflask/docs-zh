@@ -1,21 +1,91 @@
-## Version 1.1.0
+## Versions 1.2.0
 
-- [1.1.0 milestone](https://github.com/apiflask/apiflask/milestone/9)
-- [1.1.0 kanban](https://github.com/apiflask/apiflask/projects/2)
+- [1.2.0 milestone](https://github.com/apiflask/apiflask/milestone/12)
+- [1.2.0 kanban](https://github.com/apiflask/apiflask/projects/3)
 
 Released: -
 
 
+## Version 1.1.2
+
+Released: 2022/8/13
+
+- Set default Elements router to `hash` to fix incorrect path updates.
+
+
+## Version 1.1.1
+
+Released: 2022/8/3
+
+- Improve CI setup and test again Python 3.10 and 3.11.
+- Fix the typing of `APIFlask` path parameters ([issue #329][issue_329]).
+- Update `MethodViewType` usages for Flask 2.2 ([issue #335][issue_335]).
+
+[issue_329]: https://github.com/apiflask/apiflask/issues/329
+[issue_335]: https://github.com/apiflask/apiflask/issues/335
+
+
+## Version 1.1.0
+
+Released: 2022/7/3
+
+- Add a versioned docs for 1.x releases (https://v1.apiflask.com).
+- Allow the view function to return a list as JSON response ([issue #321][issue_321]).
+- Add new docs UI support: RapiDoc, RapiPDF, and Elements ([pr #308][pr_308]).
+- Add a `docs_ui` parameter to APIFlask to set the API docs UI (can be
+  `swagger-ui` (default), `redoc`, `rapidoc`, and `rapipdf`).
+- Deprecate the separate docs path `/redoc` and the `redoc_path` parameter.
+- Add the following configuration variables for new docs supprt:
+    - `ELEMENTS_JS`
+    - `ELEMENTS_CSS`
+    - `ELEMENTS_LAYOUT`
+    - `ELEMENTS_CONFIG`
+    - `RAPIDOC_JS`
+    - `RAPIDOC_THEME`
+    - `RAPIDOC_CONFIG`
+    - `RAPIPDF_JS`
+    - `RAPIPDF_CONFIG`
+- Fix CLI entry point setup to prevent overwriting `flask`
+  ([issue #312][issue_312])
+
+[pr_308]: https://github.com/apiflask/apiflask/pull/308
+[issue_312]: https://github.com/apiflask/apiflask/issues/312
+[issue_321]: https://github.com/apiflask/apiflask/issues/321
+
+
+## Version 1.0.2
+
+Released: 2022/5/21
+
+- Combine custom security schemes (app.security_schemes) with existing values
+  ([issue #293][issue_293]).
+- Add the missing `path` (`view_args`) to the valid request `location` list
+  ([issue #301][issue_301])
+- Fix the security scheme values to lowercase.
+
+[issue_293]: https://github.com/apiflask/apiflask/issues/293
+[issue_301]: https://github.com/apiflask/apiflask/issues/301
+
+
+## Version 1.0.1
+
+Released: 2022/5/17
+
+- Fix the async support for `app.auth_required`, `app.input`, and `app.doc` decorators
+  ([issue #288][issue_288]). Thanks [@jiashuChen](https://github.com/jiashuChen)!
+
+[issue_288]: https://github.com/apiflask/apiflask/issues/288
+
+
 ## Version 1.0.0
 
-Released: 2022/5/4
-Codename: Wujiaochang
+Released: 2022/5/4<br>Codename: Wujiaochang
 
 - Remove the deprecated standalone decorators: `input`, `output`, `doc`, and `auth_required`.
   Use app/blueprint decorators instead (e.g. `input()` -> `app.input()`/`bp.input()`).
 - Deprecate the following parameters ([issue #237][issue_237]):
-  - `role` in `app.auth_required()`/`bp.auth_required()`, use `roles` and always pass a list.
-  - `tag` in `app.doc()`/`bp.doc()`, use `tags` and always pass a list.
+    - `role` in `app.auth_required()`/`bp.auth_required()`, use `roles` and always pass a list.
+    - `tag` in `app.doc()`/`bp.doc()`, use `tags` and always pass a list.
 - Add a base class (`apiflask.scaffold.APIScaffold`) for common logic of `APIFlask` and
   `APIBlueprint`, move route decorators and API-related decorators to this base class
   to improve the IDE auto-completion ([issue #231][issue_231]).
@@ -24,11 +94,11 @@ Codename: Wujiaochang
 - Improve the way to detect blueprint from view endpoint to support the endpoints that
   contain dots ([issue #211][issue_211]).
 - Support file uploading ([issue #123][issue_123]):
-  - Fix the content type of `form` and `files` input locations.
-  - Raise error if the user uses multiple body input locations ("files", "form", "json").
-  - Add `Form` field and `form_and_files` location for better form upload support.
-  - Rewrite the `files` to act like `form_and_files`, so that failed parsed file will
-    be included in the returned data.
+    - Fix the content type of `form` and `files` input locations.
+    - Raise error if the user uses multiple body input locations ("files", "form", "json").
+    - Add `Form` field and `form_and_files` location for better form upload support.
+    - Rewrite the `files` to act like `form_and_files`, so that failed parsed file will
+      be included in the returned data.
 - Allow to use `json_or_form` location and fields (`DelimitedList` and `DelimitedTuple`)
   from webargs ([issue #254][issue_254]).
 - When creating a custom error processor, call it for generic HTTP errors even if the
