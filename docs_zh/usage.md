@@ -169,7 +169,7 @@ $ flask run --reload
 我们强烈建议在开发 Flask 应用的时候开启“调试模式”，更多用法请留意下面的提示：
 
 ??? note "通过 `FLASK_ENV` 开启调试模式"
-    
+
     Flask 可以在代码更改时自动重启和加载应用并显示游泳的错误调试信息。我们只需要设置环境变量 `FLASK_ENV` 为 `development` 即可开启这些功能：
 
     === "Bash"
