@@ -32,7 +32,8 @@
 
 
 !!! tip "Python 的依赖管理工具"
-    在命令行中使用 [pip][_pip]{target=_blank} 来安装 APIFlask，你也可以使用其他的依赖管理工具。
+
+    上面的命令使用 [pip][_pip]{target=_blank} 来安装 APIFlask，你也可以使用其他的依赖管理工具。
     比如：[Poetry][_poetry]{target=_blank}、[Pipenv][_pipenv]{target=_blank}、[PDM][_pdm]{target=_blank} 等等。
 
     [_pip]: https://pip.pypa.io/
