@@ -7,7 +7,7 @@
 - APIFlask 使用 [webargs](https://github.com/marshmallow-code/webargs) 解析和验证请求。
 - 使用一个或多个 [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) 来声明请求数据来源，
   并使用 `location` 来声明请求数据位置。
-- 假如解析与验证均成功，数据将会被传至视图函数，否则自动返回 400 错误响应。
+- 假如解析与验证均成功，数据将会被传至视图函数，否则自动返回 422 错误响应。
 
 
 ## 请求数据的位置声明
@@ -73,7 +73,7 @@ def get_article(category, article_id, query, data):
 
     注意：URL 变量对应的参数名称（`category`, `article_id`）必须与变量名相同。
 
-如果验证失败，APIFlask 将会自动返回 400 错误响应。与其它错误响应相同，
+如果验证失败，APIFlask 将会自动返回 422 错误响应。与其它错误响应相同，
 这个错误响应将会有消息（`message`）和详情（`detail`）等部分。
 
 - 消息（`message`）
@@ -100,7 +100,7 @@ def get_article(category, article_id, query, data):
 
 - 状态码
 
-默认的验证错误的状态码是 400，你可以在配置中更改 `VALIDATION_ERROR_STATUS_CODE` 的值来更改它。
+默认的验证错误的状态码是 422，你可以在配置中更改 `VALIDATION_ERROR_STATUS_CODE` 的值来更改它。
 
 
 ## 字典 Schema

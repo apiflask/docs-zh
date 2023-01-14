@@ -26,7 +26,7 @@ description. However, in APIFlask, these errors will be returned in JSON format 
 the following preset fields:
 
 - `message`: The HTTP reason phrase or a custom error description.
-- `detail`: An empty dict (404/405/500) or the error details of the request validation (400).
+- `detail`: An empty dict (404/405/500) or the error details of the request validation (422).
 
 You can control this behavior with the `json_errors` parameter when creating the APIFlask
 instance, and it defaults to `True`:
@@ -231,7 +231,7 @@ The error object is an instance of [`HTTPError`][apiflask.exceptions.HTTPError],
 so you can get error information via its attributes:
 
 - status_code: If the error is triggered by a validation error, the value will be
-    400 (default) or the value you passed in config `VALIDATION_ERROR_STATUS_CODE`.
+    422 (default) or the value you passed in config `VALIDATION_ERROR_STATUS_CODE`.
     If the error is triggered by [`HTTPError`][apiflask.exceptions.HTTPError]
     or [`abort`][apiflask.exceptions.abort], it will be the status code
     you passed. Otherwise, it will be the status code set by Werkzueg when

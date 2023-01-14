@@ -22,7 +22,7 @@ Flask 会对 400/404/405/500 错误生成默认的错误响应。这个错误响
 但在 APIFlask 中，这些错误都将以 JSON 格式返回，并带有以下的预设字段：
 
 - `message`：HTTP 原因短语或自定义的错误描述。
-- `detail`：空字典（404/405/500）或校验请求时产生的详细错误信息（400）。
+- `detail`：空字典（404/405/500）或校验请求时产生的详细错误信息（422）。
 
 你可以在创建 APIFlask 实例时使用 `json_errors` 参数来控制这个行为，`json_errors` 的默认值为 `True`。
 
@@ -216,7 +216,7 @@ def my_error_processor(error):
 这个错误对象是 [`HTTPError`][apiflask.exceptions.HTTPError] 的一个实例，
 因此可以通过其属性来获取错误信息：
 
-- status_code：如果这个错误是由请求校验错误触发的，该值将是 400（默认）或是配置
+- status_code：如果这个错误是由请求校验错误触发的，该值将是 422（默认）或是配置
   `VALIDATION_ERROR_STATUS_CODE` 的值。如果这个错误是由
   [`HTTPError`][apiflask.exceptions.HTTPError] 或 [`abort`][apiflask.exceptions.abort]
   触发，该值将是传入的状态码。其他情况下，该值将是 `Werkzueg` 处理请求时设置的状态码。

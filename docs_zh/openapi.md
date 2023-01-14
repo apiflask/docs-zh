@@ -26,7 +26,7 @@ info | - | See *[Meta information](#meta-information)*
 servers | - | Use the configuration variable [`SERVERS`](/configuration/#servers)
 paths | Generate based on the routes and decorators | Use `input`, `output`, `doc` decorators and docstring
 components | Generate from data schema | -
-security | Generate secuity info from the auth objects | Use the `auth_required` decorator
+security | Generate security info from the auth objects | Use the `auth_required` decorator
 tags | Generate from blueprint names | See *[Tags](#tags)*
 externalDocs | - | Use the configuration variable [`EXTERNAL_DOCS`](/configuration/#external_docs)
 
@@ -39,6 +39,22 @@ It provides three ways to obtain the spec document file:
 Besides, it also provides an `app.spec_processor` decorator, which you can use to register
 a spec process function to update the spec before it returns. See
 *[Register a spec processor](#register-a-spec-processor)* for more details.
+
+
+### Automation behaviors
+
+When generating the OpenAPI spec from your code, APIFlask has some automation behaviors:
+
+- Generate a default operation summary from the name of the view function.
+- Generate a default operation description from the docstring of the view function.
+- Generate tags from the name of blueprints.
+- Add a default 200 response for any views registered to the application.
+- Add a 422 response if the view is decorated with `app.input`.
+- Add a 401 response if the view is decorated with `app.auth_required`.
+- Add a 404 response if the view's URL rule contains variables.
+
+All these automation behaviors can be disabled with
+[the corresponding configurations](/configuration/#automation-behavior-control).
 
 
 ### The spec format
@@ -120,7 +136,7 @@ app = APIFlask(__name__, spec_path='/spec')
 
 Then the spec will be available at http://localhost:5000/spec.
 
-!!! tips
+!!! tip
 
     You can configure the MIME type of the spec response with the configuration
     variable `YAML_SPEC_MIMETYPE` and `JSON_SPEC_MIMETYPE`, see details in the
@@ -266,7 +282,7 @@ app.config['SYNC_LOCAL_SPEC'] = True
 app.config['LOCAL_SPEC_PATH'] = Path(app.root_path) / 'openapi.json'
 ```
 
-!!! tips
+!!! tip
 
     You can also use
     [`app.instance_path`](https://flask.palletsprojects.com/config/#instance-folders){target=_blank},
@@ -361,13 +377,13 @@ the tag, you can use the `APIBlueprint(tag=...)` parameter to pass a new name:
 ```python
 from apiflask import APIBlueprint
 
-bp = APIBlueprint(__name__, 'foo', tag='New Name')
+bp = APIBlueprint('foo', __name__, tag='New Name')
 ```
 
 This parameter also accepts a dict:
 
 ```python
-bp = APIBlueprint(__name__, 'foo', tag={'name': 'New Name', 'description': 'blah...'})
+bp = APIBlueprint('foo', __name__, tag={'name': 'New Name', 'description': 'blah...'})
 ```
 
 If you don't like this blueprint-based tagging system, surely you can do it manually.
@@ -387,7 +403,7 @@ app.config['TAGS'] = [
 ]
 ```
 
-!!! tips
+!!! tip
 
     The `app.tags` attribute is equals to the configuration variable `TAGS`, so you
     can also use:
@@ -413,7 +429,7 @@ on the view function:
 
 ```python hl_lines="2"
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
     return pets[pet_id]
 ```
@@ -423,7 +439,7 @@ corresponding parameters in the `output` decorator:
 
 ```python hl_lines="2"
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema, status_code=200, description='Output data of a pet')
+@app.output(PetOut, status_code=200, description='Output data of a pet')
 def get_pet(pet_id):
     return pets[pet_id]
 ```
@@ -431,7 +447,7 @@ def get_pet(pet_id):
 There are some automatic behaviors on operation `responses` object:
 
 - If the `input` decorator is added to the view function, APIFlask will add
-a `400` response.
+a `422` response.
 - When the `auth_required` decorator is added to the view function, APIFlask will
 add a `401` response.
 - If the view function only use the route decorator, APIFlask will add a default
@@ -450,7 +466,7 @@ on the view function:
 
 ```python hl_lines="2"
 @app.post('/pets')
-@app.input(PetInSchema)
+@app.input(PetIn)
 def create_pet(pet_id):
     pass
 ```
@@ -460,7 +476,7 @@ will be generated instead:
 
 ```python hl_lines="2"
 @app.get('/pets')
-@app.input(PetQuerySchema, location='query')
+@app.input(PetQuery, location='query')
 def get_pets():
     pass
 ```
@@ -502,8 +518,8 @@ you passed.
 To set the OpenAPI spec for schema fields, you can pass a dict with the `metadata` keyword:
 
 ```python
-class PetInSchema(Schema):
-    name = String(metatdata={'description': 'The name of the pet.'})
+class PetIn(Schema):
+    name = String(metadata={'description': 'The name of the pet.'})
 ```
 
 You can pass the OpenAPI schema field name as the key in this metadata dict. Currently,
@@ -553,7 +569,7 @@ to `validate`:
 from apiflask import Schema
 from apiflask.fields import String
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(
         required=True,
         validate=Length(0, 10),
@@ -592,9 +608,9 @@ Normally, you only need to set the following fields manually with the `metadata`
 See details in
 *[OpenAPI XML object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#xmlObject)*.
 
-!!! tips
+!!! tip
 
-    If the schema class' name ends with `Schema`, then it will be striped in the spec.
+    If the schema class' name ends with `Schema`, then it will be stripped in the spec.
 
 
 ### Response and request example
@@ -608,7 +624,7 @@ from apiflask import APIFlask, input
 app = APIFlask(__name__)
 
 @app.post('/pets')
-@app.input(PetInSchema, example={'name': 'foo', 'category': 'cat'})
+@app.input(PetIn, example={'name': 'foo', 'category': 'cat'})
 def create_pet():
     pass
 ```
@@ -633,7 +649,7 @@ examples = {
 }
 
 @app.get('/pets')
-@app.output(PetOutSchema, examples=examples)
+@app.output(PetOut, examples=examples)
 def get_pets():
     pass
 ```
@@ -645,7 +661,7 @@ def get_pets():
     you can set the field example (property-level example) in the data schema:
 
     ```python
-    class PetQuerySchema(Schema):
+    class PetQuery(Schema):
         name = String(metadata={'example': 'Flash'})
     ```
 
@@ -740,7 +756,7 @@ def hello():
 ### Alternative operation `responses`
 
 As described above, APIFlask will add some responses based on the decorators you added
-on the view function (200, 400, 401, 404). Sometimes you may want to add alternative
+on the view function (200, 422, 401, 404). Sometimes you may want to add alternative
 responses the view function will return, then you can use the `@app.doc(responses=...)`
 parameter, it accepts the following values:
 
@@ -836,7 +852,7 @@ from apiflask import APIFlask
 app = APIFlask(__name__, enable_openapi=False)
 ```
 
-!!! tips
+!!! tip
 
     If you only need to disable the API documentation, see
     *[Disable the API documentations globally](/api-docs/#disable-the-api-documentations-globally)*.
@@ -850,10 +866,10 @@ set `enable_openapi` parameter to `False` when creating the `APIBlueprint` insta
 ```python
 from apiflask import APIBlueprint
 
-bp = APIBlueprint(__name__, 'foo', enable_openapi=False)
+bp = APIBlueprint('foo', __name__, enable_openapi=False)
 ```
 
-!!! tips
+!!! tip
 
     APIFlask will skip a blueprint if the blueprint is created by other Flask
     extensions.

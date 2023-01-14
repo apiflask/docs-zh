@@ -178,7 +178,7 @@ def update_pet(pet_id, data):
 from apiflask import APIFlask, Schema, abort
 from apiflask.fields import Integer, String
 from apiflask.validators import Length, OneOf
-from flask.views import MethodView
+from apiflask.views import MethodView
 
 app = APIFlask(__name__)
 
@@ -199,8 +199,6 @@ class PetOut(Schema):
     category = String()
 
 
-# “app.route”只是快捷方式，你也可以直接使用“app.add_url_rule”
-@app.route('/')
 class Hello(MethodView):
 
     # 使用 HTTP 方法名作为类方法名
@@ -208,7 +206,6 @@ class Hello(MethodView):
         return {'message': 'Hello!'}
 
 
-@app.route('/pets/<int:pet_id>')
 class Pet(MethodView):
 
     @app.output(PetOut)
@@ -227,6 +224,10 @@ class Pet(MethodView):
         for attr, value in data.items():
             pets[pet_id][attr] = value
         return pets[pet_id]
+
+
+app.add_url_rule('/', view_func=Hello.as_view('hello'))
+app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
 ```
 </details>
 
@@ -311,6 +312,7 @@ APIFlsak 是 Flask 之上的一层包装。你只需要记住下面几点区别�
 
 - 当创建程序实例时，使用 `APIFlask` 而不是 `Flask`。
 - 当创建蓝本实例时，使用 `APIBlueprint` 而不是 `Blueprint`。
+- 当创建类视图时，使用 `apiflask.views.MethodView` 而不是 `flask.views.MethodView`。
 - APIFlask 提供的 `abort()` 函数（`apiflask.abort`）返回 JSON 错误响应。
 
 下面的 Flask 程序：
@@ -348,11 +350,11 @@ def hello():
 
 APIFlask 接受 marshmallow schema 作为数据 schema，它使用 webargs 验证请求数据是否符合 schema 定义，并且使用 apispec 生成 schema 对应的 OpenAPI 表示。
 
-你可以像以前那样构建 marshmallow schema。对于一些常用的 marshmallow 函数和类，你可以选择从 APIFlask 导入（你也可以直接从 marshmallow 导入）：
+你可以像以前那样构建 marshmallow schema。对于一些常用的 marshmallow 函数和类，你可以从 APIFlask 导入：
 
 - `apiflask.Schema`：schema 基类。
-- `apiflask.fields`：marshmallow 字段，包含来自 marshmallow、Flask-Marshmallow 和 webargs 的字段类。注意，别名字段（`Url`、`Str`、`Int`、`Bool` 等）已被移除（在 [marshmallow #1828](https://github.com/marshmallow-code/marshmallow/issues/1828) 投票移除这些别名字段）。
-- `apiflask.validators`：marshmallow 验证器（在 [marshmallow #1829](https://github.com/marshmallow-code/marshmallow/issues/1829) 投票为验证器相关的 API 使用更好的命名）。
+- `apiflask.fields`：marshmallow 字段，包含来自 marshmallow、Flask-Marshmallow 和 webargs 的字段类。注意，别名字段（`Url`、`Str`、`Int`、`Bool` 等）已被移除。
+- `apiflask.validators`：marshmallow 验证器投票为验证器相关的 API 使用更好的命名）。
 
 ```python
 from apiflask import Schema

@@ -121,7 +121,7 @@ def create_pet():
 
 - Add an auto-summary for the view function based on the name of view functions.
 - Add success response (200) for a bare view function that only uses route decorators.
-- Add validation error response (400) for view functions that use `input` decorator.
+- Add validation error response (422) for view functions that use `input` decorator.
 - Add authentication error response (401) for view functions that use `auth_required` decorator.
 - Add 404 response for view functions that contain URL variables.
 - Add response schema for potential error responses of view function passed with `doc` decorator. For example, `doc(responses=[404, 405])`.

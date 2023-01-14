@@ -41,6 +41,22 @@ a spec process function to update the spec before it returns. See
 *[Register a spec processor](#register-a-spec-processor)* for more details.
 
 
+### Automation behaviors
+
+When generating the OpenAPI spec from your code, APIFlask has some automation behaviors:
+
+- Generate a default operation summary from the name of the view function.
+- Generate a default operation description from the docstring of the view function.
+- Generate tags from the name of blueprints.
+- Add a default 200 response for any views registered to the application.
+- Add a 422 response if the view is decorated with `app.input`.
+- Add a 401 response if the view is decorated with `app.auth_required`.
+- Add a 404 response if the view's URL rule contains variables.
+
+All these automation behaviors can be disabled with
+[the corresponding configurations](/configuration/#automation-behavior-control).
+
+
 ### The spec format
 
 The default format of the OpenAPI spec is JSON, while YAML is also supported.
@@ -431,7 +447,7 @@ def get_pet(pet_id):
 There are some automatic behaviors on operation `responses` object:
 
 - If the `input` decorator is added to the view function, APIFlask will add
-a `400` response.
+a `422` response.
 - When the `auth_required` decorator is added to the view function, APIFlask will
 add a `401` response.
 - If the view function only use the route decorator, APIFlask will add a default
@@ -740,7 +756,7 @@ def hello():
 ### Alternative operation `responses`
 
 As described above, APIFlask will add some responses based on the decorators you added
-on the view function (200, 400, 401, 404). Sometimes you may want to add alternative
+on the view function (200, 422, 401, 404). Sometimes you may want to add alternative
 responses the view function will return, then you can use the `@app.doc(responses=...)`
 parameter, it accepts the following values:
 
