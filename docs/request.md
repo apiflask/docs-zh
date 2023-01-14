@@ -10,7 +10,7 @@ Basic concepts on request handling:
 - Use one or more [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) to declare
   an input source, and use the `location` to declare the input location.
 - If the parsing and validating success, the data will pass to the view function.
-  Otherwise, a 400 error response will be returned automatically.
+  Otherwise, a 422 error response will be returned automatically.
 
 
 ## Request locations
@@ -80,7 +80,7 @@ def get_article(category, article_id, query, data):
 
     Notice the argument name for URL variables (`category, article_id`) must match the variable name.
 
-Otherwise, a 400 error response will be returned automatically. Like any other error response,
+Otherwise, a 422 error response will be returned automatically. Like any other error response,
 this error response will contain `message` and `detail` fields:
 
 - `message`

@@ -26,7 +26,7 @@ description. However, in APIFlask, these errors will be returned in JSON format 
 the following preset fields:
 
 - `message`: The HTTP reason phrase or a custom error description.
-- `detail`: An empty dict (404/405/500) or the error details of the request validation (400).
+- `detail`: An empty dict (404/405/500) or the error details of the request validation (422).
 
 You can control this behavior with the `json_errors` parameter when creating the APIFlask
 instance, and it defaults to `True`:

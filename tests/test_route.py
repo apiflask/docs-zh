@@ -1,5 +1,4 @@
 import pytest
-from flask.views import MethodView as FlaskMethodView
 from flask.views import View as FlaskView
 from openapi_spec_validator import validate_spec
 
@@ -7,6 +6,7 @@ from .schemas import Foo
 from apiflask import APIBlueprint
 from apiflask import HTTPTokenAuth
 from apiflask.views import MethodView
+from apiflask.views import MethodView as FlaskMethodView
 from apiflask.views import View
 
 

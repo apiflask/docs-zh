@@ -1,6 +1,5 @@
 import typing as t
 
-from flask.views import MethodView as FlaskMethodView
 from flask.views import View as FlaskView
 
 from .openapi import get_path_description
@@ -9,6 +8,7 @@ from .types import ViewClassType
 from .types import ViewFuncOrClassType
 from .types import ViewFuncType
 from .views import MethodView
+from apiflask.views import MethodView as FlaskMethodView
 
 
 def route_patch(cls):
