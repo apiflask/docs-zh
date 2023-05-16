@@ -7,7 +7,7 @@
 - Python 3.7+
 - Flask 1.1+
 
-在此之前，你需要了解一下 Flask 的基础知识。下面是一些高质量且免费的 Flask 学习资源：
+在此之前，你需要了解一下 Flask 的基础知识。下面是一些优质的 Flask 学习资源：
 
 
 - [Flask's Documentation](https://flask.palletsprojects.com/){target=_blank}
@@ -44,7 +44,7 @@
 
 ## 使用 `APIFlask` 创建一个 `app` 实例
 
-与创建 Flask 的 `app` 实例操作类似，您需要导入 `apiflask` 包中的 `APIFlask` 类，然后使用
+与创建 Flask 的 `app` 实例操作类似，只需要导入 `apiflask` 包中的 `APIFlask` 类，然后使用
 `APIFlask` 来实例化 `app`：
 
 ```python hl_lines="1 3"
@@ -59,7 +59,6 @@ def index():
 ```
 
 API 项目的默认标题和版本分别是 `APIFlask` 和 `0.1.0`；你可以通过修改 `title` 和 `version` 参数来改变其内容。
-<!-- **译者注：这里的意思是指可以通过 title 和 version 两个参数来配置项目名与管理迭代版本，同时这两个参数也会影响到交互式 API 文档页面的内容** -->
 
 ```python
 app = APIFlask(__name__, title='Wonderful API', version='1.0')
@@ -72,13 +71,13 @@ $ flask run
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
-如果你脚本的文件名不是 `app.py`，那么需要在使用 `flask run` 命令启动应用程式前先向声明它。更多详情请见下面的说明。
+如果你的文件名不是 `app.py`，那么则需要在使用 `flask run` 命令启动程序前先声明它。具体步骤见下面的说明：
 
-??? note "Assign the specific application to run with `FLASK_APP`"
+??? note "运行自定义的 `FLASK_APP`"
 
     默认情况下，Flask 将在名为 `app` 或 `wsgi` 的模块/包中寻找一个名为 `app` 或 `application`
-    的应用程序实例或者是名为 `create_app` 或 `make_app` 的工厂函数。这就是为什么我建议将文件命名为 `app.py`。
-    如果使用不同的名称，则需要通过环境变量 `FLASK_APP` 告诉 Flask 应用程序模块路径。举个例子：如果你的程序实例
+    的应用程序实例或者是名为 `create_app` 或 `make_app` 的工厂函数。这就是为什么建议将文件命名为 `app.py`。
+    如果使用不同的名称，则需要通过环境变量 `FLASK_APP` 告诉 Flask 模块路径。举个例子：如果你的程序实例
     存储在名为 `hello.py` 的文件中，则需要将 `FLASK_APP` 设置为模块的名称 `hello`：
 
     === "Bash"
@@ -144,7 +143,7 @@ $ flask run
     [_app_discovery]: https://flask.palletsprojects.com/cli/#application-discovery
 
 
-如果你想在修改代码时应用也随之重新启动，可以添加 `--reload` 选项开启 reloader：
+如果你想在修改代码时让程序自动重新运行，可以添加 `--reload` 选项开启 reloader：
 
 ```bash
 $ flask run --reload
@@ -167,7 +166,7 @@ $ flask run --reload
         ```
 
 
-我们强烈建议在开发 Flask 应用的时候开启“调试模式”，更多用法请留意下面的提示：
+我们强烈建议在开发 Flask 应用的时候开启“调试模式”，更多用法请留意下面的说明：
 
 ??? note "通过 `FLASK_ENV` 开启调试模式"
 
@@ -198,19 +197,8 @@ $ flask run --reload
 
 ## 使用 python-dotenv 管理环境变量
 
-<!-- 待定 -->
-<!-- 原文 -->
-Manually setting environment is a bit inconvenient since the variable only lives in
-the current terminal session. You have to set it every time you reopen the terminal
-or reboot the computer. That's why we need to use python-dotenv, and Flask also
-has special support for it.
-
-<!-- 翻译一 -->
 由于环境变量只会存在于当前终端会话中，因此每次建立一个新的终端会话都需要重新手动设置一遍环境变量，这样太不方便了。
-所以我们需要用到 python-dotenv 包来帮我们自动加载环境变量，另外 Flask 也对它做了优化。
-
-<!-- 翻译二 -->
-<!-- ~~变量一般只会存在终端当前会话中，每次打开新终端会话都需要重新设计环境变量，因此手动设置环境变量是很麻烦的一件事情。~~ -->
+所以我们用 python-dotenv 包来帮我们自动加载环境变量，另外 Flask 也对它做了优化。
 
 使用 pip 安装 `python-dotenv`：
 
@@ -226,12 +214,7 @@ has special support for it.
     > pip install python-dotenv
     ```
 
-<!-- 原文 -->
-<!-- Now we can store environment variables in .env files. Flask-related environment
-variables should keep in a file called `.flaskenv`: -->
-
-现在，我们可以将环境变量写到一个名为 .env 的文件中，与 Flask 相关的环境变量则应该存储在 .flaskenv 中：
-<!-- （后续翻阅《Flask开发实战》中的对应部分进行微调）（译者注：此处的 Flask 指我们写的 Flask 程序，其意思是「与我们程序运行相关的配置信息应该写在 `.flaskenv` 文件中，如 **项目名称**、**项目运行的环境标识** 等不敏感的内容。」） -->
+现在，我们可以将环境变量写到一个名为 .env 的文件中，让程序在启动的时候自动加载。一般来说我们会将与业务有关的环境变量存放在 .env 的文件中，将与 Flask 框架相关的环境变量则应该保存在名为 .flaskenv 的文件中：
 
 ```ini
 # save as .flaskenv
@@ -250,8 +233,8 @@ FOO_APP_KEY=some-app-key # 某些应用的密钥
 
 !!! warning
 
-    由于 .env 文件包含敏感信息，请勿将其提交到 Git history 中。
-    请确保将文件名 `.env` 添加到 `.gitignore` 中来忽略提交。
+    由于 .env 文件包含敏感信息，请勿将其提交到 Git 历史记录中。
+    请确保将 `.env` 添加到 `.gitignore` 中来忽略提交。
 
 现在，在应用程序中我们可以使用 `os.getenv(key, default_value)` 来读取这些变量：
 
@@ -332,8 +315,6 @@ def delete_pet(pet_id):
     return '', 204
 ```
 
-<!-- However, with APIFlask, instead of setting `methods` argument for each route, you can
-also use the following shortcuts decorators: -->
 然而在 APIFlask 中，你不用为每个路由设置 `methods` 参数，而是使用下列的快捷路由装饰器：
 
 - `app.get()`: 注册一个接受 *GET* 请求的路由。
@@ -380,7 +361,7 @@ def delete_pet(pet_id):
     return '', 204
 ```
 
-!!! note "Handling multiple HTTP methods in one view function"
+!!! note "为一个路由绑定多个 HTTP Method"
 
     你不能向快捷路由装饰器传递 `methods` 参数。如果该视图函数需要接受多个 HTTP 方法，你仍然需要使用 `app.route()` 来传递 `methods` 参数：
 
@@ -401,7 +382,7 @@ def delete_pet(pet_id):
     顺带提一下，你可以在程序中混合使用 `app.route()` 和 快捷路由装饰器。
 
 
-## Move to new API decorators(转移到新的 API 装饰器/使用新的 API 装饰器)
+## 迁移使用新的 API 装饰器
 
 从 APIFlask 0.12 版本开始，四个单独的 API 装饰器（`@input`，`@output`，`@doc`，和 `@auth_required`）被迁移到 `APIFlask` 和 `APIBlueprint` 中。你现在可以通过应用实例或蓝图实例来使用它们：
 
@@ -451,7 +432,6 @@ class PetInSchema(Schema):
 ```
 
 !!! tip
-    <!-- 能力不足，无法翻译，故保留原文 -->
     See Schema and Fields chapter (WIP) for the details of how to write a schema and
     the examples for all the fields and validators.
 
@@ -896,19 +876,19 @@ from apiflask import APIFlask, HTTPTokenAuth
 
 app = APIFlask(__name__)
 auth = HTTPTokenAuth()  # 创建一个名为 `auth` 的 `HTTPTokenAuth` 对象
-# or HTTPTokenAuth(scheme='Bearer')
+# 或者在初始化的时候传入自定义前缀 HTTPTokenAuth(scheme='Bearer')
 
 
 @auth.verify_token  # 注册一个验证 token 的回调函数
 def verify_token(token):
-    # verify the token and get the user id
-    # then query and return the corresponding user from the database
+    # 校验 token 并从中获取用户 ID
+    # 然后从数据库中查询并返回对应的用户
     # ...
 
 @app.get('/')
-@app.auth_required(auth)  # protect the view
+@app.auth_required(auth)  # 保护视图
 def hello():
-    # access the current user with auth.current_user
+    # 使用 auth.current_user 访问当前请求的用户
     return f'Hello, {auth.current_user}'!
 ```
 
