@@ -26,7 +26,7 @@ description. However, in APIFlask, these errors will be returned in JSON format 
 the following preset fields:
 
 - `message`: The HTTP reason phrase or a custom error description.
-- `detail`: An empty dict (404/405/500) or the error details of the request validation (422).
+- `detail`: An empty dict (404/405/500) or the error details of the request validation (400).
 
 You can control this behavior with the `json_errors` parameter when creating the APIFlask
 instance, and it defaults to `True`:
@@ -205,7 +205,7 @@ The decorated callback function will be called in the following situations:
 - An exception triggered with [`abort`][apiflask.exceptions.abort].
 
 You can still register a specific error handler for a specific error code or
-exception with the `app.errorhandler(code_or_exection)` decorator. In that case,
+exception with the `app.errorhandler(code_or_exception)` decorator. In that case,
 the return value of the error handler will be used as the response when the
 corresponding error or exception happens.
 
