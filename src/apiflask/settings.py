@@ -24,8 +24,13 @@ JSON_SPEC_MIMETYPE: str = 'application/json'
 LOCAL_SPEC_PATH: t.Optional[str] = None
 LOCAL_SPEC_JSON_INDENT: int = 2
 SYNC_LOCAL_SPEC: t.Optional[bool] = None
+SPEC_PROCESSOR_PASS_OBJECT: bool = False
+SPEC_DECORATORS: t.Optional[t.List[t.Callable]] = None
+DOCS_DECORATORS: t.Optional[t.List[t.Callable]] = None
+SWAGGER_UI_OAUTH_REDIRECT_DECORATORS: t.Optional[t.List[t.Callable]] = None
 # Automation behavior control
 AUTO_TAGS: bool = True
+AUTO_SERVERS: bool = True
 AUTO_OPERATION_SUMMARY: bool = True
 AUTO_OPERATION_DESCRIPTION: bool = True
 AUTO_OPERATION_ID: bool = False
@@ -70,3 +75,6 @@ RAPIPDF_CONFIG: t.Optional[dict] = None
 
 # Version changed: 1.2.0
 # Change VALIDATION_ERROR_STATUS_CODE from 400 to 422.
+
+# Version added: 1.3.0
+# SPEC_PROCESSOR_PASS_OBJECT

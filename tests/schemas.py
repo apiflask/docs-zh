@@ -80,3 +80,17 @@ class ValidationError(Schema):
 class HTTPError(Schema):
     status_code = String(required=True)
     message = String(required=True)
+
+
+class CustomHTTPError(Schema):
+    status_code = String(required=True)
+    message = String(required=True)
+    custom = String(required=True)
+
+
+class ResponseHeader(Schema):
+    x_token = String(
+        data_key='X-Token',
+        required=True,
+        metadata={'description': 'A custom token header'}
+    )
