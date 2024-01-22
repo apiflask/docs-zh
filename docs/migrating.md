@@ -51,7 +51,7 @@ bp = APIBlueprint('foo', __name__)
 
 APIFlask provides some route shortcuts, you can update a view function:
 
-```python hl_lines="1"
+```python
 @app.route('/pets', methods=['POST'])
 def create_pet():
     return {'message': 'created'}
@@ -59,7 +59,7 @@ def create_pet():
 
 to:
 
-```python hl_lines="1"
+```python
 @app.post('/pets')
 def create_pet():
     return {'message': 'created'}
@@ -80,8 +80,8 @@ def create_pet():
 APIFlask support to use the `MethodView`-based view class, for example:
 
 ```python
-from apiflask import APIFlask, Schema, input, output
-from apiflask.views import MethodView
+from apiflask import APIFlask, Schema
+from flask.views import MethodView
 
 # ...
 
@@ -99,12 +99,12 @@ class Pet(MethodView):
 
     @app.input(PetIn)
     @app.output(PetOut)
-    def put(self, pet_id, data):
+    def put(self, pet_id, json_data):
         pass
 
     @app.input(PetIn(partial=True))
     @app.output(PetOut)
-    def patch(self, pet_id, data):
+    def patch(self, pet_id, json_data):
         pass
 
 app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
@@ -125,7 +125,7 @@ the `flask` package:
 
 ```python
 from apiflask import APIFlask, APIBlueprint
-from flask import request, escape, render_template, g, session, url_for
+from flask import request, render_template, g, session, url_for
 ```
 
 
@@ -181,7 +181,7 @@ def foo():
 
 If you want to disable this behavior, just set `json_errors` parameter to `False`:
 
-```python hl_lines="3"
+```python
 from apiflask import APIFlask
 
 app = APIFlask(__name__, json_errors=False)
@@ -215,12 +215,43 @@ def bar():
 ```
 
 
+### Pass positional arguments to view function
+
+In APIFlask 1.x, to ensure the nature order of the arguments passed to the view
+function, it passes path arguments to view functions as positional
+arguments.
+
+Assume a view like this:
+
+```python
+@app.get('/<category>/articles/<int:article_id>')  # category, article_id
+@app.input(ArticleQuery, location='query')  # query
+@app.input(ArticleIn)  # data
+def get_article(category, article_id, query, data):
+    pass
+```
+
+With APIFlask, you can accept the arguments in the view function in a natural way
+(from left to right, from top to bottom):
+
+```python
+def get_article(category, article_id, query, data)
+```
+
+This may causes issues when you use a custom decorator that access the arguments. So in
+the APIFlask 2.x, all the arguments passed to the view function will be keyword arguments.
+
+The argument passed by the `app.input()` decorator will be named `{location}_data`,
+a custom argument name can be set with the `arg_name` argument. See more details in
+[Basic Usage](/usage).
+
+
 ### The return values of view function
 
 For a simple view function without `@app.output` decorator, you can return a dict or
 a list as JSON response. The returned dict and list will be converted to a JSON
 response automatically (by calling
-[`jsonify()`](https://flask.palletsprojects.com/api/#flask.json.jsonify) underly).
+[`jsonify()`](https://flask.palletsprojects.com/api/#flask.json.jsonify) underlay).
 
 !!! tip
 

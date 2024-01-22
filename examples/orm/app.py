@@ -16,7 +16,6 @@ class PetModel(db.Model):
     category = db.Column(db.String(10))
 
 
-@app.before_first_request
 def init_database():
     db.create_all()
 
@@ -50,7 +49,7 @@ def say_hello():
 @app.get('/pets/<int:pet_id>')
 @app.output(PetOut)
 def get_pet(pet_id):
-    return PetModel.query.get_or_404(pet_id)
+    return db.get_or_404(PetModel, pet_id)
 
 
 @app.get('/pets')
@@ -60,21 +59,21 @@ def get_pets():
 
 
 @app.post('/pets')
-@app.input(PetIn)
+@app.input(PetIn, location='json')
 @app.output(PetOut, status_code=201)
-def create_pet(data):
-    pet = PetModel(**data)
+def create_pet(json_data):
+    pet = PetModel(**json_data)
     db.session.add(pet)
     db.session.commit()
     return pet
 
 
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetIn(partial=True))
+@app.input(PetIn(partial=True), location='json')
 @app.output(PetOut)
-def update_pet(pet_id, data):
-    pet = PetModel.query.get_or_404(pet_id)
-    for attr, value in data.items():
+def update_pet(pet_id, json_data):
+    pet = db.get_or_404(PetModel, pet_id)
+    for attr, value in json_data.items():
         setattr(pet, attr, value)
     db.session.commit()
     return pet
@@ -83,7 +82,11 @@ def update_pet(pet_id, data):
 @app.delete('/pets/<int:pet_id>')
 @app.output({}, status_code=204)
 def delete_pet(pet_id):
-    pet = PetModel.query.get_or_404(pet_id)
+    pet = db.get_or_404(PetModel, pet_id)
     db.session.delete(pet)
     db.session.commit()
     return ''
+
+
+with app.app_context():
+    init_database()

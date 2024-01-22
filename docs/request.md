@@ -10,7 +10,7 @@ Basic concepts on request handling:
 - Use one or more [`app.input()`](/api/app/#apiflask.scaffold.APIScaffold.input) to declare
   an input source, and use the `location` to declare the input location.
 - If the parsing and validating success, the data will pass to the view function.
-  Otherwise, a 422 error response will be returned automatically.
+  Otherwise, a 400 error response will be returned automatically.
 
 
 ## Request locations
@@ -41,7 +41,7 @@ you can only declare one body location for your view function, one of:
 @app.input(FooHeader, location='headers')  # header
 @app.input(FooQuery, location='query')  # query string
 @app.input(FooIn, location='json')  # JSON data (body location)
-def hello(headers, query, data):
+def hello(headers_data, query_data, json_data):
     pass
 ```
 
@@ -51,28 +51,24 @@ def hello(headers, query, data):
 When you declared an input with `app.input` decorator, APIFlask (webargs) will get the data
 from specified location and validate it against the schema definition.
 
-If the parsing and validating success, the data will pass to the view function. When you
-declared multiple inputs, the order will be from top to bottom:
+If the parsing and validating success, the data will pass to the view function as keyword argument
+named `{location}_data`:
 
 ```python
 @app.get('/')
 @app.input(FooQuery, location='query')  # query
 @app.input(FooIn, location='json')  # data
-def hello(query, data):
+def hello(query_data, json_data):
     pass
 ```
 
-!!! tip
-
-    The argument name (`query, data`) in the view function is defined by you, you can use anything you like.
-
-If you also defined some URL variables, the order will be from left to right (plus from top to bottom):
+If you also defined some URL variables, they wll also be passed as keyword arguments:
 
 ```python
 @app.get('/<category>/articles/<int:article_id>')  # category, article_id
 @app.input(ArticleQuery, location='query')  # query
 @app.input(ArticleIn, location='json')  # data
-def get_article(category, article_id, query, data):
+def get_article(category, article_id, query_data, json_data):
     pass
 ```
 
@@ -80,7 +76,7 @@ def get_article(category, article_id, query, data):
 
     Notice the argument name for URL variables (`category, article_id`) must match the variable name.
 
-Otherwise, a 422 error response will be returned automatically. Like any other error response,
+If validation failed, a 400 error response will be returned automatically. Like any other error response,
 this error response will contain `message` and `detail` fields:
 
 - `message`
@@ -126,7 +122,7 @@ from apiflask.fields import Integer
     location='query'
 )
 @app.input(FooIn, location='json')
-def hello(query, data):
+def hello(query_data, json_data):
     pass
 ```
 
@@ -144,7 +140,7 @@ from apiflask.fields import Integer
     schema_name='PaginationQuery'
 )
 @app.input(FooIn, location='json')
-def hello(query, data):
+def hello(query_data, json_data):
     pass
 ```
 
@@ -174,8 +170,8 @@ class Image(Schema):
 
 @app.post('/images')
 @app.input(Image, location='files')
-def upload_image(data):
-    f = data['image']
+def upload_image(files_data):
+    f = files_data['image']
 
     filename = secure_filename(f.filename)
     f.save(os.path.join(the_path_to_uploads, filename))
@@ -210,9 +206,9 @@ class ProfileIn(Schema):
 
 @app.post('/profiles')
 @app.input(ProfileIn, location='form_and_files')
-def create_profile(data):
-    avatar_file = data['avatar']
-    name = data['name']
+def create_profile(form_and_files_data):
+    avatar_file = form_and_files_data['avatar']
+    name = form_and_files_data['name']
 
     avatar_filename = secure_filename(avatar_file.filename)
     avatar_file.save(os.path.join(the_path_to_uploads, avatar_filename))
@@ -227,13 +223,14 @@ the form data (equals to `form_and_files`).
 
 !!! notes
 
-    Validators for the file field will be available in the version 1.1
-    ([#253](https://github.com/apiflask/apiflask/issues/253)). For now,
-    you can manually validate the file in the view function or the schema:
+    From APIFlask 2.1.0, you can use the `FileType` and `FileSize` validators
+    to validate file type and size:
 
     ```python
+    from apiflask.validators import FileType, FileSize
+
     class Image(Schema):
-        image = File(validate=lambda f: f.mimetype in ['image/jpeg', 'image/png'])
+        image = File(validate=[FileType(['.png', '.jpg', '.jpeg', '.gif']), FileSize(max='5 MB')])
     ```
 
 

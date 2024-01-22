@@ -1,17 +1,17 @@
 site_name: APIFlask
 site_description: A lightweight Python web API framework.
 site_url: https://apiflask.com
-docs_dir: docs_zh
+docs_dir: docs
 theme:
   name: material
-  custom_dir: docs_zh/_templates
+  custom_dir: docs/_templates
   logo: _assets/white-logo.png
   favicon: _assets/favicon.png
   palette:
     primary: deep orange
   icon:
     repo: fontawesome/brands/github
-  language: zh
+  language: en
 repo_url: https://github.com/apiflask/apiflask
 repo_name: apiflask/apiflask
 extra:
@@ -46,22 +46,22 @@ markdown_extensions:
   - attr_list
   - toc:
         permalink: True
-        slugify: !!python/name:pymdownx.slugs.uslugify
 nav:
-  - 主页: index.md
-  - 文档索引: docs.md
-  - 从 Flask 迁移: migrating.md
-  - 基本用法: usage.md
-  - 请求处理: request.md
-  - 响应格式化: response.md
-  - 数据 Schema: schema.md
-  - 安全认证: authentication.md
-  - OpenAPI 生成: openapi.md
-  - API 文档: api-docs.md
-  - 配置: configuration.md
-  - 错误处理: error-handling.md
-  - 示例程序: examples.md
-  - API 参考:
+  - Home: index.md
+  - Documentation Index: docs.md
+  - Migrating from Flask: migrating.md
+  - Basic Usage: usage.md
+  - Request Handling: request.md
+  - Response Formatting: response.md
+  - Data Schema: schema.md
+  - Authentication: authentication.md
+  - OpenAPI Generating: openapi.md
+  - API Documentations: api-docs.md
+  - Configuration: configuration.md
+  - Error Handling: error-handling.md
+  - Examples: examples.md
+  - Tips: tips.md
+  - API Reference:
     - APIFlask: api/app.md
     - APIBlueprint: api/blueprint.md
     - Exceptions: api/exceptions.md
@@ -73,23 +73,25 @@ nav:
     - Security: api/security.md
     - Helpers: api/helpers.md
     - Commands: api/commands.md
-  - 对比和动机: comparison.md
-  - 作者: authors.md
-  - 变更日志: changelog.md
-  - 贡献指南: contributing.md
+  - Comparison and Motivations: comparison.md
+  - Authors: authors.md
+  - Changelog: changelog.md
+  - Migration Guide: migration_guide.md
+  - Contributing Guide: contributing.md
+  - Donate to APIFlask: https://opencollective.com/apiflask
 plugins:
   - search
   - mkdocstrings:
       default_handler: python
       handlers:
         python:
-          rendering:
+          options:
             heading_level: 2
-      watch:
-        - src/apiflask
-        - README.md
-        - examples/README.md
-        - CHANGES.md
-        - CONTRIBUTING.md
+watch:
+  - src/apiflask
+  - README.md
+  - examples/README.md
+  - CHANGES.md
+  - CONTRIBUTING.md
 extra_css:
   - _assets/extra.css
