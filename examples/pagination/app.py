@@ -18,7 +18,6 @@ class PetModel(db.Model):
     category = db.Column(db.String(10))
 
 
-@app.before_first_request
 def init_database():
     db.create_all()
     for i in range(1, 101):
@@ -53,19 +52,24 @@ def say_hello():
 @app.get('/pets/<int:pet_id>')
 @app.output(PetOut)
 def get_pet(pet_id):
-    return PetModel.query.get_or_404(pet_id)
+    return db.get_or_404(PetModel, pet_id)
 
 
 @app.get('/pets')
 @app.input(PetQuery, location='query')
 @app.output(PetsOut)
-def get_pets(query):
-    pagination = PetModel.query.paginate(
-        page=query['page'],
-        per_page=query['per_page']
+def get_pets(query_data):
+    pagination = db.paginate(
+        db.select(PetModel),
+        page=query_data['page'],
+        per_page=query_data['per_page']
     )
     pets = pagination.items
     return {
         'pets': pets,
         'pagination': pagination_builder(pagination)
     }
+
+
+with app.app_context():
+    init_database()

@@ -5,8 +5,8 @@ This chapter will cover the primary usage of APIFlask.
 
 ## Prerequisites
 
-- Python 3.7+
-- Flask 1.1+
+- Python 3.8+
+- Flask 2.2+
 
 You also need to know the basic of Flask. Here are some useful free resources
 to learn Flask:
@@ -49,7 +49,7 @@ Similar to what you did to create a Flask `app` instance, you will need to impor
 `APIFlask` class from `apiflask` package, then create the `app` instance from
 the `APIFlask` class:
 
-```python hl_lines="1 3"
+```python
 from apiflask import APIFlask
 
 app = APIFlask(__name__)
@@ -200,10 +200,10 @@ note below for the details.
     in your Flask application, we will need to use the `--debug` option:
 
     ```
-    $ flask --debug run
+    $ flask run --debug
     ```
 
-    If you are not using the latest Flask version (>2.2), you will need to set
+    If you are not using the latest Flask version (>=2.2.3), you will need to set
     the environment variable `FLASK_DEBUG` to `True` instead:
 
     === "Bash"
@@ -229,79 +229,79 @@ note below for the details.
     [_debug_mode]: https://flask.palletsprojects.com/quickstart/#debug-mode
 
 
-## Manage environment variables with python-dotenv
+??? "Manage environment variables with python-dotenv"
 
-Manually setting environment is a bit inconvenient since the variable only lives in
-the current terminal session. You have to set it every time you reopen the terminal
-or reboot the computer. That's why we need to use python-dotenv, and Flask also
-has special support for it.
+    Manually setting environment is a bit inconvenient since the variable only lives in
+    the current terminal session. You have to set it every time you reopen the terminal
+    or reboot the computer. That's why we need to use python-dotenv, and Flask also
+    has special support for it.
 
-Install `python-dotenv` with pip:
+    Install `python-dotenv` with pip:
 
-=== "Linux/macOS"
+    === "Linux/macOS"
+
+        ```bash
+        $ pip3 install python-dotenv
+        ```
+
+    === "Windows"
+
+        ```
+        > pip install python-dotenv
+        ```
+
+    Now we can store environment variables in .env files. Flask-related environment
+    variables should keep in a file called `.flaskenv`:
+
+    ```ini
+    # save as .flaskenv
+    FLASK_APP=hello
+    FLASK_DEBUG=1
+    ```
+
+    While the secrets values should save in the `.env` file:
+
+    ```ini
+    # save as .env
+    SECRET_KEY=some-random-string
+    DATABASE_URL=your-database-url
+    FOO_APP_KEY=some-app-key
+    ```
+
+    !!! warning
+
+        Since the `.env` contains sensitive information, do not commit it into the
+        Git history. Be sure to ignore it by adding the file name into `.gitignore`.
+
+    In the application, now we can read these variables via `os.getenv(key, default_value)`:
+
+    ```python
+    import os
+
+    from apiflask import APIFlask
+
+    app = APIFlask(__name__)
+    app.secret_key = os.getenv('SECRET_KEY')
+    ```
+
+    Any `flask` command will read environment variables set by `.flaskenv` and `.env`.
+    Now when you run `flask run`, Flask will read the value of `FLASK_APP` and `FLASK_DEBUG`
+    in `.flaskenv` file to find the app instance from given import path and enable the
+    debug mode:
 
     ```bash
-    $ pip3 install python-dotenv
+    $ flask run
+    * Environment: development
+    * Debug mode: on
+    * Restarting with stat
+    * Debugger is active!
+    * Debugger PIN: 101-750-099
+    * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
     ```
 
-=== "Windows"
+    See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more details.
 
-    ```
-    > pip install python-dotenv
-    ```
-
-Now we can store environment variables in .env files. Flask-related environment
-variables should keep in a file called `.flaskenv`:
-
-```ini
-# save as .flaskenv
-FLASK_APP=hello
-FLASK_ENV=development
-```
-
-While the secrets values should save in the `.env` file:
-
-```ini
-# save as .env
-SECRET_KEY=some-random-string
-DATABASE_URL=your-database-url
-FOO_APP_KEY=some-app-key
-```
-
-!!! warning
-
-    Since the `.env` contains sensitive information, do not commit it into the
-    Git history. Be sure to ignore it by adding the file name into `.gitignore`.
-
-In the application, now we can read these variables via `os.getenv(key, default_value)`:
-
-```python hl_lines="1 5"
-import os
-
-from apiflask import APIFlask
-
-app = APIFlask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
-```
-
-Any `flask` command will read environment variables set by `.flaskenv` and `.env`.
-Now when you run `flask run`, Flask will read the value of `FLASK_APP` and `FLASK_ENV`
-in `.flaskenv` file to find the app instance from given import path and enable the
-debug mode:
-
-```bash
-$ flask run
- * Environment: development
- * Debug mode: on
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 101-750-099
- * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-```
-
-See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more details.
-
-[_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
+    [_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
 
 
 ## Interactive API documentation
@@ -321,46 +321,15 @@ Read the *[API Documentations](/api-docs)* chapter for the advanced topics on AP
 
 ## Create a route with route decorators
 
-To create a view function, you can do exactly what you did with Flask:
+To create a view function, instead of using `app.route` and set the `methods`:
 
 ```python
-from apiflask import APIFlask
-
-app = APIFlask(__name__)
-
-
-@app.route('/')
-def index():
-    return {'message': 'hello'}
-
-
-@app.route('/pets/<int:pet_id>')
-def get_pet(pet_id):
-    return {'message': 'OK'}
-
-
-@app.route('/pets')
-def get_pets():
-    return {'message': 'OK'}
-
-
-@app.route('/pets', methods=['POST'])
+@app.post('/pets', methods=['POST'])
 def create_pet():
     return {'message': 'created'}, 201
-
-
-@app.route('/pets/<int:pet_id>', methods=['PUT'])
-def update_pet(pet_id):
-    return {'name': 'updated'}
-
-
-@app.route('/pets/<int:pet_id>', methods=['DELETE'])
-def delete_pet(pet_id):
-    return '', 204
 ```
 
-However, with APIFlask, instead of setting `methods` argument for each route, you can
-also use the following shortcuts decorators:
+you can just use the following shortcuts decorators:
 
 - `app.get()`: register a route that only accepts *GET* request.
 - `app.post()`: register a route that only accepts *POST* request.
@@ -370,20 +339,10 @@ also use the following shortcuts decorators:
 
 Here is the same example with the route shortcuts:
 
-```python hl_lines="6 11 16 21 26 31"
+```python
 from apiflask import APIFlask
 
 app = APIFlask(__name__)
-
-
-@app.get('/')
-def index():
-    return {'message': 'hello'}
-
-
-@app.get('/pets/<int:pet_id>')
-def get_pet(pet_id):
-    return {'message': 'OK'}
 
 
 @app.get('/pets')
@@ -431,43 +390,6 @@ def delete_pet(pet_id):
     application.
 
 
-## Move to new API decorators
-
-From APIFlask 0.12, the four standalone API decorators (i.e. `@input`, `@output`,
-`@doc`, and `@auth_required`) were moved to `APIFlask` and `APIBlueprint` classes.
-Now access them with your application or blueprint instance:
-
-```python
-from apiflask import APIFlask
-
-app = APIFlask(__name__)
-
-@app.get('/')
-@app.input(Foo)
-@app.output(Bar)
-def hello():
-    return {'message': 'Hello'}
-```
-
-instead of:
-
-```python
-from apiflask import APIFlask, input, output
-
-app = APIFlask(__name__)
-
-@app.get('/')
-@input(Foo)
-@output(Bar)
-def hello():
-    return {'message': 'Hello'}
-```
-
-The old standalone decorators were deprecated since 0.12, and will be removed in the
-1.0 version. Notice all the usage in the docs are updated, you may want to
-[upgrade APIFlask](/changelog/) to update the usage.
-
-
 ## Use `@app.input` to validate and deserialize request data
 
 To validate and deserialize a request body or request query parameters, we need to
@@ -490,49 +412,14 @@ class PetIn(Schema):
 
 !!! tip
 
-    See Schema and Fields chapter (WIP) for the details of how to write a schema and
+    See [Data Schema chapter](/schema) for the details of how to write a schema and
     the examples for all the fields and validators.
 
-A schema class should inherit the `apiflask.Schema` class:
-
-```python hl_lines="1 6"
-from apiflask import Schema
-from apiflask.fields import Integer, String
-from apiflask.validators import Length, OneOf
-
-
-class PetIn(Schema):
-    name = String(required=True, validate=Length(0, 10))
-    category = String(required=True, validate=OneOf(['dog', 'cat']))
-```
-
-fields are represented with field classes in `apiflask.fields`:
-
-```python hl_lines="2 7 8"
-from apiflask import Schema
-from apiflask.fields import Integer, String
-from apiflask.validators import Length, OneOf
-
-
-class PetIn(Schema):
-    name = String(required=True, validate=Length(0, 10))
-    category = String(required=True, validate=OneOf(['dog', 'cat']))
-```
-
-To validate a field with a specific rule, you can pass a validator or a list of
+* A schema class should inherit the `apiflask.Schema` class.
+* Fields are represented with field classes in `apiflask.fields`.
+* To validate a field with a specific rule, you can pass a validator or a list of
 validators (import them from `apiflask.validators`) to the `validate` argument
-of the field class:
-
-```python hl_lines="3 7 8"
-from apiflask import Schema
-from apiflask.fields import Integer, String
-from apiflask.validators import Length, OneOf
-
-
-class PetIn(Schema):
-    name = String(required=True, validate=Length(0, 10))
-    category = String(required=True, validate=OneOf(['dog', 'cat']))
-```
+of the field class.
 
 !!! tip
 
@@ -559,8 +446,8 @@ following format:
 
 Now let's add it to the view function which is used to create a new pet:
 
-```python hl_lines="1 14"
-from apiflask import APIFlask, Schema, input
+```python hl_lines="14"
+from apiflask import APIFlask, Schema
 from apiflask.fields import Integer, String
 from apiflask.validators import Length, OneOf
 
@@ -574,43 +461,13 @@ class PetIn(Schema):
 
 @app.post('/pets')
 @app.input(PetIn)
-def create_pet(data):
-    print(data)
+def create_pet(json_data):
+    print(json_data)
     return {'message': 'created'}, 201
 ```
 
 You just need to pass the schema class to the `@app.input` decorator. When a request
 was received, APIFlask will validate the request body against the schema.
-
-If the validation passed, the data will inject into the view function as
-a positional argument in the form of `dict`. Otherwise, an error response
-with the detail of the validation result will be returned.
-
-In the example above, I use the name `data` to accept the input data dict.
-You can change the argument name to whatever you like. Since this is a dict,
-you can do something like this to create an ORM model instance:
-
-```python hl_lines="5"
-@app.post('/pets')
-@app.input(PetIn)
-@app.output(PetOut)
-def create_pet(pet_id, data):
-    pet = Pet(**data)
-    return pet
-```
-
-or update an ORM model class instance like this:
-
-```python hl_lines="6 7"
-@app.patch('/pets/<int:pet_id>')
-@app.input(PetIn)
-@app.output(PetOut)
-def update_pet(pet_id, data):
-    pet = Pet.query.get(pet_id)
-    for attr, value in data.items():
-        setattr(pet, attr, value)
-    return pet
-```
 
 If you want to mark the input with a different location, you can pass a `location`
 argument for `@app.input()` decorator, the value can be:
@@ -623,6 +480,55 @@ argument for `@app.input()` decorator, the value can be:
 - HTTP headers: `'headers'`
 - Query string: `'query'` (same as `'querystring'`)
 - Path variable (URL variable): `'path'` (same as `'view_args'`, added in APIFlask 1.0.2)
+
+If the validation passed, the data will inject into the view function as
+a keyword argument named `{location}_data` (e.g. `json_data`) in the form
+of `dict`. Otherwise, an error response with the detail of the validation
+result will be returned.
+
+You can set a custom argument name with `arg_name`:
+
+```python
+@app.post('/pets')
+@app.input(PetIn, arg_name='pet')
+def create_pet(pet):
+    print(pet)
+    return {'message': 'created'}, 201
+```
+
+Here is an example with multiple input data:
+
+```python
+@app.post('/foo')
+@app.input(PetIn, location='json')
+@app.input(PaginationIn, location='query')
+def foo(json_data, query_data):
+    return {'message': 'success'}
+```
+
+Since the parsed data will be a dict, you can do something like this to create an ORM model instance:
+
+```python hl_lines="5"
+@app.post('/pets')
+@app.input(PetIn)
+@app.output(PetOut)
+def create_pet(pet_id, json_data):
+    pet = Pet(**json_data)
+    return pet
+```
+
+or update an ORM model class instance like this:
+
+```python hl_lines="6 7"
+@app.patch('/pets/<int:pet_id>')
+@app.input(PetIn)
+@app.output(PetOut)
+def update_pet(pet_id, json_data):
+    pet = Pet.query.get(pet_id)
+    for attr, value in json_data.items():
+        setattr(pet, attr, value)
+    return pet
+```
 
 !!! warning
 
@@ -660,8 +566,8 @@ schema.
 
 Now add it to the view function which used to get a pet resource:
 
-```python hl_lines="1 14"
-from apiflask import APIFlask, output
+```python hl_lines="14"
+from apiflask import APIFlask
 from apiflask.fields import String, Integer
 
 app = APIFlask(__name__)
@@ -685,24 +591,18 @@ def get_pet(pet_id):
 The default status code for output response is `200`, you can set a different
 status code with the `status_code` argument:
 
-```python hl_lines="3"
+```python
 @app.post('/pets')
 @app.input(PetIn)
 @app.output(PetOut, status_code=201)
-def create_pet(data):
-    data['id'] = 2
-    return data
-```
-
-Or just:
-
-```python
-@app.output(PetOut, status_code=201)
+def create_pet(json_data):
+    pet = Pet(**json_data)
+    return pet
 ```
 
 If you want to return a 204 response, you can use the `EmptySchema` from `apiflask.schemas`:
 
-```python hl_lines="1 5"
+```python
 from apiflask.schemas import EmptySchema
 
 
@@ -712,9 +612,12 @@ def delete_pet(pet_id):
     return ''
 ```
 
-From version 0.4.0, you can use an empty dict to represent empty schema:
+`EmptySchema` represents an empty schema. For 204 response, it represents an empty
+response body.
 
-```python hl_lines="2"
+From version 0.4.0, you can use an empty dict as a shortcut:
+
+```python
 @app.delete('/pets/<int:pet_id>')
 @app.output({}, status_code=204)
 def delete_pet(pet_id):
@@ -729,12 +632,12 @@ def delete_pet(pet_id):
     use the `@app.doc` decorator and pass a list to the `responses` parameter.
     For example:
 
-    ```python hl_lines="4"
+    ```python
     @app.put('/pets/<int:pet_id>')
     @app.input(PetIn)
     @app.output(PetOut)  # 200
     @app.doc(responses=[204, 404])
-    def update_pet(pet_id, data):
+    def update_pet(pet_id, json_data):
         pass
     ```
 
@@ -827,11 +730,11 @@ class Pet(Model):
 The default status code is `200`, if you want to use a different status code,
 you can pass a `status_code` argument in the `@app.output` decorator:
 
-```python hl_lines="3"
+```python
 @app.post('/pets')
 @app.input(PetIn)
 @app.output(PetOut, status_code=201)
-def create_pet(data):
+def create_pet(json_data):
     # ...
     return pet
 ```
@@ -839,11 +742,11 @@ def create_pet(data):
 You don't need to return the same status code in the end of the view function
 (i.e., `return data, 201`):
 
-```python hl_lines="8"
+```python
 @app.post('/pets')
 @app.input(PetIn)
 @app.output(PetOut, status_code=201)
-def create_pet(data):
+def create_pet(json_data):
     # ...
     # equals to:
     # return pet, 201
@@ -853,11 +756,11 @@ def create_pet(data):
 When you want to pass a header dict, you can pass the dict as the second element
 of the return tuple:
 
-```python hl_lines="8"
+```python
 @app.post('/pets')
 @app.input(PetIn)
 @app.output(PetOut, status_code=201)
-def create_pet(data):
+def create_pet(json_data):
     # ...
     # equals to:
     # return pet, 201, {'FOO': 'bar'}
@@ -879,15 +782,15 @@ you to customize the spec:
 
 - Most of the fields of the `info` object and top-level field of `OpenAPI`
 objct are accessible with configuration variables.
-- The `tag` object, Operation `summary` and `description` will generated from
+- The `tag` object, Operation's `summary` and `description` will generated from
 the blueprint name, the view function name and docstring.
 - You can register a spec processor function to process the spec.
 - `requestBody` and `responses` fields can be set with the `input` and `output`
 decorator.
-- Other operation fields can be set with the `doc` decorator:
+- Other operation fields can be set with the `@app.doc` decorator:
 
-```python hl_lines="1 7"
-from apiflask import APIFlask, doc
+```python hl_lines="7"
+from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
@@ -899,7 +802,7 @@ def hello():
 ```
 
 See *[Use the `doc` decorator](/openapi/#use-the-doc-decorator)* for more details
-about OpenAPI genenrating and the usage of the `doc` decorator.
+about OpenAPI generating and the usage of the `doc` decorator.
 
 !!! warning
 
@@ -942,6 +845,12 @@ def hello():
     return f'Hello, {auth.current_user}!'
 ```
 
+!!! tip
+
+    To access the current user object, you need to use `auth.current_user` property in the view function.
+    It's equivalent to using `auth.current_user()` method in Flask-HTTPAuth.
+
+
 ### HTTP Bearer
 
 To implement an HTTP Bearer authentication, you will need to:
@@ -970,7 +879,7 @@ def verify_token(token):
 @app.auth_required(auth)  # protect the view
 def hello():
     # access the current user with auth.current_user
-    return f'Hello, {auth.current_user}'!
+    return f'Hello, {auth.current_user}!'
 ```
 
 ### API Keys (in header)
@@ -1023,7 +932,7 @@ Here is a simple example:
 
 ```python
 from apiflask import APIFlask
-from apiflask.views import MethodView
+from flask.views import MethodView
 
 app = APIFlask(__name__)
 
@@ -1072,7 +981,7 @@ With the example application above, when the user sends a *GET* request to
 and so on for the others.
 
 Normally you don't need to specify the methods, unless you want to register
-multiple rules for one single view classe. For example, register the `post` method
+multiple rules for one single view classes. For example, register the `post` method
 to a different URL rule than the others:
 
 ```python
@@ -1100,12 +1009,12 @@ class Pet(MethodView):
     @app.auth_required(auth)
     @app.input(PetIn)
     @app.output(PetOut)
-    def put(self, pet_id, data):
+    def put(self, pet_id, json_data):
         # ...
 
     @app.input(PetIn(partial=True))
     @app.output(PetOut)
-    def patch(self, pet_id, data):
+    def patch(self, pet_id, json_data):
         # ...
 
 
@@ -1116,7 +1025,7 @@ If you want to apply a decorator for all methods, instead of repeat yourself,
 you can pass the decorator to the class attribute `decorators`, it accepts
 a list of decorators:
 
-```python hl_lines="3"
+```python
 class Pet(MethodView):
 
     decorators = [auth_required(auth), doc(responses=[404])]
@@ -1129,12 +1038,12 @@ class Pet(MethodView):
     @app.auth_required(auth)
     @app.input(PetIn)
     @app.output(PetOut)
-    def put(self, pet_id, data):
+    def put(self, pet_id, json_data):
         # ...
 
     @app.input(PetIn(partial=True))
     @app.output(PetOut)
-    def patch(self, pet_id, data):
+    def patch(self, pet_id, json_data):
         # ...
 
 
@@ -1150,7 +1059,7 @@ Similar to Flask's `abort`, but `abort` from APIFlask will return a JSON respons
 
 Example:
 
-```python hl_lines="1 8"
+```python
 from apiflask import APIFlask, abort
 
 app = APIFlask(__name__)
@@ -1169,12 +1078,12 @@ def hello(name):
 
 You can also raise an `HTTPError` exception to return an error response:
 
-```python hl_lines="1 8"
+```python
 from apiflask import APIFlask, HTTPError
 
 app = APIFlask(__name__)
 
-@app.get('/<name>')
+@app.get('/users/<name>')
 def hello(name):
     if name == 'Foo':
         raise HTTPError(404, 'This man is missing.')
@@ -1202,7 +1111,7 @@ The `abort()` and `HTTPError` accept the following arguments:
 In the end, let's unpack the whole `apiflask` package to check out what it shipped with:
 
 - `APIFlask`: A class used to create an application instance (A wrapper for Flask's `Flask` class).
-- `APIBlueprint`: A class used to create a blueprint instance (A wrapper for Flask's `Blueprint` class)..
+- `APIBlueprint`: A class used to create a blueprint instance (A wrapper for Flask's `Blueprint` class).
 - `@app.input()`: A decorator used to validate the input/request data from request body, query string, etc.
 - `@app.output()`: A decorator used to format the response.
 - `@app.auth_required()`: A decorator used to protect a view from unauthenticated users.

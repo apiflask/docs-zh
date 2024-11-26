@@ -1,11 +1,11 @@
 import pytest
+from flask.views import MethodView
 from openapi_spec_validator import validate_spec
 
 from .schemas import Foo
 from .schemas import Query
 from apiflask import APIBlueprint
 from apiflask.security import HTTPBasicAuth
-from apiflask.views import MethodView
 
 
 def test_auto_tags(app, client):
@@ -22,6 +22,15 @@ def test_auto_tags(app, client):
     validate_spec(rv.json)
     assert rv.json['tags'] == []
     assert 'tags' not in rv.json['paths']['/']['get']
+
+
+@pytest.mark.parametrize('config_value', [True, False])
+def test_auto_servers(app, client, config_value):
+    app.config['AUTO_SERVERS'] = config_value
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+    validate_spec(rv.json)
+    assert bool('servers' in rv.json) == config_value
 
 
 @pytest.mark.parametrize('config_value', [True, False])

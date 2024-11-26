@@ -64,6 +64,11 @@ Now the paths to docs and spec will be <http://localhost:5000/openapi/docs>
 and <http://localhost:5000/openapi/openapi.json>.
 
 
+## Add authentication to API documentation
+
+See *[Protect OpenAPI endpoints](/openapi/#protect-openapi-endpoints)* for more details.
+
+
 ## Add custom API documentation
 
 You can easily add support to other API docs or serve the supported docs UI by yourself.
@@ -115,7 +120,7 @@ In this way, you can serve multiple API docs at the same time, or add auth prote
 to the docs view. If you want to use the built-in configuration variable for API docs or
 just want to write less code, you can import the API docs template directly from APIFlask:
 
-```python hl_lines="2 10"
+```python
 from apiflask import APIFlask
 from apiflask.ui_templates import redoc_template
 from flask import render_template_string
