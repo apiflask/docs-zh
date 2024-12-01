@@ -1,40 +1,39 @@
-# Configuration
+# 配置
 
+## 基础知识
 
-## Basics
+在 Flask 中，配置系统是基于 `app.config` 属性构建的。它是一个类字典的属性，
+因此你可以像操作字典一样操作它
 
-In Flask, the configuration system is built on top of the `app.config` attribute.
-It's a dict-like attribute; thus you can operate it as a dict.
+`app.config` 属性将会包含以下配置：
 
-This `app.config` attribute will contain the following configuration variables:
+- 内置于 Flask 的配置变量
+- 内置于 Flask 扩展的配置变量
+- 内置于 APIFlask 的配置变量
+- 你自定义的配置变量
 
-- Flask's built-in configuration variables
-- Flask extension's built-in configuration variables
-- APIFlask's built-in configuration variables
-- Your application's configuration variables
-
-Here is a simple example for basic operates:
+这是 `app.config` 基本操作的一个示例:
 
 ```python
 from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
-# set a config
+# 设置一个配置项
 app.config['DESCRIPTION'] = 'A wonderful API'
 
-# read a config
+# 读取一个配置项
 description = app.config['DESCRIPTION']
 ```
 
-Since it's dict-like object, you can also read a configuration variable with
-a default value via the `app.config.get()` method:
+因为它是一个类字典的对象，你也可以通过 `app.config.get()` 方法读取
+一个带有默认值的配置变量：
 
 ```python
-my_name = app.config.get('DESCRIPTION', 'default value')
+my_name = app.config.get('DESCRIPTION', '默认值')
 ```
 
-Or update multiple values at once via `app.config.update()` method:
+或者通过 `app.config.update()` 方法同时更新多个值：
 
 ```python
 app.config.update(
@@ -44,8 +43,8 @@ app.config.update(
 )
 ```
 
-For a large application, you can store all the configuration variable in a separate
-file, for example, a file called `settings.py`:
+对于一个大型应用来说，你可以将所有的配置变量存储于一个独立的文件中。
+例如， 可以将它们存储在 `settings.py`：
 
 ```python
 MY_CONFIG = 'A wonderful API'
@@ -53,34 +52,34 @@ FOO = 'bar'
 ITEMS_PER_PAGE = 15
 ```
 
-Now you can set the configuration variables with the `app.config.from_pyfile()` method:
+现在，你可以通过 `app.config.from_pyfile()` 方法来设置配置变量。
+
 
 ```python
 from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
-# set all configs from settings.py
+# 设置从 settings.py 导入的所有配置变量
 app.config.from_pyfile('settings.py')
 ```
 
-Read more about configuration management in
-*[Configuration Handling][_config]{target:_blank}* in Flask's documentation.
+阅读 Flask 文档中的 *[Configuration Handling][_config]{target:_blank}* 一章来了解更多有关配置管理的内容。
 
 [_config]: https://flask.palletsprojects.com/config/
 
 !!! warning
 
-    All configuration variables should be in uppercase.
+    所有的配置变量应当采用全大写的形式
 
-!!! tip "Read a config outside of the application context"
+!!! tip "在应用上下文之外读取配置"
 
-    If you want to read a configuration variable outside of the application context,
-    you will get an error like: "Working outside of the application context". This
-    usually happened when you use an application factory.
+    如果你想在应用上下文之外读取配置变量，你将看见：“在应用
+    上下文之外工作（Working outside of the application context）“
+    的错误，这个错误通常在你采用应用工厂时出现。
 
-    When you use the application factory, you can access the config with
-    `current_app.config` in the view function:
+    当你使用应用工厂时，你可以通过在视图函数中使用 `current_app.config`
+    来访问配置：
 
     ```python
     from flask import current_app
@@ -90,43 +89,44 @@ Read more about configuration management in
         bar = current_app.config['BAR']
     ```
 
-    However, when you define a data schema, there isn't an active application
-    context, so you can't use `current_app`. In this situation, you can access
-    the configration variables from the module you store them:
+    但是，当你定义一个数据 schema 时，一般不会拥有应用上下文，
+    所以你无法使用 `current_app`。在这种情况下从存储配置变量的模块访问它们：
 
     ```python hl_lines="3 6"
     from apiflask import Schema
 
-    from .settings import CATEGORIES  # import the configuration variable
+    from .settings import CATEGORIES  # 导入配置变量
 
     class PetIn(Schema):
         name = String(required=True, validate=Length(0, 10))
-        category = String(required=True, validate=OneOf(CATEGORIES))  # use it
+        category = String(required=True, validate=OneOf(CATEGORIES))  # 使用配置变量
     ```
 
-Below are all the built-in configuration variables in APIFlask.
+
+## 内置配置变量
+
+以下时所有 APIFlask 内置的配置变量：
 
 
-## OpenAPI fields
+### OpenAPI 字段
 
-All the configurations of OpenAPI-related fields will be used when generating the
-OpenAPI spec. They will also be rendered by the API documentation.
+生成 OpenAPI spec 时会用到 OpenAPI 相关字段的所有配置，它们也将由 API 文档呈现。
 
 
-### OPENAPI_VERSION
+#### `OPENAPI_VERSION`
 
-The version of OpenAPI Specification (`openapi.openapi`). This configuration can also
-be configured from the `app.openapi_version` attribute.
+OpenAPI 规范的版本（`openapi.openapi`）。这个配置也可以通过
+`app.openapi_version` 属性设置。
 
-- Type: `str`
-- Default value: `'3.0.3'`
-- Examples:
+- 类型：`str`
+- 默认值：`'3.0.3'`
+- 示例：
 
 ```python
 app.config['OPENAPI_VERSION'] = '3.0.2'
 ```
 
-Or:
+或：
 
 ```python
 app.openapi_version = '3.0.2'
@@ -134,18 +134,17 @@ app.openapi_version = '3.0.2'
 
 !!! warning "Version >= 0.4.0"
 
-    This configuration variable was added in the [version 0.4.0](/changelog/#version-040).
+    这个配置变量在 [0.4.0 版本中](/changelog/#version-040) 添加。
 
 
-### SERVERS
+#### `SERVERS`
 
-The server information of the API (`openapi.servers`), accepts multiple
-server dicts. This configuration can also be configured from the `app.servers`
-attribute.
+API 项目的服务器信息（`openapi.servers`），接受多个服务器信息的字典。
+这个配置也可以通过 `app.servers` 属性设置。
 
-- Type: `List[Dict[str, str]]`
-- Default value: `None`
-- Examples:
+- 类型：`List[Dict[str, str]]`
+- 默认值：`None`
+- 示例：
 
 ```python
 app.config['SERVERS'] = [
@@ -156,7 +155,7 @@ app.config['SERVERS'] = [
 ]
 ```
 
-Or:
+或：
 
 ```python
 app.servers = [
@@ -168,26 +167,24 @@ app.servers = [
 ```
 
 
-### TAGS
+#### `TAGS`
 
-The tag list of the OpenAPI spec documentation (`openapi.tags`), accepts a
-list of dicts. You can also pass a simple list contains the tag name string.
-This configuration can also be configured from the `app.tags` attribute.
+OpenAPI spec 文档的标签列表（`openapi.tags`）接受一个字典的列表，你也可以传入
+一个包含所有标签名字的字符串列表。这个配置也可以通过 `app.tags` 属性设置。
 
-If not set, the blueprint names will use as tags, all the endpoints under the
-blueprint will be marked with the blueprint tag automatically.
+如果没有设置的话，蓝本的名字将会用作标签，所有定义于蓝本中的端点将会自动被这个标签标记。
 
-- Type: `Union[List[str], List[Dict[str, str]]]`
-- Default value: `None`
-- Examples:
+- 类型：`Union[List[str], List[Dict[str, str]]]`
+- 默认值：`None`
+- 示例：
 
-Simple tag name list example:
+简单标签名字列表的示例：
 
 ```python
 app.config['TAGS'] = ['foo', 'bar', 'baz']
 ```
 
-With tag description:
+包含标签描述的示例：
 
 ```python
 app.config['TAGS'] = [
@@ -197,7 +194,7 @@ app.config['TAGS'] = [
 ]
 ```
 
-Full OpenAPI tags example:
+包含完整 OpenAPI 标签的示例：
 
 ```python
 app.config['TAGS'] = [
@@ -212,21 +209,21 @@ app.config['TAGS'] = [
 ]
 ```
 
-Use attribute `app.tags`:
+使用 `app.tags`：
 
 ```python
 app.tags = ['foo', 'bar', 'baz']
 ```
 
 
-### EXTERNAL_DOCS
+#### `EXTERNAL_DOCS`
 
-The external documentation information of the API (`openapi.externalDocs`).
-This configuration can also be configured from the `app.external_docs` attribute.
+API 项目的外部文档信息（`openapi.externalDocs`），这个配置也可以
+通过 `app.external_docs` 属性设置。
 
-- Type: `Dict[str, str]`
-- Default value: `None`
-- Examples:
+- 类型: `Dict[str, str]`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['EXTERNAL_DOCS'] = {
@@ -235,7 +232,7 @@ app.config['EXTERNAL_DOCS'] = {
 }
 ```
 
-Or:
+或:
 
 ```python
 app.external_docs = {
@@ -245,16 +242,15 @@ app.external_docs = {
 ```
 
 
-### INFO
+#### `INFO`
 
-The info field of the API (`openapi.info`). This configuration can also be configured
-from the `app.info` attribute. The info object (openapi.info), it accepts a dict contains
-following info fields: `description`, `termsOfService`, `contact`, `license`. You can use
-separate configuration variables to overwrite this dict.
+API 项目的信息字段（`openapi.info`），这个配置也可以通过 `app.info` 属性
+设置，信息对象（openapi.info）接受一个包含以下信息字段的字典：`description`，
+`termsOfService`，`contact`，`license`。你可以使用分开的配置变量来覆盖这个字典。
 
-- Type: `Dict[str, str]`
-- Default value: `None`
-- Examples:
+- 类型: `Dict[str, str]`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['INFO'] = {
@@ -272,7 +268,7 @@ app.config['INFO'] = {
 }
 ```
 
-Or:
+或：
 
 ```python
 app.info = {
@@ -291,54 +287,54 @@ app.info = {
 ```
 
 
-### DESCRIPTION
+#### `DESCRIPTION`
 
-The description of the API (`openapi.info.description`). This configuration can also
-be configured from the `app.description` attribute.
+API 项目的描述（`openapi.info.description`），这个配置也可以通过
+`app.description` 属性设置。
 
-- Type: `str`
-- Default value: `None`
-- Examples:
+- 类型: `str`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['DESCRIPTION'] = 'Some description of my API.'
 ```
 
-Or:
+或：
 
 ```python
 app.description = 'Some description of my API.'
 ```
 
 
-### TERMS_OF_SERVICE
+#### `TERMS_OF_SERVICE`
 
-The terms of service URL of the API (`openapi.info.termsOfService`).
-This configuration can also be configured from the `app.terms_of_service` attribute.
+API 项目的服务条款 URL（`openapi.info.termsOfService`），
+这个配置也可以通过 `app.terms_of_service` 属性设置。
 
-- Type: `str`
-- Default value: `None`
-- Examples:
+- 类型: `str`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['TERMS_OF_SERVICE'] = 'http://example.com/terms/'
 ```
 
-Or:
+或：
 
 ```python
 app.terms_of_service = 'http://example.com/terms/'
 ```
 
 
-### CONTACT
+#### `CONTACT`
 
-The contact information of the API (`openapi.info.contact`).
-This configuration can also be configured from the `app.contact` attribute.
+API 项目的联系信息（`openapi.info.contact`）。
+这个配置也可以通过 `app.contact` 设置。
 
-- Type: `Dict[str, str]`
-- Default value: `None`
-- Examples:
+- 类型: `Dict[str, str]`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['CONTACT'] = {
@@ -348,7 +344,7 @@ app.config['CONTACT'] = {
 }
 ```
 
-Or:
+或：
 
 ```python
 app.contact = {
@@ -359,14 +355,13 @@ app.contact = {
 ```
 
 
-### LICENSE
+#### `LICENSE`
 
-The license of the API (`openapi.info.license`).
-This configuration can also be configured from the `app.license` attribute.
+API 项目的协议（`openapi.info.license`），这个配置也可以通过 `app.license` 设置。
 
-- Type: `Dict[str, str]`
-- Default value: `None`
-- Examples:
+- 类型: `Dict[str, str]`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['LICENSE'] = {
@@ -375,7 +370,7 @@ app.config['LICENSE'] = {
 }
 ```
 
-Or:
+或：
 
 ```python
 app.license = {
@@ -385,26 +380,25 @@ app.license = {
 ```
 
 
-## OpenAPI spec
+### OpenAPI spec
 
-Customize the generation of the OpenAPI spec.
+自定义 OpenAPI spec 的生成。
 
 
-### SPEC_FORMAT
+#### `SPEC_FORMAT`
 
-The format of the OpenAPI spec, accepts `'json'`, `'yaml'` or `'yml'`. This config
-will be used in the following conditions:
+OpenAPI spec 的格式，接受 `'json'`、`'yaml'` 或 `'yml'`中的一个。
+这个配置在以下几种情形下使用：
 
-- Serve the spec via the built-in route.
-- Execute `flask spec` without passing the `--format`/`-f` option.
+- 通过内置的路由返回 spec 信息。
+- 在不传入 `--format`/`-f` 选项时运行 `flask spec` 命令。
 
 !!! warning
-    The auto-detection of the format from the `APIFlask(spec_path=...)` was
-    removed in favor of this config in 0.7.0.
+    `APIFlask(spec_path=...)` 在 0.7.0 及之后的版本中去除了对格式的自动检测。
 
-- Type: `str`
-- Default value: `'json'`
-- Examples:
+- 类型: `str`
+- 默认值: `'json'`
+- 示例：
 
 ```python
 app.config['SPEC_FORMAT'] = 'yaml'
@@ -412,16 +406,16 @@ app.config['SPEC_FORMAT'] = 'yaml'
 
 !!! warning "Version >= 0.7.0"
 
-    This configuration variable was added in the [version 0.7.0](/changelog/#version-070).
+    这个配置变量在 [0.7.0 版本](/changelog/#version-070) 中添加。
 
 
-### LOCAL_SPEC_PATH
+#### `LOCAL_SPEC_PATH`
 
-The path to the local OpenAPI spec file.
+OpenAPI spec 文件的路径。
 
-- Type: `str`
-- Default value: `None`
-- Examples:
+- 类型: `str`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['LOCAL_SPEC_PATH'] = 'openapi.json'
@@ -429,20 +423,20 @@ app.config['LOCAL_SPEC_PATH'] = 'openapi.json'
 
 !!! warning
 
-    If the path you passed is relative, do not put a leading slash in it.
+    如果你传入的路径是一个相对路径，请不要在前面添加一个斜杠（`/`）。
 
 !!! warning "Version >= 0.7.0"
 
-    This configuration variable was added in the [version 0.7.0](/changelog/#version-070).
+    这个配置变量在 [0.7.0 版本](/changelog/#version-070) 中添加。
 
 
-### LOCAL_SPEC_JSON_INDENT
+#### `LOCAL_SPEC_JSON_INDENT`
 
-The indentation of the local OpenAPI spec in JSON format.
+本地 OpenAPI spec 在 JSON 格式下的缩进量。
 
-- Type: `int`
-- Default value: `2`
-- Examples:
+- 类型: `int`
+- 默认值: `2`
+- 示例：
 
 ```python
 app.config['LOCAL_SPEC_JSON_INDENT'] = 4
@@ -450,17 +444,18 @@ app.config['LOCAL_SPEC_JSON_INDENT'] = 4
 
 !!! warning "Version >= 0.7.0"
 
-    This configuration variable was added in the [version 0.7.0](/changelog/#version-070).
+    这个配置变量在 [0.7.0 版本](/changelog/#version-070) 中添加。
 
 
-### SYNC_LOCAL_SPEC
+#### `SYNC_LOCAL_SPEC`
 
-If `True`, the local spec will be in sync automatically, see the example usage at
-[Keep the local spec in sync automatically](/openapi#keep-the-local-spec-in-sync-automatically).
+如果这个配置为 `True`，那么本地的 spec 文件将会自动同步更新，在
+[保持本地 spec 文件自动同步更新](/openapi#keep-the-local-spec-in-sync-automatically)
+一节中查看示例用法。
 
-- Type: `bool`
-- Default value: `None`
-- Examples:
+- 类型: `bool`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['SYNC_LOCAL_SPEC'] = True
@@ -468,16 +463,16 @@ app.config['SYNC_LOCAL_SPEC'] = True
 
 !!! warning "Version >= 0.7.0"
 
-    This configuration variable was added in the [version 0.7.0](/changelog/#version-070).
+    这个配置变量在 [0.7.0 版本](/changelog/#version-070) 中添加。
 
 
-### JSON_SPEC_MIMETYPE
+#### `JSON_SPEC_MIMETYPE`
 
-The MIME type string for JSON OpenAPI spec response.
+用作 OpenAPI spec JSON 响应值的 MIME 类型字符串。
 
-- Type: `str`
-- Default value: `'application/json'`
-- Examples:
+- 类型: `str`
+- 默认值: `'application/json'`
+- 示例：
 
 ```python
 app.config['JSON_SPEC_MIMETYPE'] = 'application/custom-json'
@@ -485,16 +480,16 @@ app.config['JSON_SPEC_MIMETYPE'] = 'application/custom-json'
 
 !!! warning "Version >= 0.4.0"
 
-    This configuration variable was added in the [version 0.4.0](/changelog/#version-040).
+    这个配置变量在 [0.4.0 版本](/changelog/#version-040) 中添加。
 
 
-### YAML_SPEC_MIMETYPE
+#### `YAML_SPEC_MIMETYPE`
 
-The MIME type string for YAML OpenAPI spec response.
+用作 OpenAPI spec YAML 响应值的 MIME 类型字符串。
 
-- Type: `str`
-- Default value: `'text/vnd.yaml'`
-- Examples:
+- 类型: `str`
+- 默认值: `'text/vnd.yaml'`
+- 示例：
 
 ```python
 app.config['YAML_SPEC_MIMETYPE'] = 'text/x-yaml'
@@ -502,45 +497,43 @@ app.config['YAML_SPEC_MIMETYPE'] = 'text/x-yaml'
 
 !!! warning "Version >= 0.4.0"
 
-    This configuration variable was added in the [version 0.4.0](/changelog/#version-040).
+    这个配置变量在 [0.4.0 版本](/changelog/#version-040) 中添加。
 
 
-## Automation behavior control
+### 对自动化行为的控制
 
-The following configuration variables are used to control the automation behavior
-of APIFlask. The default values of all these configuration variables are `True`,
-you can disable them if you needed.
+以下配置变量被用来控制 APIflask 的自动化行为，所有这些配置变量的默认值都是
+`True`，你可以在需要时禁用它们。
 
 
-### AUTO_TAGS
+#### `AUTO_TAGS`
 
-Enable or disable auto tags (`openapi.tags`) generation from the name of the blueprint.
+启用或禁用自动从蓝本名生成标签（`openapi.tags`）。
 
 !!! tip
 
-    This automation behavior only happens when `app.tags` or config `TAGS` is not set.
+    这种自动化行为仅当 `app.tags` 或 `TAGS` 配置没有被设置的时候才会进行。
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['AUTO_TAGS'] = False
 ```
 
 
-### AUTO_OPERATION_SUMMARY
+#### `AUTO_OPERATION_SUMMARY`
 
-Enable or disable auto path summary from the name or docstring of the view function.
+启用或禁用自动从视图函数名或文档生成 OpenAPI 中路径的概要（summary）。
 
 !!! tip
 
-    This automation behavior only happens when the view function doesn't decorate
-    with `@app.doc(summary=...)`.
+    这种自动化行为仅当视图函数没有被 `app.doc(summary=...)` 装饰时才会进行。
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['AUTO_OPERATION_SUMMARY'] = False
@@ -548,22 +541,20 @@ app.config['AUTO_OPERATION_SUMMARY'] = False
 
 !!! warning
 
-    This variable was renamed from `AUTO_PATH_SUMMARY` to `AUTO_OPERATION_SUMMARY`
-    since version 0.8.0.
+    在 0.8.0 及之后的版本中，这个变量从 `AUTO_PATH_SUMMARY` 重命名为 `AUTO_OPERATION_SUMMARY`。
 
 
-### AUTO_OPERATION_DESCRIPTION
+#### `AUTO_OPERATION_DESCRIPTION`
 
-Enable or disable auto path description from the docstring of the view function.
+启用或禁用自动从视图函数文档生成 OpenAPI 中对路径的描述。
 
 !!! tip
 
-    This automation behavior only happens when the view function doesn't decorate
-    with `@app.doc(description=...)`.
+    这种自动化行为仅当视图函数没有被 `@app.doc(description=...)` 装饰时才会进行。
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['AUTO_OPERATION_DESCRIPTION'] = False
@@ -571,62 +562,59 @@ app.config['AUTO_OPERATION_DESCRIPTION'] = False
 
 !!! warning
 
-    This variable was renamed from `AUTO_PATH_DESCRIPTION` to `AUTO_OPERATION_DESCRIPTION`
-    since version 0.8.0.
+    在 0.8.0 及之后的版本中，这个变量从 `AUTO_PATH_DESCRIPTION`
+    重命名为 `AUTO_OPERATION_DESCRIPTION`。
 
 
-### AUTO_OPERATION_ID
+#### `AUTO_OPERATION_ID`
 
 !!! warning "Version >= 0.10.0"
 
-    This feature was added in the [version 0.10.0](/changelog/#version-0100).
+    这个功能在 [0.10.0 版本中](/changelog/#version-0100) 添加。
 
-Enable or disable auto operationId from the method and endpoint of the view function.
-See more details in [Set `operationId`](/openapi/#set-operationid).
+启用或禁用自动从视图函数的请求方法和端点处生成 operationId。在 [设置 `operationId`](/openapi/#set-operationid) 一节中了解详细内容。
 
-- Type: `bool`
-- Default value: `False`
-- Examples:
+- 类型: `bool`
+- 默认值: `False`
+- 示例：
 
 ```python
 app.config['AUTO_OPERATION_ID'] = True
 ```
 
 
-### AUTO_200_RESPONSE
+#### `AUTO_200_RESPONSE`
 
-If a view function doesn't decorate with either `@app.input`, `@app.output`, `@app.auth_required`
-or `@app.doc`, APIFlask will add a default 200 response for this view into OpenAPI spec.
-Set this config to `False` to disable this behavior.
+如果一个视图函数不被 `@app.input`、`@app.output`、`@app.auth_required`、`@app.doc`
+装饰，APIFlask 会默认在 OpenAPI spec 中为这个视图默认添加一个 200 响应。
+将这个配置设为 `False` 来禁用这种行为。
 
 !!! tip
 
     You can change the description of the default 200 response with config
     `SUCCESS_DESCRIPTION`.
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['AUTO_200_RESPONSE'] = False
 ```
 
 
-### `AUTO_404_RESPONSE`
+#### `AUTO_404_RESPONSE`
 
-If a view function's URL rule contains a variable. By default, APIFlask will add a
-404 response for this view into OpenAPI spec. Set this config to `False` to disable
-this behavior.
+如果一个视图函数的 URL 规则包含一个变量，在默认情况下，APIFlask 会向 OpenAPI spec 中添加
+一个 404 响应。将这个配置设置为 `False` 来禁用这种行为。
 
 !!! tip
 
-    You can change the description of the automatic 404 response with config
-    `NOT_FOUND_DESCRIPTION`.
+    你可以通过 `NOT_FOUND_DESCRIPTION` 配置来改编自动 404 相应的描述
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['AUTO_404_RESPONSE'] = False
@@ -634,51 +622,51 @@ app.config['AUTO_404_RESPONSE'] = False
 
 !!! warning "Version >= 0.8.0"
 
-    This configuration variable was added in the [version 0.8.0](/changelog/#version-080).
+    这个配置变量在 [0.8.0 版本](/changelog/#version-080) 中添加。
 
 
-### AUTO_VALIDATION_ERROR_RESPONSE
+#### `AUTO_VALIDATION_ERROR_RESPONSE`
 
-If a view function uses `@app.input` to validate input request data, APIFlask will add a
-validation error response into OpenAPI spec for this view. Set this config to `False`
-to disable this behavior.
+如果一个视图函数使用 `@app.input` 来验证输入的请求数据，
+APIFlask 会向这个视图的 OpenAPI spec 中添加一个数据验证错误
+响应。
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['AUTO_VALIDATION_ERROR_RESPONSE'] = False
 ```
 
 
-### AUTO_AUTH_ERROR_RESPONSE
+#### `AUTO_AUTH_ERROR_RESPONSE`
 
-If a view function uses `@app.auth_required` to restrict the access, APIFlask will add
-an authentication error response into OpenAPI spec for this view. Set this
-config to `False` to disable this behavior.
+如果一个视图函数使用 `@app.auth_required` 来限制访问，
+APIFlask 会向这个视图的 OpenAPI spec 中添加一个安全认证错误。
+将这个配置设置为 `False` 来禁用这种行为。
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['AUTO_AUTH_ERROR_RESPONSE'] = False
 ```
 
 
-## Response customization
+### 响应自定义
 
-The following configuration variables are used to customize auto-responses.
+以下配置变量用来自定义自动化响应。
 
 
-### SUCCESS_DESCRIPTION
+#### `SUCCESS_DESCRIPTION`
 
-The default OpenAPI description of the 2XX responses.
+状态码为 2XX 的响应的默认描述。
 
-- Type: `str`
-- Default value: `Successful response`
-- Examples:
+- 类型: `str`
+- 默认值: `Successful response`
+- 示例：
 
 ```python
 app.config['SUCCESS_DESCRIPTION'] = 'Success!'
@@ -686,16 +674,16 @@ app.config['SUCCESS_DESCRIPTION'] = 'Success!'
 
 !!! warning "Version >= 0.4.0"
 
-    This configuration variable was added in the [version 0.4.0](/changelog/#version-040).
+    这个配置变量在 [0.4.0 版本](/changelog/#version-040) 中添加。
 
 
-### NOT_FOUND_DESCRIPTION
+#### `NOT_FOUND_DESCRIPTION`
 
-The default OpenAPI description of the 404 response.
+状态码为 404 的响应的默认描述。
 
-- Type: `str`
-- Default value: `Not found`
-- Examples:
+- 类型: `str`
+- 默认值: `Not found`
+- 示例：
 
 ```python
 app.config['NOT_FOUND_DESCRIPTION'] = 'Missing'
@@ -703,97 +691,98 @@ app.config['NOT_FOUND_DESCRIPTION'] = 'Missing'
 
 !!! warning "Version >= 0.8.0"
 
-    This configuration variable was added in the [version 0.8.0](/changelog/#version-080).
+    这个配置变量在 [0.8.0 版本](/changelog/#version-080) 中添加。
 
 
-### VALIDATION_ERROR_STATUS_CODE
+#### `VALIDATION_ERROR_STATUS_CODE`
 
-The status code of validation error response.
+数据验证错误响应的默认返回值。
 
-- Type: `int`
-- Default value: `422`
-- Examples:
+- 类型: `int`
+- 默认值: `422`
+- 示例：
 
 ```python
 app.config['VALIDATION_ERROR_STATUS_CODE'] = 422
 ```
 
 
-### VALIDATION_ERROR_DESCRIPTION
+#### `VALIDATION_ERROR_DESCRIPTION`
 
-The OpenAPI description of validation error response.
+数据验证错误响应的默认描述
+The description of validation error response.
 
-- Type: `str`
-- Default value: `'Validation error'`
-- Examples:
+- 类型: `str`
+- 默认值: `'Validation error'`
+- 示例：
 
 ```python
 app.config['VALIDATION_ERROR_DESCRIPTION'] = 'Invalid JSON body'
 ```
 
 
-### VALIDATION_ERROR_SCHEMA
+#### `VALIDATION_ERROR_SCHEMA`
 
-The schema of validation error response, accepts a schema class or
-a dict of OpenAPI schema definition.
+数据验证错误响应的 schema。本配置接受一个 schema 类或一个
+OpenAPI schema 定义的字典。
 
-- Type: `Union[Schema, dict]`
-- Default value: `apiflask.schemas.validation_error_schema`
-- Examples:
+- 类型: `Union[Schema, dict]`
+- 默认值: `apiflask.schemas.validation_error_schema`
+- 示例：
 
 ```python
 app.config['VALIDATION_ERROR_SCHEMA'] = CustomValidationErrorSchema
 ```
 
 
-### AUTH_ERROR_STATUS_CODE
+#### `AUTH_ERROR_STATUS_CODE`
 
-The status code of authentication error response.
+安全认证错误响应的状态码。
 
-- Type: `int`
-- Default value: `401`
-- Examples:
+- 类型: `int`
+- 默认值: `401`
+- 示例：
 
 ```python
 app.config['AUTH_ERROR_STATUS_CODE'] = 403
 ```
 
 
-### AUTH_ERROR_DESCRIPTION
+#### `AUTH_ERROR_DESCRIPTION`
 
-The OpenAPI description of authentication error response.
+安全认证错误响应的描述。
 
-- Type: `str`
-- Default value: `'Authentication error'`
-- Examples:
+- 类型: `str`
+- 默认值: `'Authentication error'`
+- 示例：
 
 ```python
 app.config['AUTH_ERROR_DESCRIPTION'] = 'Auth error'
 ```
 
 
-### HTTP_ERROR_SCHEMA
+#### `HTTP_ERROR_SCHEMA`
 
-The schema of generic HTTP error response, accepts a schema class or
-a dict of OpenAPI schema definition.
+通用的 HTTP 错误响应的 schema。本配置接受一个 schema 类或
+一个 OpenAPI schema 定义的字典。
 
-- Type: `Union[Schema, dict]`
-- Default value: `apiflask.schemas.http_error_schema`
-- Examples:
+- 类型: `Union[Schema, dict]`
+- 默认值: `apiflask.schemas.http_error_schema`
+- 示例：
 
 ```python
 app.config['HTTP_ERROR_SCHEMA'] = CustomHTTPErrorSchema
 ```
 
 
-### BASE_RESPONSE_SCHEMA
+#### `BASE_RESPONSE_SCHEMA`
 
-The schema of base response schema, accepts a schema class or a dict of
-OpenAPI schema definition.
+基响应的 schema。本配置接受一个 schema 类或一个 OpenAPI
+schema 定义的字典
 
-- Type: `Union[Schema, dict]`
-- Default value: `None`
-- Examples:
+- 类型: `Union[Schema, dict]`
+- 默认值: `None`
+- 示例：
 
 ```python
 from apiflask import APIFlask, Schema
@@ -811,17 +800,18 @@ app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
 
 !!! warning "Version >= 0.9.0"
 
-    This configuration variable was added in the [version 0.9.0](/changelog/#version-090).
+    这个配置变量在 [0.9.0 版本](/changelog/#version-090) 中添加。
 
 
-### BASE_RESPONSE_DATA_KEY
+#### `BASE_RESPONSE_DATA_KEY`
 
+基响应的数据键，它应该与响应 schema 的数据字段名相匹配。
 The data key of the base response, it should match the data field name in the base
 response schema.
 
-- Type: `str`
-- Default value: `'data'`
-- Examples:
+- 类型: `str`
+- 默认值: `'data'`
+- 示例：
 
 ```python
 app.config['BASE_RESPONSE_DATA_KEY'] = 'data'
@@ -829,48 +819,47 @@ app.config['BASE_RESPONSE_DATA_KEY'] = 'data'
 
 !!! warning "Version >= 0.9.0"
 
-    This configuration variable was added in the [version 0.9.0](/changelog/#version-090).
+    这个配置变量在 [0.9.0 版本](/changelog/#version-090) 中添加。
 
 
 ## API documentation
 
-The following configuration variables used to customize API documentation.
+以下配置变量被用来自定义 Swagger UI 和 Redoc 文档。
 
+#### `DOCS_FAVICON`
 
-### DOCS_FAVICON
+API 文档图标文件的绝对或相对 URL。
 
-The absolute or relative URL of the favicon image file of API documentations.
-
-- Type: `str`
-- Default value: `'https://apiflask.com/_assets/favicon.png'`
-- Examples:
+- 类型: `str`
+- 默认值: `'https://apiflask.com/_assets/favicon.png'`
+- 示例：
 
 ```python
 app.config['DOCS_FAVICON'] = 'https://cdn.example.com/favicon.png'
 ```
 
 
-### REDOC_USE_GOOGLE_FONT
+#### `REDOC_USE_GOOGLE_FONT`
 
-Enable or disable Google font in Redoc documentation.
+在 Redoc 文档中启用或禁用 Google 字体。
 
-- Type: `bool`
-- Default value: `True`
-- Examples:
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
 
 ```python
 app.config['REDOC_USE_GOOGLE_FONT'] = False
 ```
 
 
-### REDOC_CONFIG
+#### `REDOC_CONFIG`
 
-The configuration options pass to Redoc. See the available options in the
-[Redoc documentation](https://github.com/Redocly/redoc#redoc-options-object).
+这个配置项将会传递给 Redoc。在
+[Redoc documentation](https://github.com/Redocly/redoc#redoc-options-object) 查看可配置项。
 
-- Type: `dict`
-- Default value: `None`
-- Examples:
+- 类型: `dict`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['REDOC_CONFIG'] = {'disableSearch': True, 'hideLoading': True}
@@ -878,89 +867,87 @@ app.config['REDOC_CONFIG'] = {'disableSearch': True, 'hideLoading': True}
 
 !!! warning "Version >= 0.9.0"
 
-    This configuration variable was added in the [version 0.9.0](/changelog/#version-090).
+    这个配置变量在 [0.9.0 版本](/changelog/#version-090) 中添加。
 
 
-### REDOC_STANDALONE_JS`
+#### `REDOC_STANDALONE_JS`
 
-The absolute or relative URL of the Redoc standalone JavaScript file.
+Redoc 独立 JavaScript 文件的绝对或相对 URL。
 
-- Type: `str`
-- Default value: `'https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js'`
-- Examples:
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js'`
+- 示例：
 
 ```python
-app.config['REDOC_STANDALONE_JS'] = 'https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js'
+app.config['REDOC_STANDALONE_JS'] = 'https://cdn.example.com/filename.js'
 ```
 
 
-### SWAGGER_UI_CSS
+#### `SWAGGER_UI_CSS`
 
-The absolute or relative URL of the Swagger UI CSS file.
+Swagger UI CSS 文件的绝对或相对 URL。
 
-- Type: `str`
-- Default value: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css'`
-- Examples:
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css'`
+- 示例：
 
 ```python
-app.config['SWAGGER_UI_CSS'] = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.11.1/swagger-ui.min.css'
+app.config['SWAGGER_UI_CSS'] = 'https://cdn.example.com/filename.js'
 ```
 
 
-### SWAGGER_UI_BUNDLE_JS
+#### `SWAGGER_UI_BUNDLE_JS`
 
-The absolute or relative URL of the Swagger UI bundle JavaScript file.
+Swagger UI JavaScript 打包文件的绝对或相对 URL。
 
-- Type: `str`
-- Default value: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js'`
-- Examples:
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js'`
+- 示例：
 
 ```python
-app.config['SWAGGER_UI_BUNDLE_JS'] = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.11.1/swagger-ui-bundle.min.js'
+app.config['SWAGGER_UI_BUNDLE_JS'] = 'https://cdn.example.com/filename.js'
 ```
 
 
-### SWAGGER_UI_STANDALONE_PRESET_JS
+#### `SWAGGER_UI_STANDALONE_PRESET_JS`
 
-The absolute or relative URL of the Swagger UI standalone preset JavaScript file.
+Swagger UI 预设 JavaScript 文件的绝对或相对 URL。
 
-- Type: `str`
-- Default value: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-standalone-preset.js'`
-- Examples:
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-standalone-preset.js'`
+- 示例：
 
 ```python
-app.config['SWAGGER_UI_STANDALONE_PRESET_JS'] = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.11.1/swagger-ui-standalone-preset.min.js'
+app.config['SWAGGER_UI_STANDALONE_PRESET_JS'] = 'https://cdn.example.com/filename.js'
 ```
 
 
-### SWAGGER_UI_LAYOUT
+#### `SWAGGER_UI_LAYOUT`
 
-The layout of Swagger UI, one of `'BaseLayout'` and `'StandaloneLayout'`.
+Swagger UI 的布局类型，可选项为`'BaseLayout'` 和 `'StandaloneLayout'` 中的一个。
 
-- Type: `str`
-- Default value: `'BaseLayout'`
-- Examples:
+- 类型: `str`
+- 默认值: `'BaseLayout'`
+- 示例：
 
 ```python
 app.config['SWAGGER_UI_LAYOUT'] = 'StandaloneLayout'
 ```
 
 
-### SWAGGER_UI_CONFIG
+#### `SWAGGER_UI_CONFIG`
 
-The config for Swagger UI, these config values will overwrite the existing config,
-such as `SWAGGER_UI_LAYOUT`.
+Swagger UI 的配置，这个值将会覆盖已经存在的配置，例如 `SWAGGER_UI_LAYOUT`。
 
 !!! tip
 
-    See *[Configuration][_swagger_conf]{target=_blank}* of the Swagger UI docs
-    for available config options.
+    查看 Swagger UI 文档的 *[配置][_swagger_conf]{target=_blank}* 一节来获取更多信息。
 
 [_swagger_conf]: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
 
-- Type: `dict`
-- Default value: `None`
-- Examples:
+- 类型: `dict`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['SWAGGER_UI_CONFIG'] = {
@@ -969,9 +956,9 @@ app.config['SWAGGER_UI_CONFIG'] = {
 ```
 
 
-### SWAGGER_UI_OAUTH_CONFIG
+#### `SWAGGER_UI_OAUTH_CONFIG`
 
-The config for Swagger UI OAuth:
+Swagger UI OAuth 的配置：
 
 ```js
 ui.initOAuth(yourConfig)
@@ -979,14 +966,13 @@ ui.initOAuth(yourConfig)
 
 !!! tip
 
-    See the *[OAuth 2.0 configuration][_swagger_oauth]{target=_blank}* in Swagger UI
-    docs for available config options.
+    在 Swagger UI 文档的 *[OAuth 2.0 配置][_swagger_oauth]{target=_blank}* 一节查看更多信息。
 
 [_swagger_oauth]: https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/
 
-- Type: `dict`
-- Default value: `None`
-- Examples:
+- 类型: `dict`
+- 默认值: `None`
+- 示例：
 
 ```python
 app.config['SWAGGER_UI_OAUTH_CONFIG'] = {
@@ -995,158 +981,8 @@ app.config['SWAGGER_UI_OAUTH_CONFIG'] = {
 ```
 
 
-### ELEMENTS_CSS
+## Flask 内置配置变量
 
-The absolute or relative URL of the Elements CSS file.
-
-- Type: `str`
-- Default value: `'https://unpkg.com/@stoplight/elements/styles.min.css'`
-- Examples:
-
-```python
-app.config['ELEMENTS_CSS'] = 'https://cdn.jsdelivr.net/npm/@stoplight/elements-dev-portal@1.7.4/styles.min.css'
-```
-
-
-### ELEMENTS_JS
-
-The absolute or relative URL of the Elements JavaScript file.
-
-- Type: `str`
-- Default value: `'https://unpkg.com/@stoplight/elements/web-components.min.js'`
-- Examples:
-
-```python
-app.config['ELEMENTS_JS'] = 'https://cdn.jsdelivr.net/npm/@stoplight/elements-dev-portal@1.7.4/web-components.min.js'
-```
-
-
-### ELEMENTS_LAYOUT
-
-The layout of Elements, one of `'sidebar'` and `'stacked'`.
-
-- Type: `str`
-- Default value: `'sidebar'`
-- Examples:
-
-```python
-app.config['ELEMENTS_LAYOUT'] = 'stacked'
-```
-
-
-### ELEMENTS_CONFIG
-
-The config for Elements, these config values will overwrite the existing config,
-such as `ELEMENTS_LAYOUT`.
-
-!!! tip
-
-    See *[Elements Configuration Options][_elements_conf]{target=_blank}*
-    for available config options.
-
-[_elements_conf]: https://github.com/stoplightio/elements/blob/main/docs/getting-started/elements/elements-options.md
-
-- Type: `dict`
-- Default value: `None`
-- Examples:
-
-```python
-app.config['ELEMENTS_CONFIG'] = {
-    'hideTryIt': 'true',
-    'layout': 'stacked',
-}
-```
-
-
-### RAPIDOC_JS
-
-The absolute or relative URL of the RapiDoc JavaScript file.
-
-- Type: `str`
-- Default value: `'https://unpkg.com/rapidoc/dist/rapidoc-min.js'`
-- Examples:
-
-```python
-app.config['RAPIDOC_JS'] = 'https://cdn.jsdelivr.net/npm/rapidoc@9.3.2/dist/rapidoc-min.min.js'
-```
-
-
-### RAPIDOC_THEME
-
-The theme of RapiDoc, one of `'light'` and `'dark'`.
-
-- Type: `str`
-- Default value: `'light'`
-- Examples:
-
-```python
-app.config['RAPIDOC_THEME'] = 'dark'
-```
-
-
-### RAPIDOC_CONFIG
-
-The config for RapiDoc, these config values will overwrite the existing config,
-such as `RAPIDOC_THEME`.
-
-!!! tip
-
-    See *[RapiDoc API][_rapidoc_conf]{target=_blank}* of the RapiDoc docs
-    for available config options.
-
-[_rapidoc_conf]: https://rapidocweb.com/api.html
-
-- Type: `dict`
-- Default value: `None`
-- Examples:
-
-```python
-app.config['RAPIDOC_CONFIG'] = {
-    'update-route': False,
-    'layout': 'row'
-}
-```
-
-
-### RAPIPDF_JS
-
-The absolute or relative URL of the RapiPDF JavaScript file.
-
-- Type: `str`
-- Default value: `'https://unpkg.com/rapipdf/dist/rapipdf-min.js'`
-- Examples:
-
-```python
-app.config['RAPIPDF_JS'] = 'https://cdn.jsdelivr.net/npm/rapipdf@2.2.1/src/rapipdf.min.js'
-```
-
-
-### RAPIPDF_CONFIG
-
-The config for RapiPDF.
-
-!!! tip
-
-    See *[RapiPDF API][_rapipdf_conf]{target=_blank}* of the RapiPDF docs
-    for available config options.
-
-[_rapipdf_conf]: https://mrin9.github.io/RapiPdf/api.html
-
-- Type: `dict`
-- Default value: `None`
-- Examples:
-
-```python
-app.config['RAPIPDF_CONFIG'] = {
-    'include-example': True,
-    'button-label': 'Generate!'
-}
-```
-
-
-## Flask built-in configuration variables
-
-See *[Builtin Configuration Values][_flask_config]{target:_blank}* for the
-built-in configuration variables provided by Flask.
+请参阅 *[Builtin Configuration Values][_flask_config]{target:_blank}* 来查看 Flask 提供的内置配置变量。
 
 [_flask_config]: https://flask.palletsprojects.com/config/#builtin-configuration-values
