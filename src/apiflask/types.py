@@ -1,10 +1,5 @@
-import sys
 import typing as t
-
-if sys.version_info >= (3, 8):
-    from typing import Protocol
-else:  # pragma: no cover
-    from typing_extensions import Protocol
+from typing import Protocol
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from flask.wrappers import Response  # noqa: F401
@@ -58,6 +53,10 @@ HTTPAuthType = t.Union['HTTPBasicAuth', 'HTTPTokenAuth']
 TagsType = t.Union[t.List[str], t.List[t.Dict[str, t.Any]]]
 ViewClassType = t.Type['View']
 ViewFuncOrClassType = t.Union[t.Callable, ViewClassType]
+
+ResponseObjectType = t.Dict[str, t.Union[str, t.Dict[str, t.Dict[str, t.Any]]]]
+ResponsesObjectType = t.Dict[t.Union[int, str], ResponseObjectType]
+ResponsesType = t.Union[t.List[int], t.Dict[int, str], ResponsesObjectType]
 
 RouteCallableType = t.Union[
     t.Callable[..., ResponseReturnValueType],

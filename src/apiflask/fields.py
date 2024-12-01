@@ -58,8 +58,8 @@ class File(Field):
 
     @app.post('/images')
     @app.input(Image, location='files')
-    def upload_image(data):
-        f = data['image']
+    def upload_image(files_data):
+        f = files_data['image']
         # use `secure_filename` to clean the filename, notice it will only keep ascii characters
         filename = secure_filename(f.filename)
         f.save(os.path.join(the_path_to_uploads, filename))
@@ -85,9 +85,9 @@ class File(Field):
 
     @app.post('/profiles')
     @app.input(ProfileIn, location='form_and_files')
-    def create_profile(data):
-        avatar_file = data['avatar']
-        name = data['name']
+    def create_profile(form_and_files_data):
+        avatar_file = form_and_files_data['avatar']
+        name = form_and_files_data['name']
 
         # use `secure_filename` to clean the filename, notice it will only keep ascii characters
         avatar_filename = secure_filename(avatar_file.filename)
@@ -120,3 +120,44 @@ class File(Field):
         if not isinstance(value, FileStorage):
             raise self.make_error('invalid')
         return value
+
+
+class Config(Field):
+    """A field for Flask configuration values.
+
+    Examples:
+
+    ```python
+    from apiflask import APIFlask, Schema
+    from apiflask.fields import String, Config
+
+    app = APIFlask(__name__)
+    app.config['API_TITLE'] = 'Pet API'
+
+    class FooSchema(Schema):
+        user = String()
+        title = Config('API_TITLE')
+
+    @app.get('/foo')
+    @app.output(FooSchema)
+    def foo():
+        return {'user': 'test'}
+    ```
+
+    This field should only be used in an output schema. The `ValueError` will
+    be raised if the config key is not found in the app config.
+
+    *Version Added: 2.0.1*
+    """
+
+    _CHECK_ATTRIBUTE = False
+
+    def __init__(self, key, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.key = key
+
+    def _serialize(self, value, attr, obj, **kwargs) -> t.Any:
+        from flask import current_app
+        if self.key not in current_app.config:
+            raise ValueError(f'The key {self.key} is not found in the app config.')
+        return current_app.config[self.key]
