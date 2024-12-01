@@ -1,14 +1,17 @@
 import io
 
+import pytest
 from werkzeug.datastructures import FileStorage
 
-from .schemas import FilesListSchema
-from .schemas import FilesSchema
+from .schemas import Files
+from .schemas import FilesList
+from apiflask import Schema
+from apiflask.fields import Config
 
 
 def test_file_field(app, client):
     @app.post('/')
-    @app.input(FilesSchema, location='files')
+    @app.input(Files, location='files')
     def index(files_data):
         data = {}
         if 'image' in files_data and isinstance(files_data['image'], FileStorage):
@@ -38,16 +41,16 @@ def test_file_field(app, client):
         },
         content_type='multipart/form-data'
     )
-    assert rv.status_code == 400
+    assert rv.status_code == 422
     assert rv.json['detail']['files']['image'] == ['Not a valid file.']
 
 
 def test_multiple_file_field(app, client):
     @app.post('/')
-    @app.input(FilesListSchema, location='files')
-    def index(files_list_data):
+    @app.input(FilesList, location='files')
+    def index(files_data):
         data = {'images': True}
-        for f in files_list_data['images']:
+        for f in files_data['images']:
             if not isinstance(f, FileStorage):
                 data['images'] = False
         return data
@@ -77,5 +80,32 @@ def test_multiple_file_field(app, client):
         },
         content_type='multipart/form-data'
     )
-    assert rv.status_code == 400
+    assert rv.status_code == 422
     assert rv.json['detail']['files']['images']['2'] == ['Not a valid file.']
+
+
+def test_config_field(app, client):
+    app.config['API_TITLE'] = 'Pet API'
+
+    class GoodSchema(Schema):
+        title = Config('API_TITLE')
+
+    class BadSchema(Schema):
+        description = Config('API_DESCRIPTION')
+
+    @app.get('/good')
+    @app.output(GoodSchema)
+    def good():
+        return {}
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+
+    rv = client.get('/good')
+    assert rv.status_code == 200
+    assert rv.json == {'title': 'Pet API'}
+
+    with pytest.raises(ValueError, match=r'The key.*is not found in the app config.'):
+        with app.app_context():
+            bad = BadSchema()
+            bad.dump({})

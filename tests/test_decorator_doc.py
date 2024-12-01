@@ -2,7 +2,8 @@ import pytest
 from flask.views import MethodView
 from openapi_spec_validator import validate_spec
 
-from .schemas import FooSchema
+from .schemas import CustomHTTPError
+from .schemas import Foo
 
 
 def test_doc_summary_and_description(app, client):
@@ -146,7 +147,7 @@ def test_doc_deprecated(app, client):
 
 def test_doc_deprecated_with_methodview(app, client):
     @app.route('/foo')
-    class Foo(MethodView):
+    class FooAPI(MethodView):
         @app.doc(deprecated=True)
         def get(self):
             pass
@@ -159,15 +160,15 @@ def test_doc_deprecated_with_methodview(app, client):
 
 def test_doc_responses(app, client):
     @app.route('/foo')
-    @app.input(FooSchema)
-    @app.output(FooSchema)
+    @app.input(Foo)
+    @app.output(Foo)
     @app.doc(responses={200: 'success', 400: 'bad', 404: 'not found', 500: 'server error'})
     def foo():
         pass
 
     @app.route('/bar')
-    @app.input(FooSchema)
-    @app.output(FooSchema)
+    @app.input(Foo)
+    @app.output(Foo)
     @app.doc(responses=[200, 400, 404, 500])
     def bar():
         pass
@@ -194,7 +195,7 @@ def test_doc_responses(app, client):
     assert rv.json['paths']['/bar']['get']['responses'][
         '200']['description'] == 'Successful response'
     assert rv.json['paths']['/bar']['get']['responses'][
-        '400']['description'] == 'Validation error'
+        '400']['description'] == 'Bad Request'
     assert '404' in rv.json['paths']['/foo']['get']['responses']
     assert rv.json['paths']['/bar']['get']['responses'][
         '404']['description'] == 'Not Found'
@@ -203,19 +204,154 @@ def test_doc_responses(app, client):
         '500']['description'] == 'Internal Server Error'
 
 
+def test_doc_responses_custom_spec(app, client):
+    response_spec = {
+        'description': 'Success',
+        'content': {
+            'application/json': {
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'data': {
+                            'type': 'object',
+                            'properties': {
+                                'id': {'type': 'integer'},
+                                'name': {'type': 'string'},
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @app.get('/foo')
+    @app.input(Foo)
+    @app.output(Foo)
+    @app.doc(responses={
+        200: response_spec
+    })
+    def foo():
+        return {'message': 'Hello!'}
+
+    @app.get('/bar')
+    @app.doc(responses={
+        200: {
+            'description': 'Success',
+            'content': {
+                'application/json': {
+                    'schema': Foo
+                }
+            }
+        },
+        400: {
+            'description': 'Error',
+            'content': {
+                'application/json': {
+                    'schema': CustomHTTPError
+                }
+            }
+        },
+        404: {
+            'description': 'Error',
+            'content': {
+                'application/json': {
+                    'schema': CustomHTTPError()
+                }
+            }
+        }
+    })
+    def say_hello():
+        return {'message': 'Hello!'}
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+    validate_spec(rv.json)
+    assert '200' in rv.json['paths']['/foo']['get']['responses']
+    assert rv.json['paths']['/foo']['get']['responses']['200'] == response_spec
+
+    assert '200' in rv.json['paths']['/bar']['get']['responses']
+    assert '400' in rv.json['paths']['/bar']['get']['responses']
+    assert '404' in rv.json['paths']['/bar']['get']['responses']
+    assert rv.json['paths']['/bar']['get']['responses'][
+        '200']['description'] == 'Success'
+    assert rv.json['paths']['/bar']['get']['responses'][
+        '400']['description'] == 'Error'
+    assert rv.json['paths']['/bar']['get']['responses'][
+        '400']['content']['application/json']['schema'] == {
+            '$ref': '#/components/schemas/CustomHTTPError'}
+    assert rv.json['components']['schemas']['CustomHTTPError'] == {
+        'type': 'object',
+        'properties': {
+            'status_code': {'type': 'string'},
+            'message': {'type': 'string'},
+            'custom': {'type': 'string'},
+        },
+        'required': ['custom', 'message', 'status_code'],
+    }
+
+
+def test_doc_responses_additional_content_type(app, client):
+    """Verify that it is possible to add additional media types for a response's status code."""
+    description = 'something'
+
+    @app.route('/foo')
+    @app.input(Foo)
+    @app.output(Foo)
+    @app.doc(
+        responses={
+            200: {
+                'content': {
+                    'text/html': {},
+                },
+            },
+        }
+    )
+    def foo():
+        pass
+
+    @app.route('/bar')
+    @app.input(Foo)
+    @app.output(Foo)
+    @app.doc(
+        responses={
+            200: {
+                'content': {
+                    'text/html': {},
+                },
+                'description': description,
+            },
+        }
+    )
+    def bar():
+        pass
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+    validate_spec(rv.json)
+    assert '200' in rv.json['paths']['/foo']['get']['responses']
+    assert 'application/json' in rv.json['paths']['/foo']['get']['responses']['200']['content']
+    assert 'text/html' in rv.json['paths']['/foo']['get']['responses']['200']['content']
+    assert rv.json['paths']['/foo']['get']['responses']['200']['description'] == 'Successful response'  # noqa: E501
+    assert '200' in rv.json['paths']['/bar']['get']['responses']
+    assert 'application/json' in rv.json['paths']['/bar']['get']['responses']['200']['content']
+    assert 'text/html' in rv.json['paths']['/bar']['get']['responses']['200']['content']
+    assert rv.json['paths']['/bar']['get']['responses']['200']['description'] == description
+
+
 def test_doc_responses_with_methodview(app, client):
     @app.route('/foo')
-    class Foo(MethodView):
-        @app.input(FooSchema)
-        @app.output(FooSchema)
+    class FooAPI(MethodView):
+        @app.input(Foo)
+        @app.output(Foo)
         @app.doc(responses={200: 'success', 400: 'bad', 404: 'not found', 500: 'server error'})
         def get(self):
             pass
 
     @app.route('/bar')
-    class Bar(MethodView):
-        @app.input(FooSchema)
-        @app.output(FooSchema)
+    class BarAPI(MethodView):
+        @app.input(Foo)
+        @app.output(Foo)
         @app.doc(responses=[200, 400, 404, 500])
         def get(self):
             pass
@@ -242,7 +378,7 @@ def test_doc_responses_with_methodview(app, client):
     assert rv.json['paths']['/bar']['get']['responses'][
         '200']['description'] == 'Successful response'
     assert rv.json['paths']['/bar']['get']['responses'][
-        '400']['description'] == 'Validation error'
+        '400']['description'] == 'Bad Request'
     assert '404' in rv.json['paths']['/foo']['get']['responses']
     assert rv.json['paths']['/bar']['get']['responses'][
         '404']['description'] == 'Not Found'

@@ -1,8 +1,9 @@
 import pytest
 from flask.views import MethodView
+from flask.views import View
 from openapi_spec_validator import validate_spec
 
-from .schemas import FooSchema
+from .schemas import Foo
 from apiflask import APIBlueprint
 from apiflask import HTTPTokenAuth
 
@@ -13,7 +14,7 @@ def test_route_shortcuts(app, client, method):
     client_method = getattr(client, method)
 
     @route_method('/pet')
-    @app.output(FooSchema)
+    @app.output(Foo)
     def test_shortcuts():
         return {'name': method}
 
@@ -164,7 +165,7 @@ def test_add_url_rule_with_method_view(app, client):
             """Create foo"""
             return 'post'
 
-    app.add_url_rule('/', view_func=Foo, methods=['GET', 'POST'])
+    app.add_url_rule('/', view_func=Foo.as_view('foo'), methods=['GET', 'POST'])
 
     rv = client.get('/')
     assert rv.data == b'get'
@@ -212,3 +213,29 @@ def test_view_endpoint_contains_dot(app, client):
     assert rv.status_code == 200
     validate_spec(rv.json)
     assert rv.json['paths']['/']['get']
+
+
+@pytest.mark.parametrize('view_class', [View])
+def test_add_url_rule_skip_collecting_spec_from_view_class(app, client, view_class):
+    class Foo(view_class):
+        def dispatch_request(self):
+            return 'Hello'
+
+    app.add_url_rule('/foo', view_func=Foo.as_view('foo'))
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+    assert '/foo' not in rv.json['paths']
+
+    rv = client.get('/foo')
+    assert rv.status_code == 200
+
+
+def test_empty_methodview_class(app, client):
+    class Foo(MethodView):
+        pass
+
+    app.add_url_rule('/foo', view_func=Foo.as_view('foo'))
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+    assert '/foo' not in rv.json['paths']

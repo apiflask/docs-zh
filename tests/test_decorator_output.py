@@ -1,32 +1,36 @@
+from dataclasses import dataclass
+
 from flask import make_response
 from flask.views import MethodView
 from openapi_spec_validator import validate_spec
 
-from .schemas import FooSchema
-from .schemas import QuerySchema
+from .schemas import Foo
+from .schemas import Query
+from apiflask import Schema
+from apiflask.fields import Field
 from apiflask.fields import String
 
 
 def test_output(app, client):
     @app.route('/foo')
-    @app.output(FooSchema)
+    @app.output(Foo)
     def foo():
         return {'name': 'bar'}
 
     @app.route('/bar')
-    @app.output(FooSchema, status_code=201)
+    @app.output(Foo, status_code=201)
     def bar():
         return {'name': 'foo'}
 
     @app.route('/baz')
-    @app.input(QuerySchema, 'query')
-    @app.output(FooSchema, status_code=201)
-    def baz(query):
-        if query['id'] == 1:
+    @app.input(Query, location='query')
+    @app.output(Foo, status_code=201)
+    def baz(query_data):
+        if query_data['id'] == 1:
             return {'name': 'baz'}, 202
-        elif query['id'] == 2:
+        elif query_data['id'] == 2:
             return {'name': 'baz'}, {'Location': '/baz'}
-        elif query['id'] == 3:
+        elif query_data['id'] == 3:
             return {'name': 'baz'}, 202, {'Location': '/baz'}
         return ({'name': 'baz'},)
 
@@ -61,23 +65,23 @@ def test_output(app, client):
 
 def test_output_with_methodview(app, client):
     @app.route('/')
-    class Foo(MethodView):
-        @app.output(FooSchema)
+    class FooAPI(MethodView):
+        @app.output(Foo)
         def get(self):
             return {'name': 'bar'}
 
-        @app.output(FooSchema, status_code=201)
+        @app.output(Foo, status_code=201)
         def post(self):
             return {'name': 'foo'}
 
-        @app.input(QuerySchema, 'query')
-        @app.output(FooSchema, status_code=201)
-        def delete(self, query):
-            if query['id'] == 1:
+        @app.input(Query, location='query')
+        @app.output(Foo, status_code=201)
+        def delete(self, query_data):
+            if query_data['id'] == 1:
                 return {'name': 'baz'}, 202
-            elif query['id'] == 2:
+            elif query_data['id'] == 2:
                 return {'name': 'baz'}, {'Location': '/baz'}
-            elif query['id'] == 3:
+            elif query_data['id'] == 3:
                 return {'name': 'baz'}, 202, {'Location': '/baz'}
             return ({'name': 'baz'},)
 
@@ -170,6 +174,35 @@ def test_output_with_dict_schema(app, client):
         'content']['application/json']['schema']['$ref'] == '#/components/schemas/Generated1'
 
 
+def test_output_with_object_schema(app, client):
+    class BaseResponse(Schema):
+        data = Field()
+        message = String(dump_default='Success')
+
+    app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
+
+    class PetOut(Schema):
+        name = String()
+
+    @dataclass
+    class Pet:
+        name: str
+
+    @dataclass
+    class Response:
+        data: Pet
+
+    @app.get('/foo')
+    @app.output(PetOut)
+    def foo():
+        pet = Pet('foo')
+        return Response(data=pet)
+
+    rv = client.get('/foo')
+    assert rv.status_code == 200
+    assert rv.json['data'] == {'name': 'foo'}
+
+
 def test_output_body_example(app, client):
     example = {'name': 'foo', 'id': 2}
     examples = {
@@ -184,12 +217,12 @@ def test_output_body_example(app, client):
     }
 
     @app.get('/foo')
-    @app.output(FooSchema, example=example)
+    @app.output(Foo, example=example)
     def foo():
         pass
 
     @app.get('/bar')
-    @app.output(FooSchema, examples=examples)
+    @app.output(Foo, examples=examples)
     def bar():
         pass
 
@@ -204,13 +237,13 @@ def test_output_body_example(app, client):
 
 def test_output_with_empty_dict_as_schema(app, client):
     @app.delete('/foo')
-    @app.output({}, 204)
+    @app.output({}, status_code=204)
     def delete_foo():
         return ''
 
     @app.route('/bar')
     class Bar(MethodView):
-        @app.output({}, 204)
+        @app.output({}, status_code=204)
         def delete(self):
             return ''
 
@@ -228,7 +261,7 @@ def test_output_with_empty_dict_as_schema(app, client):
 
 def test_output_response_object_directly(app, client):
     @app.get('/foo')
-    @app.output(FooSchema)
+    @app.output(Foo)
     def foo():
         return make_response({'message': 'hello'})
 
@@ -250,7 +283,7 @@ def test_response_links(app, client):
     }
 
     @app.get('/foo')
-    @app.output(FooSchema, links=links)
+    @app.output(Foo, links=links)
     def foo():
         pass
 
@@ -274,7 +307,7 @@ def test_response_links_ref(app, client):
         return spec
 
     @app.get('/foo')
-    @app.output(FooSchema, links=links)
+    @app.output(Foo, links=links)
     def foo():
         pass
 
@@ -282,3 +315,23 @@ def test_response_links_ref(app, client):
     assert rv.status_code == 200
     validate_spec(rv.json)
     assert 'getFoo' in rv.json['paths']['/foo']['get']['responses']['200']['links']
+
+
+def test_response_content_type(app, client):
+    @app.get('/foo')
+    @app.output(Foo)  # default value is application/json
+    def foo():
+        pass
+
+    @app.get('/bar')
+    @app.output(Foo, content_type='image/png')
+    def bar():
+        pass
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+    validate_spec(rv.json)
+    assert len(rv.json['paths']['/foo']['get']['responses']['200']['content']) == 1
+    assert len(rv.json['paths']['/bar']['get']['responses']['200']['content']) == 1
+    assert 'application/json' in rv.json['paths']['/foo']['get']['responses']['200']['content']
+    assert 'image/png' in rv.json['paths']['/bar']['get']['responses']['200']['content']

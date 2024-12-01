@@ -5,7 +5,7 @@ Welcome to APIFlask's documentation!
 
 ## Versions
 
-- [Latest](https://apiflask.com): The docs for the latest source code on GitHub.
+- [V2 (latest)](https://apiflask.com): The docs for the latest source code on GitHub.
 - [V1](https://v1.apiflask.com): The docs for the latest 1.x release.
 
 
@@ -14,7 +14,7 @@ Welcome to APIFlask's documentation!
 Go through the following chapters to learn how to use APIFlask:
 
 - **[Introduction](/)**: A general introduction for APIFlask.
-- **[Migrating from Flask](/migrating)**: Migrating guide and notes.
+- **[Migrating from Flask](/migrating)**: Migratioon guide and notes.
 - **[Basic Usage](/usage)**: Get started with APIFlask.
 - **[Request Handling](/request)**: The detailed introduction of the `@app.input` decorator.
 - **[Response Formatting](/response)**:  The detailed introduction of the `@app.output` decorator.
@@ -22,10 +22,12 @@ Go through the following chapters to learn how to use APIFlask:
 - **[OpenAPI Generating](/openapi)**: Introduce how the OpenAPI generation works and how to customize
 it with `@app.doc` decorator and configuration variables.
 - **[Authentication](/authentication)**: Introduce how to implement authentication support for your application.
-- **[Swagger UI and Redoc](/api-docs)**: Introduce the usage and configuration of the API
+- **[API Documentation](/api-docs)**: Introduce the usage and configuration of the API
 documentation tools.
 - **[Configuration](/configuration)**: A list of all the built-in configuration variables
 - **[Examples](/examples)**: A collection of application examples.
+- **[Tips](/tips)**: A collection of best practices and notes for web API development with APIFlask.
+- **[Migration Guide](/migration_guide)**: Migration guide for major versions of APIFlask.
 
 The following chapters are useful for contributors and who want to know more about
 APIFlask:

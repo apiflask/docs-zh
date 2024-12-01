@@ -35,6 +35,7 @@ from marshmallow.fields import TimeDelta as TimeDelta
 from marshmallow.fields import Tuple as Tuple
 from marshmallow.fields import URL as URL
 from marshmallow.fields import UUID as UUID
+from marshmallow.fields import Enum as Enum
 from webargs.fields import DelimitedList as DelimitedList
 from webargs.fields import DelimitedTuple as DelimitedTuple
 
@@ -51,14 +52,14 @@ class File(Field):
     from apiflask.fields import File
 
 
-    class ImageSchema(Schema):
+    class Image(Schema):
         image = File()
 
 
     @app.post('/images')
-    @app.input(ImageSchema, location='files')
-    def upload_image(data):
-        f = data['image']
+    @app.input(Image, location='files')
+    def upload_image(files_data):
+        f = files_data['image']
         # use `secure_filename` to clean the filename, notice it will only keep ascii characters
         filename = secure_filename(f.filename)
         f.save(os.path.join(the_path_to_uploads, filename))
@@ -78,15 +79,15 @@ class File(Field):
     from apiflask.fields import String, File
 
 
-    class ProfileInSchema(Schema):
+    class ProfileIn(Schema):
         name = String()
         avatar = File()
 
     @app.post('/profiles')
-    @app.input(ProfileInSchema, location='form_and_files')
-    def create_profile(data):
-        avatar_file = data['avatar']
-        name = data['name']
+    @app.input(ProfileIn, location='form_and_files')
+    def create_profile(form_and_files_data):
+        avatar_file = form_and_files_data['avatar']
+        name = form_and_files_data['name']
 
         # use `secure_filename` to clean the filename, notice it will only keep ascii characters
         avatar_filename = secure_filename(avatar_file.filename)
@@ -119,3 +120,44 @@ class File(Field):
         if not isinstance(value, FileStorage):
             raise self.make_error('invalid')
         return value
+
+
+class Config(Field):
+    """A field for Flask configuration values.
+
+    Examples:
+
+    ```python
+    from apiflask import APIFlask, Schema
+    from apiflask.fields import String, Config
+
+    app = APIFlask(__name__)
+    app.config['API_TITLE'] = 'Pet API'
+
+    class FooSchema(Schema):
+        user = String()
+        title = Config('API_TITLE')
+
+    @app.get('/foo')
+    @app.output(FooSchema)
+    def foo():
+        return {'user': 'test'}
+    ```
+
+    This field should only be used in an output schema. The `ValueError` will
+    be raised if the config key is not found in the app config.
+
+    *Version Added: 2.0.1*
+    """
+
+    _CHECK_ATTRIBUTE = False
+
+    def __init__(self, key, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.key = key
+
+    def _serialize(self, value, attr, obj, **kwargs) -> t.Any:
+        from flask import current_app
+        if self.key not in current_app.config:
+            raise ValueError(f'The key {self.key} is not found in the app config.')
+        return current_app.config[self.key]

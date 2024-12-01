@@ -71,6 +71,14 @@ swagger_ui_template = """
   <script src="{{ config.SWAGGER_UI_BUNDLE_JS }}"></script>
   <script src="{{ config.SWAGGER_UI_STANDALONE_PRESET_JS }}"></script>
   <script>
+    // we can get several config items of Function type
+    // referring to https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
+    var funcConfigItems = ['operationsSorter', 'tagsSorter', 'onComplete', 'requestInterceptor', 'responseInterceptor', 'modelPropertyMacro', 'parameterMacro']
+
+    function parseFunc(funcStr) {
+        return new Function('"use strict"; return ' + funcStr)()
+    }
+
     var baseConfig = {
       url: "{{ url_for('openapi.spec') }}",
       dom_id: "#swagger-ui",
@@ -88,21 +96,20 @@ swagger_ui_template = """
     {% if config.SWAGGER_UI_CONFIG %}
     var userConfig = {{ config.SWAGGER_UI_CONFIG | tojson }}
     for (var attr in userConfig) {
-      baseConfig[attr] = userConfig[attr]
+      baseConfig[attr] = funcConfigItems.includes(attr) ? parseFunc(userConfig[attr]) : userConfig[attr]
     }
     {% endif %}
     window.onload = function () {
       const ui = SwaggerUIBundle(baseConfig)
       {% if config.SWAGGER_UI_OAUTH_CONFIG %}
       oauthConfig = {}
-      var userOauthConfig = {{ config.SWAGGER_UI_OAUTH_CONFIG | tojson
-    }}
-    for (var attr in userOauthConfig) {
-      oauthConfig[attr] = userOauthConfig[attr]
+      var userOauthConfig = {{ config.SWAGGER_UI_OAUTH_CONFIG | tojson }}
+      for (var attr in userOauthConfig) {
+        oauthConfig[attr] = userOauthConfig[attr]
+      }
+      ui.initOAuth(oauthConfig)
+      {% endif %}
     }
-    ui.initOAuth(oauthConfig)
-    {% endif %}
-        }
   </script>
 </body>
 
@@ -207,6 +214,12 @@ elements_template = """
   <elements-api
     apiDescriptionUrl="{{ url_for('openapi.spec') }}"
     layout="{{ config.ELEMENTS_LAYOUT }}"
+    {% if config.ELEMENTS_CONFIG and 'router' in config.ELEMENTS_CONFIG %}
+      {% set router = config.ELEMENTS_CONFIG['router'] %}
+    {% else %}
+      {% set router = 'hash' %}
+    {% endif %}
+    router={{ router | tojson }}
     {% if config.ELEMENTS_CONFIG %}
       {% for key, value in config.ELEMENTS_CONFIG.items() %}
         {{ key }}={{ value | tojson }}

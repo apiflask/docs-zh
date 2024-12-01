@@ -47,13 +47,13 @@ Then you can set the security scheme with the `security` parameter in `app.doc()
 ```python hl_lines="5"
 @app.post('/pets')
 @my_auth_lib.protect  # protect the view with the decorator provided by external authentication library
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
+@app.input(PetIn)
+@app.output(PetOut, status_code=201)
 @app.doc(security='ApiKeyAuth')
-def create_pet(data):
+def create_pet(json_data):
     pet_id = len(pets)
     data['id'] = pet_id
-    pets.append(data)
+    pets.append(json_data)
     return pets[pet_id]
 ```
 

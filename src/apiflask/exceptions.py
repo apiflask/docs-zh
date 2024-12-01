@@ -15,7 +15,7 @@ class HTTPError(Exception):
 
     ```python
     from apiflask import APIFlask, HTTPError
-    from flask import escape
+    from markupsafe import escape
 
     app = APIFlask(__name__)
 
@@ -50,7 +50,7 @@ class HTTPError(Exception):
                 provide the addition information such as custom error code,
                 documentation URL, etc.
             headers: A dict of headers used in the error response.
-            extra_data: A dict of additioinal fields (custom error information) that will
+            extra_data: A dict of additional fields (custom error information) that will
                 added to the error response body.
 
         *Version changed: 0.9.0*
@@ -71,7 +71,7 @@ class HTTPError(Exception):
             # TODO: support use custom error status code?
             if status_code not in default_exceptions:
                 raise LookupError(
-                    f'No exception for status code "{status_code}",'
+                    f'No exception for status code {status_code!r}, '
                     ' valid error status code are "4XX" and "5XX".'
                 )
             self.status_code = status_code
@@ -110,7 +110,7 @@ def abort(
 
     ```python
     from apiflask import APIFlask, abort
-    from flask import escape
+    from markupsafe import escape
 
     app = APIFlask(__name__)
 
@@ -133,7 +133,7 @@ def abort(
             provide the addition information such as custom error code,
             documentation URL, etc.
         headers: A dict of headers used in the error response.
-        extra_data: A dict of additioinal fields (custom error information) that will
+        extra_data: A dict of additional fields (custom error information) that will
             added to the error response body.
 
     *Version changed: 0.4.0*

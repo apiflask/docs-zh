@@ -5,9 +5,8 @@ section first in the Basic Usage chapter for the basics of writing input and out
 
 Basic concepts on data schema:
 
-- APIFlask schema = [marshmallow](https://github.com/marshmallow-code/marshmallow) schema.
-- APIFlask's `apiflask.Schema` base class is directly imported from marshmallow, see the
-  [API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.schema.html)
+- APIFlask's `apiflask.Schema` base class is directly imported from marshmallow with some minor changes,
+  see the [API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.schema.html)
   for the details.
 - We recommend separating input and output schema. Since the output data is not
   validated, you don't need to define validators on output fields.
@@ -73,7 +72,7 @@ Or you prefer to keep a reference:
 ```python
 from apiflask import Schema, fields
 
-class FooBarSchema(Schema):
+class FooBar(Schema):
     foo = fields.String()
     bar = fields.Integer()
 ```
@@ -156,9 +155,10 @@ API documentation: <https://webargs.readthedocs.io/en/latest/api.html#module-web
 
 ## APIFlask fields
 
-API documentation: <https://apiflask.com/api/fields/#apiflask.fields.File>
+API documentation: <https://apiflask.com/api/fields>
 
-- `File`
+- `File`: represents a file input.
+- `Config`: dump a config value from Flask's `config` object.
 
 !!! tip
 
@@ -168,7 +168,8 @@ API documentation: <https://apiflask.com/api/fields/#apiflask.fields.File>
 
 ## Data validators
 
-APIFlask's `aipflask.validators` contains all the validator class provided by marshmallow:
+APIFlask's `aipflask.validators` contains all the validator class provided by marshmallow
+and two extra validators `FileType` and `FileSize`:
 
 - `ContainsNoneOf`
 - `ContainsOnly`
@@ -182,8 +183,11 @@ APIFlask's `aipflask.validators` contains all the validator class provided by ma
 - `Regexp`
 - `URL`
 - `Validator`
+- `FileType`
+- `FileSize`
 
-See the [API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.validate.html)
+See the [marshmallow API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.validate.html)
+and the [apiflask API documentation](https://apiflask.com/api/validators)
 for the detailed usage.
 
 When specifying validators for a field, you can pass a single validator to the `validate` parameter:
@@ -194,7 +198,7 @@ from apiflask.fields import String
 from apiflask.validators import OneOf
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
 
@@ -206,7 +210,7 @@ from apiflask.fields import String
 from apiflask.validators import Length, OneOf
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     category = String(required=True, validate=[OneOf(['dog', 'cat']), Length(0, 10)])
 ```
 
@@ -301,12 +305,12 @@ from apiflask.fields import String, Integer, Field
 
 app = APIFlask(__name__)
 
-class BaseResponseSchema(Schema):
+class BaseResponse(Schema):
     data = Field()  # the data key
     message = String()
     code = Integer()
 
-app.config['BASE_RESPONSE_SCHEMA'] = BaseResponseSchema
+app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
 ```
 
 The default data key is "data", you can change it to match your data field name in your schema

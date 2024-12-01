@@ -1,8 +1,9 @@
 import typing as t
 
-from marshmallow import Schema as Schema
+from marshmallow import Schema as BaseSchema
 from marshmallow.fields import Integer
 from marshmallow.fields import URL
+from marshmallow.orderedset import OrderedSet
 
 
 # schema for the detail object of validation error response
@@ -50,23 +51,40 @@ http_error_schema: t.Dict[str, t.Any] = {
 }
 
 
+class Schema(BaseSchema):
+    """A base schema for all schemas.
+
+    The different between marshmallow's `Schema` and APIFlask's `Schema` is that the latter
+    sets `set_class` to `OrderedSet` by default.
+
+    *Version Added: 1.2.0*
+    """
+    # use ordered set to keep the order of fields
+    # can be removed when https://github.com/marshmallow-code/marshmallow/pull/1896 is merged
+    set_class = OrderedSet
+
+
 class EmptySchema(Schema):
-    """An empty schema used to generate a 204 response.
+    """An empty schema used to generate empty response/schema.
+
+    For 204 response, you can use this schema to
+    generate an empty response body. For 200 response, you can use this schema
+    to generate an empty response body schema.
 
     Example:
 
     ```python
     @app.delete('/foo')
-    @app.output(EmptySchema)
+    @app.output(EmptySchema, status_code=204)
     def delete_foo():
         return ''
     ```
 
-    It equals to:
+    It equals to use `{}`:
 
     ```python
     @app.delete('/foo')
-    @app.output({}, 204)
+    @app.output({}, status_code=204)
     def delete_foo():
         return ''
     ```
@@ -86,3 +104,64 @@ class PaginationSchema(Schema):
     prev = URL()
     first = URL()
     last = URL()
+
+
+class FileSchema(Schema):
+    """A schema for file response.
+
+    This is used to represent a file response in OpenAPI spec. If you want to
+    embed a file as base64 string in the JSON body, you can use the
+    `apiflask.fields.File` field instead.
+
+    Example:
+
+    ```python
+    from apiflask.schemas import FileSchema
+    from flask import send_from_directory
+
+    @app.get('/images/<filename>')
+    @app.output(
+        FileSchema(type='string', format='binary'),
+        content_type='image/png',
+        description='An image file'
+    )
+    @app.doc(summary="Returns the image file")
+    def get_image(filename):
+        return send_from_directory(app.config['IMAGE_FOLDER'], filename)
+    ```
+
+    The output OpenAPI spec will be:
+
+    ```yaml
+    paths:
+    /images/{filename}:
+      get:
+        summary: Returns the image file
+        responses:
+          '200':
+            description: An image file
+            content:
+              image/png:
+                schema:
+                  type: string
+                  format: binary
+    ```
+
+    *Version Added: 2.0.0*
+    """
+    def __init__(
+        self,
+        *,
+        type: str = 'string',
+        format: str = 'binary'
+    ) -> None:
+        """
+        Arguments:
+            type: The type of the file. Defaults to `string`.
+            format: The format of the file, one of `binary` and `base64`. Defaults to `binary`.
+        """
+        self.type = type
+        self.format = format
+
+    def __repr__(self) -> str:
+        return f'schema: \n  type: {self.type}\n  format: {self.format}'

@@ -43,7 +43,7 @@ def verify_token(token: str) -> t.Union[User, None]:
             current_app.config['SECRET_KEY'],
         )
         id = data['id']
-        user = get_user_by_id[id]
+        user = get_user_by_id(id)
     except JoseError:
         return None
     except IndexError:
@@ -51,12 +51,12 @@ def verify_token(token: str) -> t.Union[User, None]:
     return user
 
 
-class TokenSchema(Schema):
+class Token(Schema):
     token = String()
 
 
 @app.post('/token/<int:id>')
-@app.output(TokenSchema)
+@app.output(Token)
 def get_token(id: int):
     if get_user_by_id(id) is None:
         abort(404)
@@ -67,5 +67,5 @@ def get_token(id: int):
 
 @app.get('/name/<int:id>')
 @app.auth_required(auth)
-def get_secret():
+def get_secret(id):
     return auth.current_user.secret

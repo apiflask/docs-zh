@@ -16,7 +16,6 @@ class PetModel(db.Model):
     category = db.Column(db.String(10))
 
 
-@app.before_first_request
 def init_database():
     db.create_all()
 
@@ -31,12 +30,12 @@ def init_database():
     db.session.commit()
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer()
     name = String()
     category = String()
@@ -48,42 +47,46 @@ def say_hello():
 
 
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
-    return PetModel.query.get_or_404(pet_id)
+    return db.get_or_404(PetModel, pet_id)
 
 
 @app.get('/pets')
-@app.output(PetOutSchema(many=True))
+@app.output(PetOut(many=True))
 def get_pets():
     return PetModel.query.all()
 
 
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
-def create_pet(data):
-    pet = PetModel(**data)
+@app.input(PetIn, location='json')
+@app.output(PetOut, status_code=201)
+def create_pet(json_data):
+    pet = PetModel(**json_data)
     db.session.add(pet)
     db.session.commit()
     return pet
 
 
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetInSchema(partial=True))
-@app.output(PetOutSchema)
-def update_pet(pet_id, data):
-    pet = PetModel.query.get_or_404(pet_id)
-    for attr, value in data.items():
+@app.input(PetIn(partial=True), location='json')
+@app.output(PetOut)
+def update_pet(pet_id, json_data):
+    pet = db.get_or_404(PetModel, pet_id)
+    for attr, value in json_data.items():
         setattr(pet, attr, value)
     db.session.commit()
     return pet
 
 
 @app.delete('/pets/<int:pet_id>')
-@app.output({}, 204)
+@app.output({}, status_code=204)
 def delete_pet(pet_id):
-    pet = PetModel.query.get_or_404(pet_id)
+    pet = db.get_or_404(PetModel, pet_id)
     db.session.delete(pet)
     db.session.commit()
     return ''
+
+
+with app.app_context():
+    init_database()

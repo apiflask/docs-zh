@@ -1,4 +1,4 @@
-# API documentations
+# API documentation
 
 APIFlask provides support to the following API documentation UIs:
 
@@ -64,7 +64,12 @@ Now the paths to docs and spec will be <http://localhost:5000/openapi/docs>
 and <http://localhost:5000/openapi/openapi.json>.
 
 
-## Add custom API documentations
+## Add authentication to API documentation
+
+See *[Protect OpenAPI endpoints](/openapi/#protect-openapi-endpoints)* for more details.
+
+
+## Add custom API documentation
 
 You can easily add support to other API docs or serve the supported docs UI by yourself.
 
@@ -115,7 +120,7 @@ In this way, you can serve multiple API docs at the same time, or add auth prote
 to the docs view. If you want to use the built-in configuration variable for API docs or
 just want to write less code, you can import the API docs template directly from APIFlask:
 
-```python hl_lines="2 10"
+```python
 from apiflask import APIFlask
 from apiflask.ui_templates import redoc_template
 from flask import render_template_string
@@ -129,9 +134,9 @@ def my_redoc():
 ```
 
 
-## Disable the API documentations globally
+## Disable the API documentation globally
 
-You can set the `docs_path` parameter to `None` to disable Swagger UI documentation:
+You can set the `docs_path` parameter to `None` to disable the API documentation:
 
 ```python
 from apiflask import APIFlask
@@ -156,9 +161,9 @@ See *[Disable the OpenAPI support for specific blueprints](/openapi/#disable-for
 See *[Disable the OpenAPI support for specific view functions](/openapi/#disable-for-specific-view-functions)* for more details.
 
 
-## Configure Swagger UI/Redoc
+## Configure API documentations
 
-The following configuration variables can be used to config Swagger UI/Redoc:
+The following configuration variables can be used to configure API docs:
 
 - `DOCS_FAVICON`
 - `REDOC_USE_GOOGLE_FONT`
@@ -166,12 +171,17 @@ The following configuration variables can be used to config Swagger UI/Redoc:
 - `SWAGGER_UI_LAYOUT`
 - `SWAGGER_UI_CONFIG`
 - `SWAGGER_UI_OAUTH_CONFIG`
+- `ELEMENTS_LAYOUT`
+- `ELEMENTS_CONFIG`
+- `RAPIDOC_THEME`
+- `RAPIDOC_CONFIG`
+- `RAPIPDF_CONFIG`
 
-See *[Configuration](/configuration/#api-documentation)* for the
+See *[Configuration](/configuration/#api-documentations)* for the
 introduction and examples of these configuration variables.
 
 
-## Use different CDN server for Swagger UI/Redoc resources
+## Use different CDN server for API documentation resources
 
 Each resource (JavaScript/CSS files) URL has a configuration variable. You can pass
 the URL from your preferred CDN server to the corresponding configuration variables:
@@ -207,7 +217,7 @@ See *[Configuration](/configuration/#api-documentations)* for the
 introduction and examples of these configuration variables.
 
 
-## Serve Swagger UI/Redoc from local resources
+## Serve API documentation from local resources
 
 Like what you need to do in the last section, to use local resources, you can pass
 the URL of local static files to the corresponding configuration variables:

@@ -10,10 +10,21 @@ app = APIFlask(__name__)
 @dataclass
 class PetIn:
     name: str = field(
-        metadata={'required': True, 'validate': Length(min=1, max=10)}
+        metadata={
+            'required': True,
+            'validate': Length(min=1, max=10),
+            'example': 'Medor',
+            'description': 'This will be printed in the generated doc. '
+                           'The "example" value "Medor" will be fed '
+                           'into the "try it"/"Send API request".',
+        }
     )
     category: str = field(
-        metadata={'required': True, 'validate': OneOf(['cat', 'dog'])}
+        default='dog',
+        metadata={
+            'required': True,
+            'validate': OneOf(['cat', 'dog'])
+        }
     )
 
 
@@ -51,8 +62,8 @@ def get_pets():
 
 
 @app.post('/pets')
-@app.input(PetIn.Schema)
-@app.output(PetOut.Schema, 201)
+@app.input(PetIn.Schema, location='json', arg_name='pet')
+@app.output(PetOut.Schema, status_code=201)
 def create_pet(pet: PetIn):
     pet_id = len(pets)
     pets.append({
@@ -66,7 +77,7 @@ def create_pet(pet: PetIn):
 # partial=True is not supported in marshmallow-dataclass currently
 # https://github.com/lovasoa/marshmallow_dataclass/issues/169
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetIn.Schema)
+@app.input(PetIn.Schema, location='json', arg_name='pet')
 @app.output(PetOut.Schema)
 def update_pet(pet_id, pet: PetIn):
     if pet_id > len(pets) - 1:
@@ -77,7 +88,7 @@ def update_pet(pet_id, pet: PetIn):
 
 
 @app.delete('/pets/<int:pet_id>')
-@app.output({}, 204)
+@app.output({}, status_code=204)
 def delete_pet(pet_id):
     if pet_id > len(pets) - 1:
         abort(404)

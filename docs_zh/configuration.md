@@ -97,7 +97,7 @@ app.config.from_pyfile('settings.py')
 
     from .settings import CATEGORIES  # 导入配置变量
 
-    class PetInSchema(Schema):
+    class PetIn(Schema):
         name = String(required=True, validate=Length(0, 10))
         category = String(required=True, validate=OneOf(CATEGORIES))  # 使用配置变量
     ```
@@ -699,7 +699,7 @@ app.config['NOT_FOUND_DESCRIPTION'] = 'Missing'
 数据验证错误响应的默认返回值。
 
 - 类型: `int`
-- 默认值: `400`
+- 默认值: `422`
 - 示例：
 
 ```python
@@ -790,12 +790,12 @@ from apiflask.fields import String, Integer, Field
 
 app = APIFlask(__name__)
 
-class BaseResponseSchema(Schema):
+class BaseResponse(Schema):
     message = String()
     status_code = Integer()
     data = Field()
 
-app.config['BASE_RESPONSE_SCHEMA'] = BaseResponseSchema
+app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
 ```
 
 !!! warning "Version >= 0.9.0"
@@ -822,7 +822,7 @@ app.config['BASE_RESPONSE_DATA_KEY'] = 'data'
     这个配置变量在 [0.9.0 版本](/changelog/#version-090) 中添加。
 
 
-### Swagger UI 和 Redoc
+## API documentation
 
 以下配置变量被用来自定义 Swagger UI 和 Redoc 文档。
 

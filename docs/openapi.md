@@ -41,6 +41,22 @@ a spec process function to update the spec before it returns. See
 *[Register a spec processor](#register-a-spec-processor)* for more details.
 
 
+### Automation behaviors
+
+When generating the OpenAPI spec from your code, APIFlask has some automation behaviors:
+
+- Generate a default operation summary from the name of the view function.
+- Generate a default operation description from the docstring of the view function.
+- Generate tags from the name of blueprints.
+- Add a default 200 response for any views registered to the application.
+- Add a 400 response if the view is decorated with `app.input`.
+- Add a 401 response if the view is decorated with `app.auth_required`.
+- Add a 404 response if the view's URL rule contains variables.
+
+All these automation behaviors can be disabled with
+[the corresponding configurations](/configuration/#automation-behavior-control).
+
+
 ### The spec format
 
 The default format of the OpenAPI spec is JSON, while YAML is also supported.
@@ -48,7 +64,7 @@ If you want to enable the YAML support, install APIFlask with the `yaml` extra
 (it will install `PyYAML`):
 
 ```
-$ pip install apiflask[yaml]
+$ pip install "apiflask[yaml]"
 ```
 
 Now you can change the format via the `SPEC_FORMAT` config:
@@ -63,7 +79,7 @@ app.config['SPEC_FORMAT'] = 'yaml'
 The default URL path for spec endpoint is `/openapi.json`, you may also want to update
 it when you want to use YAML format:
 
-```python hl_lines="3"
+```python
 from apiflask import APIFlask
 
 app = APIFlask(__name__, spec_path='/openapi.yaml')
@@ -411,9 +427,9 @@ your view functions or view classes automatically, while you may want to change 
 The operation `responses` will be generated when you add the `output` decorator
 on the view function:
 
-```python hl_lines="2"
+```python
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
     return pets[pet_id]
 ```
@@ -421,9 +437,9 @@ def get_pet(pet_id):
 You can set the `description` and `status_code` (default to `200`) through the
 corresponding parameters in the `output` decorator:
 
-```python hl_lines="2"
+```python
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema, status_code=200, description='Output data of a pet')
+@app.output(PetOut, status_code=200, description='Output data of a pet')
 def get_pet(pet_id):
     return pets[pet_id]
 ```
@@ -448,9 +464,9 @@ You can disable these behaviors or configure them through related
 The operation `requestBody` will be generated when you add the `input` decorator
 on the view function:
 
-```python hl_lines="2"
+```python
 @app.post('/pets')
-@app.input(PetInSchema)
+@app.input(PetIn)
 def create_pet(pet_id):
     pass
 ```
@@ -458,9 +474,9 @@ def create_pet(pet_id):
 When you specify a request data location other than `json`, the operation `parameters`
 will be generated instead:
 
-```python hl_lines="2"
+```python
 @app.get('/pets')
-@app.input(PetQuerySchema, location='query')
+@app.input(PetQuery, location='query')
 def get_pets():
     pass
 ```
@@ -502,7 +518,7 @@ you passed.
 To set the OpenAPI spec for schema fields, you can pass a dict with the `metadata` keyword:
 
 ```python
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(metadata={'description': 'The name of the pet.'})
 ```
 
@@ -553,7 +569,7 @@ to `validate`:
 from apiflask import Schema
 from apiflask.fields import String
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(
         required=True,
         validate=Length(0, 10),
@@ -602,13 +618,13 @@ See details in
 When rendering the spec in the API documentation, the docs tool will generate a default
 example for you. If you want to add a custom example, you can use the `example` parameter to pass a dict as the response `example` in the `input`/`output` decorator:
 
-```python hl_lines="6"
-from apiflask import APIFlask, input
+```python
+from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
 @app.post('/pets')
-@app.input(PetInSchema, example={'name': 'foo', 'category': 'cat'})
+@app.input(PetIn, example={'name': 'foo', 'category': 'cat'})
 def create_pet():
     pass
 ```
@@ -617,7 +633,7 @@ For multiple examples, use the `examples` parameter and pass a dict of dict, eve
 example dict maps a unique name:
 
 ```python hl_lines="17"
-from apiflask import APIFlask, output
+from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
@@ -633,7 +649,7 @@ examples = {
 }
 
 @app.get('/pets')
-@app.output(PetOutSchema, examples=examples)
+@app.output(PetOut, examples=examples)
 def get_pets():
     pass
 ```
@@ -645,7 +661,7 @@ def get_pets():
     you can set the field example (property-level example) in the data schema:
 
     ```python
-    class PetQuerySchema(Schema):
+    class PetQuery(Schema):
         name = String(metadata={'example': 'Flash'})
     ```
 
@@ -669,8 +685,8 @@ pet_links = {
 }
 
 @app.post('/pets')
-@app.output(PetOutSchem, links=pet_links)
-def new_pet(data):
+@app.output(PetOut, links=pet_links)
+def new_pet():
     pass
 ```
 
@@ -693,9 +709,105 @@ def update_spec(spec):
 
 
 @app.post('/pets')
-@app.output(PetOutSchem, links={'getAddressByUserId': {'$ref': '#/components/links/getAddressByUserId'}})
-def new_pet(data):
+@app.output(PetOut, links={'getAddressByUserId': {'$ref': '#/components/links/getAddressByUserId'}})
+def new_pet():
     pass
+```
+
+
+## Response `headers`
+
+!!! warning "Version >= 2.1.0"
+
+    This feature was added in the [version 2.1.0](/changelog/#version-210).
+
+You can pass a schema class to `headers` in the output decorator:
+```python
+class Header(Schema):
+    x_token = String(
+        data_key='X-Token',
+        metadata={'description': 'A custom token header'}
+    )
+
+@app.post('/pets')
+@app.output(PetOut, headers=Header)
+def new_pet():
+    pass
+```
+
+When passing the schema to `headers`, you can also use a dict instead of a schema class:
+
+```python
+@app.post('/pets')
+@app.output(PetOut, headers={'X-Token': String(metadata={'description': 'A custom token header'})})
+def new_pet():
+    pass
+```
+
+
+## Request and response content type / media type
+
+For request, the content type is set automatically based on the input location:
+
+- `json`: `application/json`
+- `form`: `application/x-www-form-urlencoded`
+- `files`, `form_and_files`: `multipart/form-data`
+
+For response, the default content type is `application/json`. You can set a custom content type with the
+`content_type` parameter (APIFlask >= 1.3.0) in the `output()` decorator:
+
+```python
+@app.post('/foo')
+@app.output({FooSchema}, content_type='custom/type')
+def get_foo():
+    pass
+```
+
+!!! note
+
+    For consistency with Flask/Werkzeug, we use `content_type` instead of `media_type`.
+
+
+## File response
+
+!!! warning "Version >= 2.0.0"
+
+    This feature was added in the [version 2.0.0](/changelog/#version-0200).
+
+When you create an endpoint to return a file, the `FileSchema` should be used:
+
+```python
+from apiflask.schemas import FileSchema
+from flask import send_from_directory
+
+@app.get('/images/<filename>')
+@app.output(FileSchema, content_type='image/png')
+def get_image(filename):
+    return send_from_directory(app.config['IMAGE_FOLDER'], filename)
+```
+
+Acoording the OpenAPI spec, the schema may be omit if the file format is binary, so you
+can also use `EmptySchema`:
+
+```python
+from apiflask.schemas import EmptySchema
+
+@app.get('/images/<filename>')
+@app.output(EmptySchema, content_type='image/png')
+```
+
+Or:
+
+```python
+@app.get('/images/<filename>')
+@app.output({}, content_type='image/png')
+```
+
+You can use `type` and `format` to set the custom file type and format
+(one of `binary` and `base64`, defaults to `binary`):
+
+```python
+@app.output(FileSchema(format='base64'), content_type='image/png')
 ```
 
 
@@ -708,8 +820,8 @@ There is also a `doc` decorator that can be used to set operation fields explici
 
 Here is the example of using the `doc` decorator to set `summary` and `description`:
 
-```python hl_lines="6"
-from apiflask import APIFlask, doc
+```python
+from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
@@ -729,7 +841,7 @@ You only need to set the tag if you are not using a blueprint or you want to con
 yourself. The `tags` parameter accepts a list of tag name string, they should match the values you
 passed in `TAGS` config or `app.tags` attribute:
 
-```python hl_lines="2"
+```python
 @app.get('/')
 @app.doc(tags=['Foo'])
 def hello():
@@ -742,27 +854,112 @@ def hello():
 As described above, APIFlask will add some responses based on the decorators you added
 on the view function (200, 400, 401, 404). Sometimes you may want to add alternative
 responses the view function will return, then you can use the `@app.doc(responses=...)`
-parameter, it accepts the following values:
+parameter:
 
-- A list of status code int, for example, `[404, 418]`.
-- A dict in a format of `{<STATUS_CODE>: <DESCRIPTION>}`, this will allow you to
-set a custom description for each status, for example,
-`{404: 'Not Found', 418: 'Blah...'}`. If a response with the same status code is
-already exist, the existing description will be overwritten.
-
-```python hl_lines="2"
+```python
 @app.get('/')
 @app.doc(responses=[204, 404])
 def hello():
     return 'Hello'
 ```
 
+The `responses` parameter accepts the following values:
+
+- A list of status code int, for example, `[404, 418]`.
+- A dict in a format of `{<STATUS_CODE>: <DESCRIPTION>}`, this will allow you to
+set a custom description for each status, for example,
+`{404: 'Not Found', 418: 'Blah...'}`. If a response with the same status code is
+already exist, the existing description will be overwritten.
+- A dict in a format of `{<STATUS_CODE>: {RESPONSE}}`, where the `{RESPONSE}` is
+a complete spec dict for the response. For example:
+
+```python
+@app.doc(responses={
+    400: {
+        'description': 'Custom error',
+        'content': {
+            'application/json': {
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'data': {
+                            'type': 'object',
+                            'properties': {
+                                'error_id': {'type': 'integer'},
+                                'message': {'type': 'string'},
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+})
+```
+
+You can also pass a schema class for the `schema`:
+
+```python
+@app.doc(responses={
+    404: {
+        'description': 'Custom error',
+        'content': {
+            'application/json': {
+                'schema': SomeErrorSchema
+            }
+        }
+    }
+})
+```
+
+
+### Multiple media types for a response
+
+You can add additional media types for a response and these will be added to
+the OpenAPI document. This allows you to describe situations where you may
+return a different representation of a resource, perhaps by performing
+[content negotiation][content_negotiation] based on some parameter of the
+request. This is done by supplying custom `responses` and including
+additional media types in the `content` section of each response, as
+in the following:
+
+```python
+@app.get("/pets/<int:pet_id>")
+@app.input(Accept, location="headers")
+@app.output(PetOut)
+@app.doc(responses={
+    200: {
+        'description': 'Return the resource in either JSON or HTML',
+        'content': {
+            'text/html': {}
+        }
+    }
+})
+def get_pet(pet_id, headers_data):
+    pet = pets[pet_id]
+    if "html" in headers_data.get('accept'):
+        result = render_template('pets/pet-detail.j2.html', pet=pet)
+    else:
+        result = pet
+    return result
+```
+
+The previous snippet shows how you could inspect the request's `Accept`
+header and then return either an HTML representation or a JSON representation
+of the same resource.
+
+Note that APIFlask thus allows you to complement the default `application/json`
+media type, which is automatically added by APIFlask for views that include the
+`@app.output` decorator with additional media types.
+
+[content_negotiation]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation
+
 
 ### Mark an operation as `deprecated`
 
 You can mark an operation as deprecated with the `deprecated` parameter:
 
-```python hl_lines="2"
+```python
 @app.get('/')
 @app.doc(deprecated=True)
 def hello():
@@ -776,9 +973,9 @@ def hello():
 
     This feature was added in the [version 0.10.0](/changelog/#version-0100).
 
-You can set `operationId` for a view funtion (operation) with the `operation_id` parameter:
+You can set `operationId` for a view function (operation) with the `operation_id` parameter:
 
-```python hl_lines="2"
+```python
 @app.get('/')
 @app.doc(operation_id='myCustomHello')
 def hello():
@@ -814,12 +1011,26 @@ def hello():
 
 You can use the `description` parameter to set the description for auth objects:
 
-```python hl_lines="4"
+```python
 from apiflask import APIFlask, HTTPTokenAuth
 
 app = APIFlask(__name__)
 auth = HTTPTokenAuth(description='some description')
 ```
+
+
+## Protect OpenAPI endpoints
+
+If you want to apply an authentication or custom handling logic
+to the OpenAPI endpoints, you can use the `SPEC_DECORATORS`,
+`DOCS_DECORATORS` and `SWAGGER_UI_OAUTH_REDIRECT_DECORATORS` configuration options:
+
+```python
+app.config['SPEC_DECORATORS'] = [app.auth_required(auth)]
+app.config['DOCS_DECORATORS'] = [app.auth_required(auth)]
+```
+
+Check out a full example at [examples/openapi/custom_decorators/app.py](https://github.com/apiflask/apiflask/tree/main/examples/openapi/custom_decorators/app.py)
 
 
 ## Disable the OpenAPI support
@@ -864,8 +1075,8 @@ bp = APIBlueprint('foo', __name__, enable_openapi=False)
 To hide a view function from API documentations (and OpenAPI spec), you
 can set the `hide` parameter to `True` in the `doc` decorator:
 
-```python hl_lines="6"
-from apiflask import APIFlask, doc
+```python
+from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
@@ -904,11 +1115,25 @@ def update_spec(spec):
     return spec
 ```
 
-Notice the format of the spec depends on the value of the configuration
-variable `SPEC_FORMAT` (defaults to `'json'`):
+By default, the `spec` argument is a dict. When the `SPEC_PROCESSOR_PASS_OBJECT` config is
+`True`, the `spec` argument will be an
+[`apispec.APISpec`](https://apispec.readthedocs.io/en/latest/api_core.html#apispec.APISpec) object.
 
-- `'json'` -> dict
-- `'yaml'` -> string
+```python
+from apiflask import APIFlask
+
+app = APIFlask(__name__)
+app.config['SPEC_PROCESSOR_PASS_OBJECT'] = True
+
+class FooSchema(Schema):
+    id = Integer()
+
+@app.spec_processor
+def update_spec(spec):
+    spec.title = 'Updated Title'
+    spec.components.schema('Foo', schema=FooSchema)  # add a schema manually
+    return spec
+```
 
 Check out [the example application](https://github.com/apiflask/apiflask/tree/main/examples/openapi/app.py)
 for OpenAPI support, see [the examples page](/examples) for running the example application.

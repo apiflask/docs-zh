@@ -69,6 +69,7 @@ def create_pet():
 	你可以将 `app.route()` 与快捷路由装饰器混用。需要注意的是，
 	Flask 2.0 版本已经内置了这些方法。
 
+
 ## 基于 MethodView 的视图类
 
 !!! warning "Version >= 0.5.0"
@@ -79,11 +80,10 @@ APIFlask 支持基于 `MethodView` 的视图类，例如：
 
 ```python
 from apiflask import APIFlask, Schema, input, output
-from flask.views import MethodView
+from apiflask.views import MethodView  # 从 apiflak.views 导入
 
 # ...
 
-@app.route('/pets/<int:pet_id>', endpoint='pet')
 class Pet(MethodView):
 
     decorators = [doc(responses=[404])]
@@ -105,10 +105,9 @@ class Pet(MethodView):
     @app.output(PetOutSchema)
     def patch(self, pet_id, data):
         pass
-```
 
-APIFlask 支持对一个基于 `MethodView` 的视图类添加 `route` 装饰器，但是你也可以使用
-`add_url_rule` 方法来灵活注册这个视图类。
+app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
+```
 
 虽然基于 `View` 的类视图不被支持，你依然可以使用它，尽管目前 APIFlask 还无法为它生成
 OpenAPI spec 以及 API 文档。
@@ -159,7 +158,7 @@ def foo():
     `abort_json()` 函数在 [0.4.0 版本](/changelog/#version-040) 中被重命名为 `abort()`。
 
 
-### JSON 错误以及混用 `flask.abort()` 和 `apiflask.abort()`
+### JSON 错误响应以及混用 `flask.abort()` 和 `apiflask.abort()`
 
 当你将应用基类改为 `APIFlask` 时，所有的错误响应将会自动转换为 JSON 格式，即使你在使用
 Flask 提供的 `abort()` 函数：

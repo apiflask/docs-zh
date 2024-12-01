@@ -24,8 +24,13 @@ JSON_SPEC_MIMETYPE: str = 'application/json'
 LOCAL_SPEC_PATH: t.Optional[str] = None
 LOCAL_SPEC_JSON_INDENT: int = 2
 SYNC_LOCAL_SPEC: t.Optional[bool] = None
+SPEC_PROCESSOR_PASS_OBJECT: bool = False
+SPEC_DECORATORS: t.Optional[t.List[t.Callable]] = None
+DOCS_DECORATORS: t.Optional[t.List[t.Callable]] = None
+SWAGGER_UI_OAUTH_REDIRECT_DECORATORS: t.Optional[t.List[t.Callable]] = None
 # Automation behavior control
 AUTO_TAGS: bool = True
+AUTO_SERVERS: bool = True
 AUTO_OPERATION_SUMMARY: bool = True
 AUTO_OPERATION_DESCRIPTION: bool = True
 AUTO_OPERATION_ID: bool = False
@@ -38,22 +43,22 @@ SUCCESS_DESCRIPTION: str = 'Successful response'
 NOT_FOUND_DESCRIPTION: str = 'Not found'
 VALIDATION_ERROR_DESCRIPTION: str = 'Validation error'
 AUTH_ERROR_DESCRIPTION: str = 'Authentication error'
-VALIDATION_ERROR_STATUS_CODE: int = 400
+VALIDATION_ERROR_STATUS_CODE: int = 422
 AUTH_ERROR_STATUS_CODE: int = 401
 VALIDATION_ERROR_SCHEMA: OpenAPISchemaType = validation_error_schema
 HTTP_ERROR_SCHEMA: OpenAPISchemaType = http_error_schema
 BASE_RESPONSE_SCHEMA: t.Optional[OpenAPISchemaType] = None
 BASE_RESPONSE_DATA_KEY: str = 'data'
-# Swagger UI and Redoc
+# API docs
 DOCS_FAVICON: str = 'https://apiflask.com/_assets/favicon.png'
 REDOC_USE_GOOGLE_FONT: bool = True
-REDOC_STANDALONE_JS: str = 'https://cdn.jsdelivr.net/npm/redoc@next/bundles/\
+REDOC_STANDALONE_JS: str = 'https://cdn.redoc.ly/redoc/latest/bundles/\
 redoc.standalone.js'  # TODO: rename to REDOC_JS
 REDOC_CONFIG: t.Optional[dict] = None
-SWAGGER_UI_CSS: str = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css'
-SWAGGER_UI_BUNDLE_JS: str = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/\
+SWAGGER_UI_CSS: str = 'https://unpkg.com/swagger-ui-dist/swagger-ui.css'
+SWAGGER_UI_BUNDLE_JS: str = 'https://unpkg.com/swagger-ui-dist/\
 swagger-ui-bundle.js'  # TODO: rename to SWAGGER_UI_JS
-SWAGGER_UI_STANDALONE_PRESET_JS: str = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/\
+SWAGGER_UI_STANDALONE_PRESET_JS: str = 'https://unpkg.com/swagger-ui-dist/\
 swagger-ui-standalone-preset.js'  # TODO: rename to SWAGGER_UI_STANDALONE_JS
 SWAGGER_UI_LAYOUT: str = 'BaseLayout'
 SWAGGER_UI_CONFIG: t.Optional[dict] = None
@@ -67,3 +72,9 @@ RAPIDOC_THEME: str = 'light'
 RAPIDOC_CONFIG: t.Optional[dict] = None
 RAPIPDF_JS: str = 'https://unpkg.com/rapipdf/dist/rapipdf-min.js'
 RAPIPDF_CONFIG: t.Optional[dict] = None
+
+# Version changed: 1.2.0
+# Change VALIDATION_ERROR_STATUS_CODE from 400 to 422.
+
+# Version added: 1.3.0
+# SPEC_PROCESSOR_PASS_OBJECT

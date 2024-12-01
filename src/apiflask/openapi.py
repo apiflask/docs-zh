@@ -2,18 +2,22 @@ from __future__ import annotations
 
 import typing as t
 
-from apispec import APISpec
-
-from .exceptions import _bad_schema_message
 from .security import HTTPBasicAuth
 from .security import HTTPTokenAuth
 from .types import HTTPAuthType
-from .types import OpenAPISchemaType
-from .types import SchemaType
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from .blueprint import APIBlueprint
 
+
+default_bypassed_endpoints: t.List[str] = [
+    'static',
+    'openapi.spec',
+    'openapi.docs',
+    'openapi.redoc',
+    'openapi.swagger_ui_oauth_redirect',
+    '_debug_toolbar.static',  # Flask-DebugToolbar
+]
 
 default_response = {
     'schema': {},
@@ -22,6 +26,8 @@ default_response = {
     'example': None,
     'examples': None,
     'links': None,
+    'content_type': 'application/json',
+    'headers': None,
 }
 
 
@@ -62,16 +68,20 @@ def get_auth_name(
     auth_names: t.List[str]
 ) -> str:
     """Get auth name from auth object."""
-    name: str
-    if isinstance(auth, HTTPBasicAuth):
-        name = 'BasicAuth'
-    elif isinstance(auth, HTTPTokenAuth):
-        if auth.scheme.lower() == 'bearer' and auth.header is None:
-            name = 'BearerAuth'
+    name: str = ''
+    if hasattr(auth, 'security_scheme_name'):
+        name = auth.security_scheme_name  # type: ignore
+    if not name:
+        if isinstance(auth, HTTPBasicAuth):
+            name = 'BasicAuth'
+        elif isinstance(auth, HTTPTokenAuth):
+            if auth.scheme.lower() == 'bearer' and auth.header is None:
+                name = 'BearerAuth'
+            else:
+                name = 'ApiKeyAuth'
         else:
-            name = 'ApiKeyAuth'
-    else:
-        raise TypeError('Unknown authentication scheme.')
+            raise TypeError('Unknown authentication scheme.')
+
     if name in auth_names:
         v = 2
         new_name = f'{name}_{v}'
@@ -112,7 +122,7 @@ def get_security_and_security_schemes(
     """Make security and security schemes from given auth names and schemes."""
     security: t.Dict[HTTPAuthType, str] = {}
     security_schemes: t.Dict[str, t.Dict[str, str]] = {}
-    for name, auth in zip(auth_names, auth_schemes):
+    for name, auth in zip(auth_names, auth_schemes):  # noqa: B905
         security[auth] = name
         security_schemes[name] = get_security_scheme(auth)
         if hasattr(auth, 'description') and auth.description is not None:
@@ -140,60 +150,6 @@ def get_path_description(func: t.Callable) -> str:
         # use the remain lines of docstring as description
         return '\n'.join(docs[1:]).strip()
     return ''
-
-
-def add_response(
-    operation: dict,
-    status_code: str,
-    schema: t.Union[SchemaType, dict],
-    description: str,
-    example: t.Optional[t.Any] = None,
-    examples: t.Optional[t.Dict[str, t.Any]] = None,
-    links: t.Optional[t.Dict[str, t.Any]] = None,
-) -> None:
-    """Add response to operation.
-
-    *Version changed: 0.10.0*
-
-    - Add `links` parameter.
-    """
-    operation['responses'][status_code] = {}
-    if status_code != '204':
-        operation['responses'][status_code]['content'] = {
-            'application/json': {
-                'schema': schema
-            }
-        }
-    operation['responses'][status_code]['description'] = description
-    if example is not None:
-        operation['responses'][status_code]['content'][
-            'application/json']['example'] = example
-    if examples is not None:
-        operation['responses'][status_code]['content'][
-            'application/json']['examples'] = examples
-    if links is not None:
-        operation['responses'][status_code]['links'] = links
-
-
-def add_response_with_schema(
-    spec: APISpec,
-    operation: dict,
-    status_code: str,
-    schema: OpenAPISchemaType,
-    schema_name: str,
-    description: str
-) -> None:
-    """Add response with given schema to operation."""
-    if isinstance(schema, type):
-        schema = schema()
-        add_response(operation, status_code, schema, description)
-    elif isinstance(schema, dict):
-        if schema_name not in spec.components.schemas:
-            spec.components.schema(schema_name, schema)
-        schema_ref = {'$ref': f'#/components/schemas/{schema_name}'}
-        add_response(operation, status_code, schema_ref, description)
-    else:
-        raise TypeError(_bad_schema_message)
 
 
 def get_argument(argument_type: str, argument_name: str) -> t.Dict[str, t.Any]:

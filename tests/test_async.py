@@ -1,14 +1,7 @@
-import pytest
 from openapi_spec_validator import validate_spec
 
-from .schemas import FooSchema
+from .schemas import Foo
 from apiflask import HTTPTokenAuth
-
-
-@pytest.fixture(autouse=True)
-def skip_async_test(app):
-    if not hasattr(app, 'ensure_sync'):
-        pytest.skip('This test requires Flask 2.0 or higher')
 
 
 def test_async_view(app, client):
@@ -73,9 +66,9 @@ def test_doc_on_async_view(app, client):
 def test_input_on_async_view(app, client):
 
     @app.post('/')
-    @app.input(FooSchema)
-    async def index(data):
-        return data
+    @app.input(Foo)
+    async def index(json_data):
+        return json_data
 
     data = {'id': 1, 'name': 'foo'}
     rv = client.post('/', json=data)
@@ -86,7 +79,7 @@ def test_input_on_async_view(app, client):
 def test_output_on_async_view(app, client):
 
     @app.get('/foo')
-    @app.output(FooSchema)
+    @app.output(Foo)
     async def foo():
         return {'id': 1, 'name': 'foo'}
 
@@ -107,10 +100,10 @@ def test_async_doc_input_and_output_decorator(app, client):
 
     @app.post('/')
     @app.doc(summary='Test Root Endpoint')
-    @app.input(FooSchema)
-    @app.output(FooSchema)
-    async def index(data):
-        return data
+    @app.input(Foo)
+    @app.output(Foo)
+    async def index(json_data):
+        return json_data
 
     payload = {'id': 1, 'name': 'foo'}
     rv = client.post('/', json=payload)

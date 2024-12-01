@@ -5,30 +5,30 @@ from flask.views import MethodView
 from openapi_spec_validator import validate_spec
 from werkzeug.datastructures import FileStorage
 
-from .schemas import BarSchema
-from .schemas import FilesSchema
-from .schemas import FooSchema
-from .schemas import FormAndFilesSchema
-from .schemas import FormSchema
-from .schemas import QuerySchema
+from .schemas import Bar
+from .schemas import EnumPathParameter
+from .schemas import Files
+from .schemas import Foo
+from .schemas import Form
+from .schemas import FormAndFiles
 from apiflask.fields import String
 
 
 def test_input(app, client):
     @app.route('/foo', methods=['POST'])
-    @app.input(FooSchema)
-    def foo(schema):
-        return schema
+    @app.input(Foo)
+    def foo(json_data):
+        return json_data
 
     @app.route('/bar')
     class Bar(MethodView):
-        @app.input(FooSchema)
-        def post(self, data):
-            return data
+        @app.input(Foo)
+        def post(self, json_data):
+            return json_data
 
     for rule in ['/foo', '/bar']:
         rv = client.post(rule)
-        assert rv.status_code == 400
+        assert rv.status_code == 422
         assert rv.json == {
             'detail': {
                 'json': {'name': ['Missing data for required field.']}
@@ -37,7 +37,7 @@ def test_input(app, client):
         }
 
         rv = client.post(rule, json={'id': 1})
-        assert rv.status_code == 400
+        assert rv.status_code == 422
         assert rv.json == {
             'detail': {
                 'json': {'name': ['Missing data for required field.']}
@@ -62,13 +62,13 @@ def test_input(app, client):
 
 def test_input_with_query_location(app, client):
     @app.route('/foo', methods=['POST'])
-    @app.input(FooSchema, location='query')
-    @app.input(BarSchema, location='query')
-    def foo(schema, schema2):
-        return {'name': schema['name'], 'name2': schema2['name2']}
+    @app.input(Foo, location='query', arg_name='foo')
+    @app.input(Bar, location='query', arg_name='bar')
+    def foo(foo, bar):
+        return {'name': foo['name'], 'name2': bar['name2']}
 
     rv = client.post('/foo')
-    assert rv.status_code == 400
+    assert rv.status_code == 422
     assert rv.json == {
         'detail': {
             'query': {'name': ['Missing data for required field.']}
@@ -77,7 +77,7 @@ def test_input_with_query_location(app, client):
     }
 
     rv = client.post('/foo?id=1&name=bar')
-    assert rv.status_code == 400
+    assert rv.status_code == 422
     assert rv.json == {
         'detail': {
             'query': {'name2': ['Missing data for required field.']}
@@ -96,7 +96,7 @@ def test_input_with_query_location(app, client):
 
 def test_input_with_form_location(app, client):
     @app.post('/')
-    @app.input(FormSchema, location='form')
+    @app.input(Form, location='form')
     def index(form_data):
         return form_data
 
@@ -116,7 +116,7 @@ def test_input_with_form_location(app, client):
 
 def test_input_with_files_location(app, client):
     @app.post('/')
-    @app.input(FilesSchema, location='files')
+    @app.input(Files, location='files')
     def index(files_data):
         data = {}
         if 'image' in files_data and isinstance(files_data['image'], FileStorage):
@@ -125,9 +125,7 @@ def test_input_with_files_location(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    # TODO: Failed validating 'oneOf' in schema
-    # https://github.com/p1c2u/openapi-spec-validator/issues/113
-    # validate_spec(rv.json)
+    validate_spec(rv.json)
     assert 'multipart/form-data' in rv.json['paths']['/']['post']['requestBody']['content']
     assert rv.json['paths']['/']['post']['requestBody'][
         'content']['multipart/form-data']['schema']['$ref'] == '#/components/schemas/Files'
@@ -148,20 +146,18 @@ def test_input_with_files_location(app, client):
 
 def test_input_with_form_and_files_location(app, client):
     @app.post('/')
-    @app.input(FormAndFilesSchema, location='form_and_files')
-    def index(form_data):
+    @app.input(FormAndFiles, location='form_and_files')
+    def index(form_and_files_data):
         data = {}
-        if 'name' in form_data:
+        if 'name' in form_and_files_data:
             data['name'] = True
-        if 'image' in form_data and isinstance(form_data['image'], FileStorage):
+        if 'image' in form_and_files_data and isinstance(form_and_files_data['image'], FileStorage):
             data['image'] = True
         return data
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    # TODO: Failed validating 'oneOf' in schema
-    # https://github.com/p1c2u/openapi-spec-validator/issues/113
-    # validate_spec(rv.json)
+    validate_spec(rv.json)
     assert 'multipart/form-data' in rv.json['paths']['/']['post']['requestBody']['content']
     assert rv.json['paths']['/']['post']['requestBody'][
         'content']['multipart/form-data']['schema']['$ref'] == '#/components/schemas/FormAndFiles'
@@ -181,6 +177,36 @@ def test_input_with_form_and_files_location(app, client):
     assert rv.json == {'name': True, 'image': True}
 
 
+def test_input_with_path_location(app, client):
+    @app.get('/<image_type>')
+    @app.input(EnumPathParameter, location='path')
+    def index(image_type, path_data):
+        return {'image_type': image_type}
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+    validate_spec(rv.json)
+    assert '/{image_type}' in rv.json['paths']
+    assert len(rv.json['paths']['/{image_type}']['get']['parameters']) == 1
+    assert rv.json['paths']['/{image_type}']['get']['parameters'][0]['in'] == 'path'
+    assert rv.json['paths']['/{image_type}']['get']['parameters'][0]['name'] == 'image_type'
+    assert rv.json['paths']['/{image_type}']['get']['parameters'][0]['schema'] == {
+        'type': 'string',
+        'enum': ['jpg', 'png', 'tiff', 'webp'],
+    }
+
+    rv = client.get('/png')
+    assert rv.status_code == 200
+    assert rv.json == {'image_type': 'png'}
+
+    rv = client.get('/gif')
+    assert rv.status_code == 422
+    assert rv.json['message'] == 'Validation error'
+    assert 'path' in rv.json['detail']
+    assert 'image_type' in rv.json['detail']['path']
+    assert rv.json['detail']['path']['image_type'] == ['Must be one of: jpg, png, tiff, webp.']
+
+
 @pytest.mark.parametrize('locations', [
     ['files', 'form'],
     ['files', 'json'],
@@ -194,19 +220,13 @@ def test_input_with_form_and_files_location(app, client):
     ['json_or_form', 'form_and_files'],
 ])
 def test_multiple_input_body_location(app, locations):
+    arg_name_1 = f'{locations[0]}_data'  # noqa: F841
+    arg_name_2 = f'{locations[1]}_data'  # noqa: F841
     with pytest.raises(RuntimeError):
         @app.route('/foo')
-        @app.input(FooSchema, locations[0])
-        @app.input(BarSchema, locations[1])
-        def foo(query):
-            pass
-
-
-def test_bad_input_location(app):
-    with pytest.raises(ValueError):
-        @app.route('/foo')
-        @app.input(QuerySchema, 'bad')
-        def foo(query):
+        @app.input(Foo, location=locations[0])
+        @app.input(Bar, location=locations[1])
+        def foo(arg_name_1, arg_name_2):
             pass
 
 
@@ -216,27 +236,27 @@ def test_input_with_dict_schema(app, client):
     }
 
     @app.get('/foo')
-    @app.input(dict_schema, 'query')
-    def foo(query):
-        return query
+    @app.input(dict_schema, location='query')
+    def foo(query_data):
+        return query_data
 
     @app.post('/bar')
     @app.input(dict_schema, schema_name='MyName')
-    def bar(body):
-        return body
+    def bar(json_data):
+        return json_data
 
     @app.post('/baz')
     @app.input(dict_schema)
-    def baz(body):
-        return body
+    def baz(json_data):
+        return json_data
 
     @app.post('/spam')
     @app.input(dict_schema)
-    def spam(body):
-        return body
+    def spam(json_data):
+        return json_data
 
     rv = client.get('/foo')
-    assert rv.status_code == 400
+    assert rv.status_code == 422
     assert rv.json == {
         'detail': {
             'query': {'name': ['Missing data for required field.']}
@@ -249,7 +269,7 @@ def test_input_with_dict_schema(app, client):
     assert rv.json == {'name': 'grey'}
 
     rv = client.post('/bar')
-    assert rv.status_code == 400
+    assert rv.status_code == 422
     assert rv.json == {
         'detail': {
             'json': {'name': ['Missing data for required field.']}
@@ -306,22 +326,22 @@ def test_input_body_example(app, client):
     }
 
     @app.post('/foo')
-    @app.input(FooSchema, example=example)
+    @app.input(Foo, example=example)
     def foo():
         pass
 
     @app.post('/bar')
-    @app.input(FooSchema, examples=examples)
+    @app.input(Foo, examples=examples)
     def bar():
         pass
 
     @app.route('/baz')
     class Baz(MethodView):
-        @app.input(FooSchema, example=example)
+        @app.input(Foo, example=example)
         def get(self):
             pass
 
-        @app.input(FooSchema, examples=examples)
+        @app.input(Foo, examples=examples)
         def post(self):
             pass
 

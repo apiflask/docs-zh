@@ -15,7 +15,7 @@ The error handling in APIFlask is based on the following basic concepts:
 !!! tip
 
     The error handler registered with `app.errorhandler` for specific HTTP errors will be
-    used over the custom error response processor.
+    used over the custom error response processor registered with `app.error_processor`.
 
 
 ## Automatic JSON error response
@@ -205,7 +205,7 @@ The decorated callback function will be called in the following situations:
 - An exception triggered with [`abort`][apiflask.exceptions.abort].
 
 You can still register a specific error handler for a specific error code or
-exception with the `app.errorhandler(code_or_exection)` decorator. In that case,
+exception with the `app.errorhandler(code_or_exception)` decorator. In that case,
 the return value of the error handler will be used as the response when the
 corresponding error or exception happens.
 
@@ -231,7 +231,7 @@ The error object is an instance of [`HTTPError`][apiflask.exceptions.HTTPError],
 so you can get error information via its attributes:
 
 - status_code: If the error is triggered by a validation error, the value will be
-    400 (default) or the value you passed in config `VALIDATION_ERROR_STATUS_CODE`.
+    422 (default) or the value you passed in config `VALIDATION_ERROR_STATUS_CODE`.
     If the error is triggered by [`HTTPError`][apiflask.exceptions.HTTPError]
     or [`abort`][apiflask.exceptions.abort], it will be the status code
     you passed. Otherwise, it will be the status code set by Werkzueg when
@@ -253,9 +253,9 @@ so you can get error information via its attributes:
     ...
     ```
 
-    The value of `location` can be `json` (i.e., request body) or `query`
-    (i.e., query string) depending on the place where the validation error
-    happened.
+    The value of `location` can be `json` (i.e., request body), `query`
+    (i.e., query string) or other values depending on the place where the
+    validation error happened (it matches the value you passed in `app.input`).
 
 - headers: The value will be `{}` unless you pass it in `HTTPError` or `abort`.
 - extra_data: Additional error information passed with `HTTPError` or `abort`.
@@ -275,7 +275,7 @@ def my_error_processor(error):
 
 !!! tip
 
-    I would recommend keeping the `detail` in the response since it contains
+    I would recommend keeping the `error.detail` data in the response since it contains
     the detailed information about the validation error when it happened.
 
 After you change the error response, you have to update the corresponding OpenAPI schema

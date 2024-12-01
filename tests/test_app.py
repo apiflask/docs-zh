@@ -1,14 +1,16 @@
 import pytest
+from apispec import BasePlugin
 from flask import Blueprint
 from flask.views import MethodView
 from openapi_spec_validator import validate_spec
 
-from .schemas import BarSchema
-from .schemas import FooSchema
-from .schemas import PaginationSchema
+from .schemas import Bar
+from .schemas import Foo
+from .schemas import Pagination
 from apiflask import APIBlueprint
 from apiflask import APIFlask
 from apiflask import Schema
+from apiflask.exceptions import abort
 from apiflask.fields import Integer
 from apiflask.fields import String
 
@@ -46,15 +48,15 @@ def test_json_errors_reuse_werkzeug_headers(app, client):
     def foo():
         pass
 
-    rv = client.post('/foo')
-    assert rv.status_code == 405
-    assert 'Allow' in rv.headers
-
     # test manually raise 405
     @app.get('/bar')
     def bar():
         from werkzeug.exceptions import MethodNotAllowed
         raise MethodNotAllowed(valid_methods=['GET'])
+
+    rv = client.post('/foo')
+    assert rv.status_code == 405
+    assert 'Allow' in rv.headers
 
     rv = client.get('/bar')
     assert rv.status_code == 405
@@ -64,30 +66,30 @@ def test_json_errors_reuse_werkzeug_headers(app, client):
 
 def test_view_function_arguments_order(app, client):
 
-    class QuerySchema(Schema):
+    class Query(Schema):
         foo = String(required=True)
         bar = String(required=True)
 
-    class PetSchema(Schema):
+    class Pet(Schema):
         name = String(required=True)
         age = Integer(dump_default=123)
 
     @app.post('/pets/<int:pet_id>/toys/<int:toy_id>')
-    @app.input(QuerySchema, 'query')
-    @app.input(PaginationSchema, 'query')
-    @app.input(PetSchema)
-    def pets(pet_id, toy_id, query, pagination, body):
+    @app.input(Query, location='query', arg_name='query')
+    @app.input(Pagination, location='query', arg_name='pagination')
+    @app.input(Pet, location='json')
+    def pets(pet_id, toy_id, query, pagination, json_data):
         return {'pet_id': pet_id, 'toy_id': toy_id,
-                'foo': query['foo'], 'bar': query['bar'], 'pagination': pagination, **body}
+                'foo': query['foo'], 'bar': query['bar'], 'pagination': pagination, **json_data}
 
     @app.route('/animals/<int:pet_id>/toys/<int:toy_id>')
     class Animals(MethodView):
-        @app.input(QuerySchema, 'query')
-        @app.input(PaginationSchema, 'query')
-        @app.input(PetSchema)
-        def post(self, pet_id, toy_id, query, pagination, body):
+        @app.input(Query, location='query', arg_name='query')
+        @app.input(Pagination, location='query', arg_name='pagination')
+        @app.input(Pet, location='json')
+        def post(self, pet_id, toy_id, query, pagination, json_data):
             return {'pet_id': pet_id, 'toy_id': toy_id,
-                    'foo': query['foo'], 'bar': query['bar'], 'pagination': pagination, **body}
+                    'foo': query['foo'], 'bar': query['bar'], 'pagination': pagination, **json_data}
 
     rv = client.post('/pets/1/toys/3?foo=yes&bar=no',
                      json={'name': 'dodge', 'age': 5})
@@ -189,26 +191,27 @@ def test_skip_raw_blueprint(app, client):
 
 
 def test_dispatch_static_request(app, client):
-    # keyword arguments
-    rv = client.get('/static/hello.css')  # endpoint: static
-    assert rv.status_code == 404
-
     # positional arguments
     @app.get('/mystatic/<int:pet_id>')
-    @app.input(FooSchema)
-    def mystatic(pet_id, foo):  # endpoint: mystatic
-        return {'pet_id': pet_id, 'foo': foo}
+    @app.input(Foo)
+    def mystatic(pet_id, json_data):  # endpoint: mystatic
+        return {'pet_id': pet_id, 'foo': json_data}
+
+    # positional arguments
+    # blueprint static route accepts both keyword/positional arguments
+    bp = APIBlueprint('foo', __name__, static_folder='static')
+    app.register_blueprint(bp, url_prefix='/foo')
 
     rv = client.get('/mystatic/2', json={'id': 1, 'name': 'foo'})
     assert rv.status_code == 200
     assert rv.json['pet_id'] == 2
     assert rv.json['foo'] == {'id': 1, 'name': 'foo'}
 
-    # positional arguments
-    # blueprint static route accepts both keyword/positional arguments
-    bp = APIBlueprint('foo', __name__, static_folder='static')
-    app.register_blueprint(bp, url_prefix='/foo')
     rv = client.get('/foo/static/hello.css')  # endpoint: foo.static
+    assert rv.status_code == 404
+
+    # keyword arguments
+    rv = client.get('/static/hello.css')  # endpoint: static
     assert rv.status_code == 404
 
 
@@ -237,19 +240,19 @@ def test_schema_name_resolver(app, client, resolver):
     app.schema_name_resolver = resolver
 
     @app.route('/foo')
-    @app.output(FooSchema)
+    @app.output(Foo)
     def foo():
         pass
 
     @app.route('/bar')
-    @app.output(BarSchema(partial=True))
+    @app.output(Bar(partial=True))
     def bar():
         pass
 
     spec = app.spec
     if resolver == schema_name_resolver1:
-        assert 'FooSchema' in spec['components']['schemas']
-        assert 'BarSchema_' in spec['components']['schemas']
+        assert 'Foo' in spec['components']['schemas']
+        assert 'Bar_' in spec['components']['schemas']
     elif resolver == schema_name_resolver2:
         assert 'Foo' in spec['components']['schemas']
         assert 'BarPartial' in spec['components']['schemas']
@@ -295,3 +298,70 @@ def test_return_list_as_json(app, client):
     assert rv.status_code == 201
     assert rv.headers['Content-Type'] == 'application/json'
     assert rv.json == test_list
+
+
+def test_apispec_plugins(app):
+    class TestPlugin(BasePlugin):
+        def operation_helper(self, path=None, operations=None, **kwargs) -> None:
+            operations.update({'post': 'some_injected_test_data'})
+
+    app.spec_plugins = [TestPlugin()]
+
+    @app.get('/plugin_test')
+    def single_value():
+        return 'plugin_test'
+
+    spec = app._get_spec('json')
+
+    assert spec['paths']['/plugin_test'].get('post') == 'some_injected_test_data'
+
+
+def test_spec_decorators(app, client):
+    def auth_decorator(f):
+        def wrapper(*args, **kwargs):
+            abort(401)
+            return f(*args, **kwargs)
+        return wrapper
+
+    app.config['SPEC_DECORATORS'] = [auth_decorator]
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 401
+
+    rv = client.get('/docs')
+    assert rv.status_code == 200
+
+
+def test_docs_decorators(app, client):
+    def auth_decorator(f):
+        def wrapper(*args, **kwargs):
+            abort(401)
+            return f(*args, **kwargs)
+        return wrapper
+
+    app.config['DOCS_DECORATORS'] = [auth_decorator]
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+
+    rv = client.get('/docs')
+    assert rv.status_code == 401
+
+
+def test_swagger_ui_oauth_redirect_decorators(app, client):
+    def auth_decorator(f):
+        def wrapper(*args, **kwargs):
+            abort(401)
+            return f(*args, **kwargs)
+        return wrapper
+
+    app.config['SWAGGER_UI_OAUTH_REDIRECT_DECORATORS'] = [auth_decorator]
+
+    rv = client.get('/openapi.json')
+    assert rv.status_code == 200
+
+    rv = client.get('/docs')
+    assert rv.status_code == 200
+
+    rv = client.get('/docs/oauth2-redirect')
+    assert rv.status_code == 401

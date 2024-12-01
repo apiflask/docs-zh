@@ -11,12 +11,12 @@ pets = [
 ]
 
 
-class PetInSchema(Schema):
+class PetIn(Schema):
     name = String(required=True, validate=Length(0, 10))
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer()
     name = String()
     category = String()
@@ -28,7 +28,7 @@ def say_hello():
 
 
 @app.get('/pets/<int:pet_id>')
-@app.output(PetOutSchema)
+@app.output(PetOut)
 def get_pet(pet_id):
     if pet_id > len(pets) - 1 or pets[pet_id].get('deleted'):
         abort(404)
@@ -36,34 +36,34 @@ def get_pet(pet_id):
 
 
 @app.get('/pets')
-@app.output(PetOutSchema(many=True))
+@app.output(PetOut(many=True))
 def get_pets():
     return pets
 
 
 @app.post('/pets')
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
-def create_pet(data):
+@app.input(PetIn, location='json')
+@app.output(PetOut, status_code=201)
+def create_pet(json_data):
     pet_id = len(pets)
-    data['id'] = pet_id
-    pets.append(data)
+    json_data['id'] = pet_id
+    pets.append(json_data)
     return pets[pet_id]
 
 
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetInSchema(partial=True))
-@app.output(PetOutSchema)
-def update_pet(pet_id, data):
+@app.input(PetIn(partial=True), location='json')
+@app.output(PetOut)
+def update_pet(pet_id, json_data):
     if pet_id > len(pets) - 1:
         abort(404)
-    for attr, value in data.items():
+    for attr, value in json_data.items():
         pets[pet_id][attr] = value
     return pets[pet_id]
 
 
 @app.delete('/pets/<int:pet_id>')
-@app.output({}, 204)
+@app.output({}, status_code=204)
 def delete_pet(pet_id):
     if pet_id > len(pets) - 1:
         abort(404)
