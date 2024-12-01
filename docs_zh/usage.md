@@ -1,23 +1,21 @@
-# Basic Usage
+# 基本用法
 
-This chapter will cover the primary usage of APIFlask.
+本章将介绍 APIFlask 的主要用法。
 
-
-## Prerequisites
+## 要求
 
 - Python 3.7+
 - Flask 1.1+
 
-You also need to know the basic of Flask. Here are some useful free resources
-to learn Flask:
+在此之前，你还需要了解 Flask 的基本知识。这里有一些有用的免费资源学习 Flask ：
 
-- [Flask's Documentation](https://flask.palletsprojects.com/){target=_blank}
-- [Official Flask Tutorial](https://flask.palletsprojects.com/tutorial/#tutorial){target=_blank}
-- [The Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world){target=_blank}
-- [Flask for Beginners](https://github.com/greyli/flask-tutorial){target=_blank} (Chinese)
+- [Flask's Documentation（官方文档）](https://flask.palletsprojects.com/){target=_blank}
+- [Official Flask Tutorial（官方教程）](https://flask.palletsprojects.com/tutorial/#tutorial){target=_blank}
+- [The Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world)
+  {target=_blank}
+- [Flask for Beginners](https://github.com/greyli/flask-tutorial){target=_blank} (中文)
 
-
-## Installation
+## 安装
 
 === "Linux/macOS"
 
@@ -31,11 +29,11 @@ to learn Flask:
     > pip install apiflask
     ```
 
-!!! tip "Python dependency management tools"
+!!! tip "Python 依赖管理工具"
 
-    The command above use [pip][_pip]{target=_blank} to install APIFlask, you can also use
-    other dependencies management tools such as [Poetry][_poetry]{target=_blank},
-    [Pipenv][_pipenv]{target=_blank}, [PDM][_pdm]{target=_blank}, etc.
+    以上的命令是通过 [pip][_pip]{target=_blank} 来安装 APIFlask， 你也可以通过其他依赖管理工具如
+    [Poetry][_poetry]{target=_blank}、[Pipenv][_pipenv]{target=_blank}、[PDM][_pdm]{target=_blank}
+    等来安装.
 
     [_pip]: https://pip.pypa.io/
     [_poetry]: https://python-poetry.org/
@@ -43,11 +41,10 @@ to learn Flask:
     [_pdm]: https://pdm.fming.dev/
 
 
-## Create an `app` instance with `APIFlask` class
+## 使用 `APIFlask` 类创建 `app` 实例
 
-Similar to what you did to create a Flask `app` instance, you will need to import
-`APIFlask` class from `apiflask` package, then create the `app` instance from
-the `APIFlask` class:
+与 Flask 创建 `app` 实例类似，你需要从 `apiflask` 包中导入 `APIFlask` 类，再通过
+`APIFlask` 类创建 `app` 实例：
 
 ```python hl_lines="1 3"
 from apiflask import APIFlask
@@ -60,38 +57,35 @@ def index():
     return {'message': 'hello'}
 ```
 
-The default title and version of the API will be `APIFlask` and `0.1.0`; you can
-pass the `title` and the `version` arguments to change these settings:
+API 的默认标题和版本号为 `APIFlask` 和 `0.1.0`；你可以 指定 `title` 和 `version` 参数来更改这些设置：
 
 ```python
 app = APIFlask(__name__, title='Wonderful API', version='1.0')
 ```
 
-To run this application, you can save it as `app.py`, then run the `flask run` command:
+要运行程序，你需要将代码保存为 `app.py` 文件，然后使用 `flask run` 命令运行：
 
 ```bash
 $ flask run
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
-If your script's name isn't `app.py`, you will need to declare which application
-should be started before execute `flask run`. See the note below for more details.
+如果脚本的名称不是 `app.py`，则需要在执行 `flask run` 命令时声明你要运行的应用。
+更多详细信息，请参阅下面的注释。
 
-??? note "Assign the specific application to run"
+??? note "指定要运行的特定应用"
 
-    In default, Flask will look for an application instance called `app` or `application`
-    or application factory function called `create_app` or `make_app` in module/package
-    called `app` or `wsgi`. That's why I recommend naming the file as `app.py`. If you
-    use a different name, then you need to tell Flask the application module path via the
-    `--app` (Flask 2.2+) option or the environment variable `FLASK_APP`. For example, if
-    your application instance stored in a file called `hello.py`, then you will need to
-    set `--app` or `FLASK_APP` to the module name `hello`:
+    默认情况下，Flask 将在名为 `app` 或 `wsgi` 的模块/包中查找名为 `app` 或 `application`
+    的应用实例，或查找名为 `create_app` 或 `make_app` 的应用工厂函数。因此，我推荐将文件命名
+    为 `app.py`。如果你使用不同的名称，你需要通过 `--app` （Flask 2.2+）选项或环境变量 `FLASK_APP`
+    来告诉 Flask 应用模块的路径。例如，如果你的应用实例存储在名为 `hello.py` 的文件中，那么需要将
+    `--app` 或 `FLASK_APP` 设置为模块名称 `hello`：
 
     ```
     $ flask --app hello run
     ```
 
-    or:
+    或者：
 
     === "Bash"
 
@@ -111,8 +105,7 @@ should be started before execute `flask run`. See the note below for more detail
         > $env:FLASK_APP="hello"
         ```
 
-    Similarly, If your application instance or application factory function stored in
-    `mypkg/__init__.py`, you can pass the package name:
+    同样的，如果应用实例或应用工厂函数存储在 `mypkg/__init__.py` 中，你可以传递包名：
 
     ```
     $ flask --app mypkg run
@@ -136,14 +129,13 @@ should be started before execute `flask run`. See the note below for more detail
         > $env:FLASK_APP="mypkg"
         ```
 
-    However, if the application instance or application factory function store in
-    `mypkg/myapp.py`, you will need to use:
+    但是，如果你的应用实例或者应用工厂函数存储在 `mypkg/myapp.py` 中，你需要使用：
 
     ```
     $ flask --app mypkg.myapp run
     ```
 
-    or:
+    或者:
 
     === "Bash"
 
@@ -163,12 +155,11 @@ should be started before execute `flask run`. See the note below for more detail
         > $env:FLASK_APP="mypkg.myapp"
         ```
 
-    See *[Application Discovery][_app_discovery]{target=_blank}* for more details.
+    查看 *[Application Discovery][_app_discovery]{target=_blank}* 获取更多详细信息。
 
     [_app_discovery]: https://flask.palletsprojects.com/cli/#application-discovery
 
-If you want to make the application restart whenever the code changes, you can enable
-reloader with `--reload` option:
+如果你想在代码更改时自动重启应用，可以使用 `--reload` 选项:
 
 ```bash
 $ flask run --reload
@@ -176,7 +167,7 @@ $ flask run --reload
 
 !!! tip
 
-    Install `watchdog` for a better performance for the application reloader:
+    安装 `watchdog` 以获得更好的重启性能：
 
     === "Linux/macOS"
 
@@ -190,21 +181,18 @@ $ flask run --reload
         > pip install watchdog
         ```
 
-We highly recommend enabling "debug mode" when developing Flask application. See the
-note below for the details.
+我们推荐在开发 Flask 应用时启用“调试模式”。查看以下注释了解更多细节。
 
-??? note "Enable the debug mode"
+??? note "开启调试模式"
 
-    Flask can automatically restart and reload the application when code changes
-    and display useful debug information for errors. To enable these features
-    in your Flask application, we will need to use the `--debug` option:
+    Flask 可以在代码更改时自动重启和重新加载应用程序，并显示有用的错误调试信息。
+    要在 Flask 应用中启用这些功能，我们需要使用 `--debug` 选项：
 
     ```
     $ flask --debug run
     ```
 
-    If you are not using the latest Flask version (>2.2), you will need to set
-    the environment variable `FLASK_DEBUG` to `True` instead:
+    如果使用的不是最新的 Flask 版本（> 2.2），你需要将环境变量 `FLASK_DEBUG` 设置为 `True`。
 
     === "Bash"
 
@@ -224,19 +212,17 @@ note below for the details.
         > $env:FLASK_DEBUG="True"
         ```
 
-    See *[Debug Mode][_debug_mode]{target=_blank}* for more details.
+    查看 *[Debug Mode][_debug_mode]{target=_blank}* 获取更多关于调试模式的信息。
 
     [_debug_mode]: https://flask.palletsprojects.com/quickstart/#debug-mode
 
 
-## Manage environment variables with python-dotenv
+## 使用 python-dotenv 管理环境变量
 
-Manually setting environment is a bit inconvenient since the variable only lives in
-the current terminal session. You have to set it every time you reopen the terminal
-or reboot the computer. That's why we need to use python-dotenv, and Flask also
-has special support for it.
+手动设置环境变量很麻烦，因为变量只在当前的终端会话中存在。你必须在每次重新打开终端或重启电脑时都设置它。
+这就是为什么我们需要使用 python-dotenv，同样 Flask 还有专门的支持。
 
-Install `python-dotenv` with pip:
+通过pip安装 `python-dotenv` ：
 
 === "Linux/macOS"
 
@@ -250,8 +236,7 @@ Install `python-dotenv` with pip:
     > pip install python-dotenv
     ```
 
-Now we can store environment variables in .env files. Flask-related environment
-variables should keep in a file called `.flaskenv`:
+现在，我们可以将环境变量存储在 .env 文件中。Flask 相关的环境变量应该保存在名为 `.flaskenv` 的文件中：
 
 ```ini
 # save as .flaskenv
@@ -259,7 +244,7 @@ FLASK_APP=hello
 FLASK_ENV=development
 ```
 
-While the secrets values should save in the `.env` file:
+当需要保存敏感信息时，应该保存在名为 `.env` 的文件中：
 
 ```ini
 # save as .env
@@ -270,10 +255,9 @@ FOO_APP_KEY=some-app-key
 
 !!! warning
 
-    Since the `.env` contains sensitive information, do not commit it into the
-    Git history. Be sure to ignore it by adding the file name into `.gitignore`.
+    当 `.env` 中包含敏感信息时，请不要将其提交到 Git 历史中。确保将其添加到 `.gitignore` 中。
 
-In the application, now we can read these variables via `os.getenv(key, default_value)`:
+现在，我们可以在应用程序中通过 `os.getenv(key, default_value)` 获取这些变量：
 
 ```python hl_lines="1 5"
 import os
@@ -284,10 +268,8 @@ app = APIFlask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
 ```
 
-Any `flask` command will read environment variables set by `.flaskenv` and `.env`.
-Now when you run `flask run`, Flask will read the value of `FLASK_APP` and `FLASK_ENV`
-in `.flaskenv` file to find the app instance from given import path and enable the
-debug mode:
+任何 `flask` 命令都会读取 `.flaskenv` 和 `.env` 中的环境变量。现在当你运行 `flask run`，
+Flask会获取 `FLASK_APP` 和 `FLASK_ENV` 的值来查找应用实例，并启用调试模式:
 
 ```bash
 $ flask run
@@ -299,29 +281,25 @@ $ flask run
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
-See *[Environment Variables From dotenv][_dotenv]{target=_blank}* for more details.
+查看 *[Environment Variables From dotenv][_dotenv]{target=_blank}* 获取更多关于环境变量的信息。
 
 [_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
 
+## 交互式 API 文档
 
-## Interactive API documentation
+创建应用实例后，可以通过 <http://localhost:5000/docs> 查看交互式 API 文档，除此之外，也可以通过
+<http://localhost:5000/openapi.json> 查看 OpenAPI 规范文件。
 
-Once you have created the app instance, the interactive API documentation will be
-available at <http://localhost:5000/docs>. On
-top of that, the OpenAPI spec file is available at <http://localhost:5000/openapi.json>.
+如果想在本地预览规范文件，使用 [the `flask spec` command](/openapi/#the-flask-spec-command) 命令
 
-If you want to preview the spec or save the spec to a local file, use [the `flask spec`
-command](/openapi/#the-flask-spec-command).
+当你添加了新的路由或添加了视图函数的输入和输出定义时，也可以刷新此文档。
 
-You can refresh the documentation whenever you added a new route or added the input
-and output definition for the view function in the following sections.
+阅读 *[API 文档](/api-docs)* 获取更多关于 API 文档的信息。
 
-Read the *[API Documentations](/api-docs)* chapter for the advanced topics on API docs.
+## 使用路由修饰器创建路由
 
 
-## Create a route with route decorators
-
-To create a view function, you can do exactly what you did with Flask:
+对于创建视图函数，你可以使用与 Flask 相同的方式：
 
 ```python
 from apiflask import APIFlask
@@ -359,16 +337,15 @@ def delete_pet(pet_id):
     return '', 204
 ```
 
-However, with APIFlask, instead of setting `methods` argument for each route, you can
-also use the following shortcuts decorators:
+但是，你也可以通过 APIFlask 使用快捷路由修饰器来替代路由装饰器的 `methods` 参数:
 
-- `app.get()`: register a route that only accepts *GET* request.
-- `app.post()`: register a route that only accepts *POST* request.
-- `app.put()`: register a route that only accepts *PUT* request.
-- `app.patch()`: register a route that only accepts *PATCH* request.
-- `app.delete()`: register a route that only accepts *DELETE* request.
+- `app.get()`: 注册 *GET* 请求的路由。
+- `app.post()`: 注册 *POST* 请求的路由。
+- `app.put()`: 注册 *PUT* 请求的路由。
+- `app.patch()`: 注册 *PATCH* 请求的路由。
+- `app.delete()`: 注册 *DELETE* 请求的路由。
 
-Here is the same example with the route shortcuts:
+这里是使用这些路由修饰器的例子：
 
 ```python hl_lines="6 11 16 21 26 31"
 from apiflask import APIFlask
@@ -406,11 +383,10 @@ def delete_pet(pet_id):
     return '', 204
 ```
 
-!!! note "Handling multiple HTTP methods in one view function"
+!!! note "在视图函数中处理多种 HTTP 方法"
 
-    You can't pass the `methods` argument to route shortcuts. If you want the
-    view function to accept multiple HTTP methods, you will need to use the
-    `app.route()` decorator to pass the `methods` argument:
+    如果想让视图函数接受多种 HTTP 方法，你不能在快捷路由修饰器中使用 `methods` 参数。
+    只使用 `app.route()` 装饰器来传递 `methods` 参数：
 
     ```python
     @app.route('/', methods=['GET', 'POST'])
@@ -418,7 +394,7 @@ def delete_pet(pet_id):
         return {'message': 'hello'}
     ```
 
-    Or you can do something like this:
+    或者你可以这样做:
 
     ```python
     @app.get('/')
@@ -427,15 +403,13 @@ def delete_pet(pet_id):
         return {'message': 'hello'}
     ```
 
-    By the way, you can mix the use of `app.route()` with the shortcuts in your
-    application.
+    通过这种方式，你可以应用中混合使用 `app.route()` 装饰器和快捷路由修饰器。
 
 
-## Move to new API decorators
+## 迁移到新的 API 装饰器
 
-From APIFlask 0.12, the four standalone API decorators (i.e. `@input`, `@output`,
-`@doc`, and `@auth_required`) were moved to `APIFlask` and `APIBlueprint` classes.
-Now access them with your application or blueprint instance:
+从 APIFlask 0.12 起，四个单独的 API 装饰器（即 `@input`, `@output`, `@doc`, 和 `@auth_required`）
+已被移动到 `APIFlask` 和 `APIBlueprint` 类中。现在可以通过应用或蓝图实例来访问它们:
 
 ```python
 from apiflask import APIFlask
@@ -449,7 +423,7 @@ def hello():
     return {'message': 'Hello'}
 ```
 
-instead of:
+使用以上方式来替代：
 
 ```python
 from apiflask import APIFlask, input, output
@@ -463,19 +437,16 @@ def hello():
     return {'message': 'Hello'}
 ```
 
-The old standalone decorators were deprecated since 0.12, and will be removed in the
-1.0 version. Notice all the usage in the docs are updated, you may want to
-[upgrade APIFlask](/changelog/) to update the usage.
+旧的单独装饰器从 0.12 版本起已被弃用，同时将在 1.0 版本中移除。注意在文档中所有的用法都已更新，
+如果你需要升级 APIFlask，可以参考 [升级指南](/changelog/)。
 
 
-## Use `@app.input` to validate and deserialize request data
+## 使用 `@app.input` 来验证请求数据和反序列化
 
-To validate and deserialize a request body or request query parameters, we need to
-create a data schema class first. Think of it as a way to describe the valid
-incoming data. If you already familiar with marshmallow, then you already know
-how to write a data schema.
+要验证和反序列化请求数据或请求查询参数，首先需要创建一个 schema 类。这是一种有效地描述输入数据的方式。
+如果你已经熟悉了 marshmallow，那么你已经知道如何编写一个 schema。
 
-Here is a simple input schema for a Pet input resource:
+这是一个简单的 schema 用于 Pet 类输入：
 
 ```python
 from apiflask import Schema
@@ -490,10 +461,9 @@ class PetIn(Schema):
 
 !!! tip
 
-    See Schema and Fields chapter (WIP) for the details of how to write a schema and
-    the examples for all the fields and validators.
+    查看 Schema 和 Fields 章节（WIP）了解更多关于如何编写 schema 和字段以及验证器的信息。
 
-A schema class should inherit the `apiflask.Schema` class:
+schema 类应该继承 `apiflask.Schema` 类。
 
 ```python hl_lines="1 6"
 from apiflask import Schema
@@ -506,7 +476,7 @@ class PetIn(Schema):
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
 
-fields are represented with field classes in `apiflask.fields`:
+字段使用 `apiflask.fields` 中的字段类：
 
 ```python hl_lines="2 7 8"
 from apiflask import Schema
@@ -519,9 +489,8 @@ class PetIn(Schema):
     category = String(required=True, validate=OneOf(['dog', 'cat']))
 ```
 
-To validate a field with a specific rule, you can pass a validator or a list of
-validators (import them from `apiflask.validators`) to the `validate` argument
-of the field class:
+要使用特定规则验证字段，可以将验证器或验证器列表（从 `apiflask.validators` 导入验证器）
+传递给字段类的 `validate` 参数。
 
 ```python hl_lines="3 7 8"
 from apiflask import Schema
@@ -536,16 +505,14 @@ class PetIn(Schema):
 
 !!! tip
 
-    Notice we mark the field as a required field with the `required` parameter.
-    If you want to set a default value for an input field when is missing in
-    the input data, you can use the `load_default` parameter:
+    注意，我们可以使用 `required` 参数将字段标记为必填字段。如果你想在输入数据缺失该字段时使用默认值，
+    可以使用 `load_default` 参数:
 
     ```python
     name = String(load_default='default name')
     ```
 
-With this schema, we declare that the input request body should appear in the
-following format:
+通过此 schema，我们声明输入请求体应该以下格式出现:
 
 ```json
 {
@@ -555,9 +522,9 @@ following format:
 ```
 !!! notes
 
-    Read the *[Data Schema](/schema)* chapter for the advanced topics on data schema.
+    查看 *[数据 Schema](/schema)* 章节了解更多关于数据 Schema 的信息。
 
-Now let's add it to the view function which is used to create a new pet:
+现在，让我们将其添加到新建宠物的视图函数中:
 
 ```python hl_lines="1 14"
 from apiflask import APIFlask, Schema, input
@@ -579,16 +546,12 @@ def create_pet(data):
     return {'message': 'created'}, 201
 ```
 
-You just need to pass the schema class to the `@app.input` decorator. When a request
-was received, APIFlask will validate the request body against the schema.
+只需要将 schema 类传递给 `@app.input` 装饰器。当收到请求时，APIFlask 将通过此 schema 验证请求体。
 
-If the validation passed, the data will inject into the view function as
-a positional argument in the form of `dict`. Otherwise, an error response
-with the detail of the validation result will be returned.
+如果验证通过，数据将转换为 `dict` 注入到视图函数的位置参数中。否则，返回验证结果的错误响应。
 
-In the example above, I use the name `data` to accept the input data dict.
-You can change the argument name to whatever you like. Since this is a dict,
-you can do something like this to create an ORM model instance:
+在上面的例子中，使用 `data` 来接受输入数据字典。你可以将参数名更改为想使用的名字。
+同时，你可以从这个字典中创建一个 ORM 模型实例。
 
 ```python hl_lines="5"
 @app.post('/pets')
@@ -599,7 +562,7 @@ def create_pet(pet_id, data):
     return pet
 ```
 
-or update an ORM model class instance like this:
+或者像这样更新 ORM 模型实例:
 
 ```python hl_lines="6 7"
 @app.patch('/pets/<int:pet_id>')
@@ -612,30 +575,28 @@ def update_pet(pet_id, data):
     return pet
 ```
 
-If you want to mark the input with a different location, you can pass a `location`
-argument for `@app.input()` decorator, the value can be:
+如果想将输入标记为请求的不同的位置，可以传递 `location` 参数给 `@app.input()` 装饰器，该值可以是:
 
-- Request JSON body: `'json'` (default)
-- Upload files: `'files'`
-- Form data: `'form'`
-- Form data and files: `'form_and_files'`
-- Cookies: `'cookies'`
-- HTTP headers: `'headers'`
-- Query string: `'query'` (same as `'querystring'`)
-- Path variable (URL variable): `'path'` (same as `'view_args'`, added in APIFlask 1.0.2)
+- 请求JSON正文： `'json'` （默认值）
+- 上传文件： `'files'`
+- 表单数据： `'form'`
+- 表单数据和文件： `'form_and_files'`
+- Cookies： `'cookies'`
+- HTTP 请求头： `'headers'`
+- 查询参数: `'query'` （同 `'querystring'`）
+- Path 变量（URL变量）： `'path'` （同 APIFlask 1.0.2 增加的 `'view_args'` 参数）
 
 !!! warning
 
-    Be sure to put the `@app.input` decorator under the routes decorators
-    (i.e., `app.route`, `app.get`, `app.post`, etc.).
+    请确保 `@app.input` 装饰器位于路由装饰器之下（即 `app.route` 、`app.get` 、`app.post` 等）。
 
 
-Read the *[Request Handling](/request)* chapter for the advanced topics on request handling.
+查看 *[请求处理](/request)* 章节了解更多关于请求处理的信息。
 
 
-## Use `@app.output` to format response data
+## 使用 `@app.output` 来格式化响应数据
 
-Similarly, we can define a schema for output data with `@app.output` decorator. Here is an example:
+同样的，我们可以使用 `@app.output` 装饰器来定义输出数据的 schema。这是一个示例：
 
 ```python
 from apiflask.fields import String, Integer
@@ -647,18 +608,17 @@ class PetOut(Schema):
     category = String()
 ```
 
-Since APIFlask will not validate the output data, we only need to list all the field for the output
-schema.
+在 APIFlask 中不会验证输出数据，我们只需要在输出数据的 schema 中列出所有字段。
 
 !!! tip
 
-    You can set a default value for output field with the `dump_default` argument:
+    你可以使用 `dump_default` 参数设置输出字段的默认值：
 
     ```python
     name = String(dump_default='default name')
     ```
 
-Now add it to the view function which used to get a pet resource:
+现在将它添加到获取宠物资源的视图函数中:
 
 ```python hl_lines="1 14"
 from apiflask import APIFlask, output
@@ -682,8 +642,7 @@ def get_pet(pet_id):
     }
 ```
 
-The default status code for output response is `200`, you can set a different
-status code with the `status_code` argument:
+输出响应的默认状态码为 `200`，你可以使用 `status_code` 设置不同的状态码：
 
 ```python hl_lines="3"
 @app.post('/pets')
@@ -694,13 +653,13 @@ def create_pet(data):
     return data
 ```
 
-Or just:
+或者只是:
 
 ```python
 @app.output(PetOut, status_code=201)
 ```
 
-If you want to return a 204 response, you can use the `EmptySchema` from `apiflask.schemas`:
+如果想要返回一个 204 响应，你可以使用从 `apiflask.schemas` 中导入的 `EmptySchema`:
 
 ```python hl_lines="1 5"
 from apiflask.schemas import EmptySchema
@@ -712,7 +671,7 @@ def delete_pet(pet_id):
     return ''
 ```
 
-From version 0.4.0, you can use an empty dict to represent empty schema:
+从 0.4.0 版本开始，可以使用空字典来表示空 schema：
 
 ```python hl_lines="2"
 @app.delete('/pets/<int:pet_id>')
@@ -721,13 +680,12 @@ def delete_pet(pet_id):
     return ''
 ```
 
-!!! warning "The `@app.output` decorator can only use once"
+!!! warning " `@app.output` 装饰器只能使用一次"
 
-    You can only define one main success response for your view function,
-    which means you can only use one `@app.output` decorator. If you want to
-    add more alternative responses for a view in the OpenAPI spec, you can
-    use the `@app.doc` decorator and pass a list to the `responses` parameter.
-    For example:
+    对于视图函数，只能定义一个主要成功响应，这意味着只能使用一次 `@app.output` 装饰器。
+    如果想要在 OpenAPI 规范中为视图函数添加更多的备选响应，你可以使用 `@app.doc`，并传递
+    一个列表到 `responses` 参数。
+    比如：
 
     ```python hl_lines="4"
     @app.put('/pets/<int:pet_id>')
@@ -740,17 +698,16 @@ def delete_pet(pet_id):
 
 !!! warning
 
-    Be sure to put the `@app.output` decorator under the routes decorators
-    (i.e., `app.route`, `app.get`, `app.post`, etc.).
+    请确保 `@app.output` 装饰器位于路由装饰器之下（即 `app.route`、 `app.get`、 `app.post` 等）。
 
 
-Read the *[Response Formatting](/response)* chapter for the advanced topics on request formatting.
+查看 *[响应格式](/response)* 章节了解更多关于响应格式的信息。
 
 
-## The return value of the view function
+## 视图函数的返回值
 
-When you are using a `@app.output(schema)` decorator, you should return a dict or object
-that matches the schema you passed. For example, here is your schema:
+当你使用 `@app.output(schema)` 装饰器时，应该返回与传递的 schema 匹配的字典或对象。
+例如，这是你的 schema：
 
 ```python
 from apiflask import Schema
@@ -763,7 +720,7 @@ class PetOut(Schema):
     category = String()
 ```
 
-Now you can return a dict:
+现在可以返回一个字典：
 
 ```python
 @app.get('/pets/<int:pet_id>')
@@ -776,7 +733,7 @@ def get_pet(pet_id):
     }
 ```
 
-or you can return an ORM model instance directly:
+或者直接返回 ORM 模型实例:
 
 ```python hl_lines="5"
 @app.get('/pets/<int:pet_id>')
@@ -786,7 +743,7 @@ def get_pet(pet_id):
     return pet
 ```
 
-Notice your ORM model class should have the fields defined in the schema class:
+注意，ORM 模型类应该包含在 schema 类中定义的字段。
 
 ```python
 class Pet(Model):
@@ -795,37 +752,34 @@ class Pet(Model):
     category = String()
 ```
 
-!!! tip "What if I want to use a different external field name?"
+!!! tip "如果我想使用其他外部字段名怎么办？"
 
-    For example, in your ORM model class, you have a `phone` field that
-    store the user's phone number:
+    例如，ORM 模型类中有一个 `phone` 字段，它存储用户的电话号码：
 
     ```python
     class User(Model):
         phone = String()
     ```
 
-    Now you want to output the field with the name `phone_number`, then you can use
-    `data_key` to declare the actual key name to dump to:
+    现在想输出字段的名为 `phone_number`，那么你可以使用 `data_key` 声明实际的键名：
 
     ```python
     class UserOut(Schema):
         phone = String(data_key='phone_number')
     ```
 
-    This schema will generate something like `{'phone_number': ...}`.
+    这个 schema 会生成一个字典，就像 `{'phone_number': ...}`。
 
-    Similarly, you can tell APIFlask to load from different key in input schema:
+    同样的，你可以在输入 schema 中使用 `data_key` 声明实际的键名：
 
     ```python
     class UserIn(Schema):
         phone = String(data_key='phone_number')
     ```
 
-    This schema expects the user input is something like `{'phone_number': ...}`.
+    这个 schema 会输入你期望的字典，就像 `{'phone_number': ...}`。
 
-The default status code is `200`, if you want to use a different status code,
-you can pass a `status_code` argument in the `@app.output` decorator:
+默认的状态码是 `200`，如果想使用不同的状态码，你可以在 `@app.output` 装饰器中传递一个 `status_code` 参数：
 
 ```python hl_lines="3"
 @app.post('/pets')
@@ -836,8 +790,7 @@ def create_pet(data):
     return pet
 ```
 
-You don't need to return the same status code in the end of the view function
-(i.e., `return data, 201`):
+你不需要在视图函数的最后返回相同的状态码 （例如， `return data, 201`）:
 
 ```python hl_lines="8"
 @app.post('/pets')
@@ -845,13 +798,12 @@ You don't need to return the same status code in the end of the view function
 @app.output(PetOut, status_code=201)
 def create_pet(data):
     # ...
-    # equals to:
+    # 等同于：
     # return pet, 201
     return pet
 ```
 
-When you want to pass a header dict, you can pass the dict as the second element
-of the return tuple:
+当你想要传递请求头字典数据时，在 return 元组的第二个参数传递：
 
 ```python hl_lines="8"
 @app.post('/pets')
@@ -859,32 +811,26 @@ of the return tuple:
 @app.output(PetOut, status_code=201)
 def create_pet(data):
     # ...
-    # equals to:
+    # 等同于：
     # return pet, 201, {'FOO': 'bar'}
     return pet, {'FOO': 'bar'}
 ```
 
 !!! tip
 
-    Be sure to always set the `status_code` argument in `@app.output` when you want
-    to use a non-200 status code. If there is a mismatch, the `status_code`
-    passed in `@app.output` will be used in OpenAPI spec, while the actual response
-    will use the status code you returned at the end of the view function.
+    请确保 `@app.output` 中的 `status_code` 仅在你想要使用非 200 状态码时设置。如果存在设置的与实际返回不匹配情况，
+    OpenAPI 规范中会使用 `@app.output` 中的 `status_code` ，而实际响应将使用你在视图函数中返回的状态码。
 
 
-## The OpenAPI generating support and the `@app.doc` decorator
+## OpenAPI 生成支持和 `@app.doc` 装饰器
 
-APIFlask provides automatic OpenAPI spec generating support, while also allows
-you to customize the spec:
+APIFlask 提供了 OpenAPI 规范生成支持，同时还允许你自定义规范：
 
-- Most of the fields of the `info` object and top-level field of `OpenAPI`
-objct are accessible with configuration variables.
-- The `tag` object, Operation `summary` and `description` will generated from
-the blueprint name, the view function name and docstring.
-- You can register a spec processor function to process the spec.
-- `requestBody` and `responses` fields can be set with the `input` and `output`
-decorator.
-- Other operation fields can be set with the `doc` decorator:
+- 大部分 `info` 对象的字段和 `OpenAPI` 对象的顶层字段都可以通过变量配置。
+- `tag` 、 `summary` 和 `description` 可以从蓝图名、视图函数名和 docstring 中生成。
+- 你可以注册规范处理函数来处理规范。
+- `requestBody` 和 `responses` 字段可以通过 `input` 和 `output` 装饰器设置。
+- 其他操作字段可以通过 `doc` 装饰器设置：
 
 ```python hl_lines="1 7"
 from apiflask import APIFlask, doc
@@ -898,42 +844,39 @@ def hello():
     return 'Hello'
 ```
 
-See *[Use the `doc` decorator](/openapi/#use-the-doc-decorator)* for more details
-about OpenAPI genenrating and the usage of the `doc` decorator.
+查看 [使用 `doc` 装饰器](/openapi/#use-the-doc-decorator) 获取更多关于 OpenAPI 规范生成
+和 `doc` 装饰器的使用信息。
 
 !!! warning
 
-    Be sure to put the `@app.doc` decorator under the routes decorators
-    (i.e., `app.route`, `app.get`, `app.post`, etc.).
+    请确保 `@app.doc` 装饰器在路由装饰器之下（即 `app.route`、 `app.get`、 `app.post` 等）。
 
 
-## Use `@app.auth_required` to protect your views
+## 使用 `@app.auth_required` 来保护你的视图
 
-Based on [Flask-HTTPAuth](https://github.com/miguelgrinberg/Flask-HTTPAuth), APIFlask
-provides three types of authentication:
+基于 [Flask-HTTPAuth](https://github.com/miguelgrinberg/Flask-HTTPAuth)，APIFlask 提供了三种认证方式：
 
 ### HTTP Basic
 
-To implement an HTTP Basic authentication, you will need to:
+实现 HTTP 基本认证，你需要:
 
-- Create an `auth` object with `HTTPBasicAuth`
-- Register a callback function with `@auth.verify_password`, the function
-  should accept `username` and `password`, return the corresponding user object
-  or `None`.
-- Protect the view function with `@app.auth_required(auth)`.
-- Access the current user object in your view function with `auth.current_user`.
+- 通过 `HTTPBasicAuth` 类创建 `auth` 对象。
+- 使用 `@auth.verify_password` 注册一个回调函数，这个函数应该接受 `username` 和 `password` 作为参数，
+返回对应的用户对象或 `None`。
+- 使用 `@app.auth_required(auth)` 保护视图函数。
+- 在视图函数中通过 `auth.current_user` 访问当前用户。
 
 ```python
 from apiflask import APIFlask, HTTPBasicAuth
 
 app = APIFlask(__name__)
-auth = HTTPBasicAuth()  # create the auth object
+auth = HTTPBasicAuth()  # 创建一个认证对象
 
 
 @auth.verify_password
 def verify_password(username, password):
-    # get the user from the database, check the password
-    # then return the user if the password matches
+    # 从数据库中获取用户并校验密码
+    # 如果密码匹配则返回用户
     # ...
 
 @app.route('/')
@@ -944,39 +887,37 @@ def hello():
 
 ### HTTP Bearer
 
-To implement an HTTP Bearer authentication, you will need to:
+实现 HTTP Bearer 认证，你需要:
 
-- Create an `auth` object with `HTTPTokenAuth`
-- Register a callback function with `@auth.verify_password`, the function
-  should accept `token`, return the corresponding user object or `None`.
-- Protect the view function with `@app.auth_required(auth)`.
-- Access the current user object in your view function with `auth.current_user`.
+- 通过 `HTTPTokenAuth` 类创建 `auth` 对象。
+- 使用 `@auth.verify_password` 注册一个回调函数，这个函数应该接受 `token` 作为参数，返回对应的用户对象或 `None`。
+- 使用 `@app.auth_required(auth)` 保护视图函数。
+- 在视图函数中通过 `auth.current_user` 访问当前用户。
 
 ```python
 from apiflask import APIFlask, HTTPTokenAuth
 
 app = APIFlask(__name__)
-auth = HTTPTokenAuth()  # create the auth object
-# or HTTPTokenAuth(scheme='Bearer')
+auth = HTTPTokenAuth()  # 创建一个认证对象
+# 或者使用 HTTPTokenAuth(scheme='Bearer')
 
 
-@auth.verify_token  # register a callback to verify the token
+@auth.verify_token  # 注册一个用于验证 token 的回调函数
 def verify_token(token):
-    # verify the token and get the user id
-    # then query and return the corresponding user from the database
+    # 校验 token 和获取用户 id
+    # 然后从数据库中查询并返回相应的用户
     # ...
 
 @app.get('/')
-@app.auth_required(auth)  # protect the view
+@app.auth_required(auth)  # 保护视图
 def hello():
-    # access the current user with auth.current_user
+    # 通过 auth.current_user 访问当前用户
     return f'Hello, {auth.current_user}'!
 ```
 
-### API Keys (in header)
+### API Keys (在请求头中)
 
-Similar to the Bearer type, but set the `scheme` to `ApiKey` when creating the
-auth object:
+和 Bearer 类似，但在创建 auth 对象时设置 `scheme` 为 `ApiKey`：
 
 ```python
 from apiflask import HTTPTokenAuth
@@ -984,7 +925,7 @@ from apiflask import HTTPTokenAuth
 HTTPTokenAuth(scheme='ApiKey')
 ```
 
-or with a custom header:
+或者自定义请求头：
 
 ```python
 from apiflask import HTTPTokenAuth
@@ -994,32 +935,28 @@ HTTPTokenAuth(scheme='ApiKey', header='X-API-Key')
 # ...
 ```
 
-You can set the OpenAPI security description with the `description` parameter
-in `HTTPBasicAuth` and `HTTPTokenAuth`.
+你可以通过 `description` 参数在 `HTTPBasicAuth` 和 `HTTPTokenAuth` 中设置 OpenAPI 安全描述。
 
-See [Flask-HTTPAuth's documentation][_flask-httpauth]{target=_blank} to learn
-the details. However, remember to
-import `HTTPBasicAuth` and `HTTPTokenAuth` from APIFlask and use `@app.auth_required`
-instead of `@auth.login_required` for your view functions.
+查看 [Flask-HTTPAuth's documentation][_flask-httpauth] 来了解更多详情。但请记住从 APIFlask
+中导入 `HTTPBasicAuth` 和 `HTTPTokenAuth`，并使用 `@app.auth_required` 而不是 `@auth.login_required`
+作为你的视图函数认证。
 
 !!! warning
 
-    Be sure to put the `@app.auth_required` decorator under the routes decorators
-    (i.e., `app.route`, `app.get`, `app.post`, etc.).
+    请确保 `@app.auth_required` 装饰器在路由装饰器之下（即 `app.route`、 `app.get`、 `app.post` 等）。
 
 [_flask-httpauth]: https://flask-httpauth.readthedocs.io/
 
-Read the *[Authentication](/authentication)* chapter for the advanced topics on authentication.
+阅读 *[认证](/authentication)* 章节获取更多高级认证主题。
 
 
-## Use class-based views
+## 使用基于类的视图
 
 !!! warning "Version >= 0.5.0"
 
-    This feature was added in the [version 0.5.0](/changelog/#version-050).
+    这个特性在 [version 0.5.0](/changelog/#version-050) 中添加 。
 
-You can create a group of routes under the same URL rule with the `MethodView` class.
-Here is a simple example:
+你可以通过 `MethodView` 类在同一个 URL 规则下创建一组路由，这里是一个简单的例子：
 
 ```python
 from apiflask import APIFlask
@@ -1040,40 +977,36 @@ class Pet(MethodView):
 app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
 ```
 
-When creating a view class, it needs to inherit from the `MethodView` class, since APIFlask
-can only generate OpenAPI spec for `MethodView`-based view classes.
+当创建一个视图类时，它需要继承自 `MethodView` 类，因为 APIFlask 从继承于 `MethodView` 基类的视图类中
+生成 OpenAPI 规范。
 
-Now, you can define view methods for each HTTP method, use the (HTTP) method name as method name:
+现在，你可以为每个 HTTP 方法定义视图方法，使用 (HTTP) 方法名作为视图函数名:
 
 ```python
 class Pet(MethodView):
 
-    def get(self, pet_id):  # triggered by GET request
+    def get(self, pet_id):  # 由 GET 请求触发
         return {'message': 'OK'}
 
-    def post(self, pet_id):  # triggered by POST request
+    def post(self, pet_id):  # 由 POST 请求触发
         return {'message': 'OK'}
 
-    def put(self, pet_id):  # triggered by PUT request
+    def put(self, pet_id):  # 由 PUT 请求触发
         return {'message': 'OK'}
 
-    def delete(self, pet_id):  # triggered by DELETE request
+    def delete(self, pet_id):  # 由 DELETE 请求触发
         return '', 204
 
-    def patch(self, pet_id):  # triggered by PATCH request
+    def patch(self, pet_id):  # 由 PATCH 请求触发
         return {'message': 'OK'}
 
 
 app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
 ```
 
-With the example application above, when the user sends a *GET* request to
-`/pets/<int:pet_id>`, the `get()` method of the `Pet` class will be called,
-and so on for the others.
+对于上述示例应用，当用户发送一个 *GET* 请求到 `pets/<int:pet_id>` 时， `Pet` 类的 `get()` 方法将被调用，以此类推。
 
-Normally you don't need to specify the methods, unless you want to register
-multiple rules for one single view classe. For example, register the `post` method
-to a different URL rule than the others:
+通常你不需要在路由规则中指定方法名，除非你想为一个视图类注册多个 URL 规则。例如，注册 `post` 方法到其他 URL 规则中:
 
 ```python
 class Pet(MethodView):
@@ -1084,10 +1017,9 @@ app.add_url_rule('/pets/<int:pet_id>', view_func=pet_view, methods=['GET', 'PUT'
 app.add_url_rule('/pets', view_func=pet_view, methods=['POST'])
 ```
 
-However, you may want to create separate classes for different URL rules.
+然而，你可能希望为不同的 URL 规则创建不同的类。
 
-When you use decorators like `@app.input`, `@app.output`, be sure to use it on method
-instead of class:
+当使用 `@app.input`、`@app.output` 这类的装饰器时，一定要在方法上使用它，而不是类：
 
 ```python
 class Pet(MethodView):
@@ -1112,9 +1044,7 @@ class Pet(MethodView):
 app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
 ```
 
-If you want to apply a decorator for all methods, instead of repeat yourself,
-you can pass the decorator to the class attribute `decorators`, it accepts
-a list of decorators:
+如果想将装饰器应用于所有方法，你可以将装饰器传递给类属性 `decorators`，它用于接收一个装饰器列表:
 
 ```python hl_lines="3"
 class Pet(MethodView):
@@ -1141,14 +1071,14 @@ class Pet(MethodView):
 app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
 ```
 
-Read [Flask docs on class-based views](https://flask.palletsprojects.com/views/) for more information.
+阅读 [Flask docs on class-based views](https://flask.palletsprojects.com/views/) 获取更多关于类视图的信息。
 
 
-## Use `abort()` to return an error response
+## 使用 `abort()` 返回错误响应
 
-Similar to Flask's `abort`, but `abort` from APIFlask will return a JSON response.
+与 Flask 的 `abort` 不同，APIFlask 的 `abort` 会返回一个 JSON 响应。
 
-Example:
+例:
 
 ```python hl_lines="1 8"
 from apiflask import APIFlask, abort
@@ -1164,10 +1094,9 @@ def hello(name):
 
 !!! tip
 
-    When `app.json_errors` is `True` (default), Flask's `abort` will also return
-    JSON error response.
+    当 `app.json_errors` 为 `True`（默认） 时，Flask 的 `abort` 也会返回 JSON 格式的错误响应。
 
-You can also raise an `HTTPError` exception to return an error response:
+你也可以使用 `HTTPError` 异常来返回错误响应：
 
 ```python hl_lines="1 8"
 from apiflask import APIFlask, HTTPError
@@ -1181,48 +1110,42 @@ def hello(name):
     return {'hello': name}
 ```
 
-The `abort()` and `HTTPError` accept the following arguments:
+`abort()` 和 `HTTPError` 接受以下参数:
 
-- `status_code`: The status code of the error (4XX and 5xx).
-- `message`: The simple description of the error. If not provided,
-    the reason phrase of the status code will be used.
-- `detail`: The detailed information of the error, it can be used to
-    provide additional information such as custom error code, documentation
-    URL, etc.
-- `headers`: A dict of headers used in the error response.
+- `status_code`: 错误状态码（4XX 和 5XX）。
+- `message`: 简单的错误描述。如果未提供，将使用状态码的原因短语。
+- `detail`: 错误的详细信息，它可以用于提供额外的信息，例如自定义错误代码、文档 URL 等。
+- `headers`: 一个用于错误响应的请求头字典。
 
 !!! warning
 
-    The function `abort_json()` was renamed to `abort()` in
-    the [version 0.4.0](/changelog/#version-040).
+    在 [ version 0.4.0](/changelog/#version-040) 中，`abort_json()` 被重命名为 `abort()`。
 
 
-## Overview of the `apiflask` package
+## `apiflask` 包概述
 
-In the end, let's unpack the whole `apiflask` package to check out what it shipped with:
+最终，我们来解包整个 `apiflask` 包，看看它包含了哪些内容：
 
-- `APIFlask`: A class used to create an application instance (A wrapper for Flask's `Flask` class).
-- `APIBlueprint`: A class used to create a blueprint instance (A wrapper for Flask's `Blueprint` class)..
-- `@app.input()`: A decorator used to validate the input/request data from request body, query string, etc.
-- `@app.output()`: A decorator used to format the response.
-- `@app.auth_required()`: A decorator used to protect a view from unauthenticated users.
-- `@app.doc()`: A decorator used to set up the OpenAPI spec for view functions.
-- `abort()`: A function used to abort the request handling process and return an error response. The JSON version of Flask's `flask.abort()` function.
-- `HTTPError`: An exception used to return error response (used by `abort()`).
-- `HTTPBasicAuth`: A class used to create an auth instance.
-- `HTTPTokenAuth`: A class used to create an auth instance.
-- `Schema`: A base class for resource schemas (Will be a wrapper for marshmallow's `Schema`).
-- `fields`: A module contains all the fields (from marshmallow).
-- `validators`: A module contains all the field validators (from marshmallow).
-- `app.get()`: A decorator used to register a route that only accepts *GET* request.
-- `app.post()`: A decorator used to register a route that only accepts *POST* request.
-- `app.put()`: A decorator used to register a route that only accepts *PUT* request.
-- `app.patch()`: A decorator used to register a route that only accepts *PATCH* request.
-- `app.delete()`: A decorator used to register a route that only accepts *DELETE* request.
-- `app.route()`: A decorator used to register a route. It accepts a `methods`
-parameter to specify a list of accepted methods, default to *GET* only. It can also
-be used on the `MethodView`-based view class.
-- `$ flask spec`: A command to output the spec to stdout or a file.
+- `APIFlask`：一个用于创建应用实例的类（Flask 类的包装）。
+- `APIBlueprint`：一个用于创建蓝图实例的类（Flask `Blueprint` 类的包装）。
+- `@app.input()`：用于验证请求数据（如请求体、查询字符串等）的装饰器。
+- `@app.output()`：用于格式化响应数据的装饰器。
+- `@app.auth_required()`：用于保护视图，防止未经认证的用户访问的装饰器。
+- `@app.doc()`：用于设置视图函数的 OpenAPI 规范的装饰器。
+- `abort()`：用于中止请求处理并返回错误响应的函数。是 Flask 的 `abort()` 函数的 JSON 版本。
+- `HTTPError`：用于返回错误响应的异常（由 `abort()` 使用）。
+- `HTTPBasicAuth`：一个用于创建基本认证实例的类。
+- `HTTPTokenAuth`：一个用于创建令牌认证实例的类。
+- `Schema`：用于资源模式的基类（是 Marshmallow `Schema` 的包装）。
+- `fields`：包含所有字段的模块（来自 Marshmallow）。
+- `validators`：包含所有字段验证器的模块（来自 Marshmallow）。
+- `app.get()`：用于注册仅接受 *GET* 请求的路由装饰器。
+- `app.post()`：用于注册仅接受 *POST* 请求的路由的装饰器。
+- `app.put()`：用于注册仅接受 *PUT* 请求的路由的装饰器。
+- `app.patch()`：用于注册仅接受 *PATCH* 请求的路由的装饰器。
+- `app.delete()`：用于注册仅接受 *DELETE* 请求的路由的装饰器。
+- `app.route()`：用于注册路由的装饰器。它接受一个 `methods` 参数来指定可接受的请求方法，
+默认为 *GET*。也可以在基于 `MethodView` 的视图类中使用。
+- `$ flask spec`：用于输出 OpenAPI 规范到标准输出或文件的命令。
 
-You can learn the details of these APIs in the [API reference](/api/app), or you can
-continue to read the following chapters.
+你可以在 [API 参考](/api/app) 中学习这些 API，或者你可以继续阅读下一章节
