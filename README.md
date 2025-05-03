@@ -80,8 +80,8 @@ APIFlask 提供了下面这些主要特性：
 
 ## 要求
 
-- Python 3.7+
-- Flask 1.1.0+
+- Python 3.8+
+- Flask 2.0+
 
 
 ## 安装
@@ -155,14 +155,14 @@ def get_pet(pet_id):
 
 
 @app.patch('/pets/<int:pet_id>')
-@app.input(PetIn(partial=True))
+@app.input(PetIn(partial=True))  # -> json_data
 @app.output(PetOut)
 def update_pet(pet_id, data):
     # 验证且解析后的请求输入数据会
     # 作为一个字典传递给视图函数
     if pet_id > len(pets) - 1:
         abort(404)
-    for attr, value in data.items():
+    for attr, value in json_data.items():
         pets[pet_id][attr] = value
     return pets[pet_id]
 ```
@@ -178,7 +178,7 @@ def update_pet(pet_id, data):
 from apiflask import APIFlask, Schema, abort
 from apiflask.fields import Integer, String
 from apiflask.validators import Length, OneOf
-from apiflask.views import MethodView
+from flask.views import MethodView
 
 app = APIFlask(__name__)
 
@@ -217,11 +217,11 @@ class Pet(MethodView):
 
     @app.input(PetIn(partial=True))
     @app.output(PetOut)
-    def patch(self, pet_id, data):
+    def patch(self, pet_id, json_data):
         """Update a pet"""
         if pet_id > len(pets) - 1:
             abort(404)
-        for attr, value in data.items():
+        for attr, value in json_data.items():
             pets[pet_id][attr] = value
         return pets[pet_id]
 
@@ -235,7 +235,7 @@ app.add_url_rule('/pets/<int:pet_id>', view_func=Pet.as_view('pet'))
 <summary>或使用 <code>async def</code>（Flask 2.0）</summary>
 
 ```bash
-$ pip install -U flask[async]
+$ pip install -U "apiflask[async]"
 ```
 
 ```python
@@ -318,7 +318,8 @@ APIFlsak 是 Flask 之上的一层包装。你只需要记住下面几点区别�
 下面的 Flask 程序：
 
 ```python
-from flask import Flask, request, escape
+from flask import Flask, request
+from markupsafe import escape
 
 app = Flask(__name__)
 
@@ -332,7 +333,8 @@ def hello():
 
 ```python
 from apiflask import APIFlask  # step one
-from flask import request, escape
+from flask import request
+from markupsafe import escape
 
 app = APIFlask(__name__)  # step two
 

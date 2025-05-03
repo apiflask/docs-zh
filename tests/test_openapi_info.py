@@ -1,4 +1,4 @@
-from openapi_spec_validator import validate_spec
+import openapi_spec_validator as osv
 
 from apiflask import APIFlask
 
@@ -23,16 +23,13 @@ def test_other_info_fields(app, client):
     app.contact = {
         'name': 'API Support',
         'url': 'http://www.example.com/support',
-        'email': 'support@example.com'
+        'email': 'support@example.com',
     }
-    app.license = {
-        'name': 'Apache 2.0',
-        'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'
-    }
+    app.license = {'name': 'Apache 2.0', 'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'}
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert rv.json['info']['description'] == app.description
     assert rv.json['info']['termsOfService'] == app.terms_of_service
     assert rv.json['info']['contact'] == app.contact
@@ -48,17 +45,14 @@ def test_info_attribute(app, client):
         'contact': {
             'name': 'API Support',
             'url': 'http://www.example.com/support',
-            'email': 'support@example.com'
+            'email': 'support@example.com',
         },
-        'license': {
-            'name': 'Apache 2.0',
-            'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'
-        }
+        'license': {'name': 'Apache 2.0', 'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'},
     }
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert rv.json['info']['description'] == app.info['description']
     assert rv.json['info']['termsOfService'] == app.info['termsOfService']
     assert rv.json['info']['contact'] == app.info['contact']
@@ -75,15 +69,8 @@ def test_overwirte_info_attribute(app, client):
     app.info = {
         'description': 'Not set',
         'termsOfService': 'Not set',
-        'contact': {
-            'name': 'Not set',
-            'url': 'Not set',
-            'email': 'Not set'
-        },
-        'license': {
-            'name': 'Not set',
-            'url': 'Not set'
-        }
+        'contact': {'name': 'Not set', 'url': 'Not set', 'email': 'Not set'},
+        'license': {'name': 'Not set', 'url': 'Not set'},
     }
 
     app.description = 'My API'
@@ -91,16 +78,13 @@ def test_overwirte_info_attribute(app, client):
     app.contact = {
         'name': 'API Support',
         'url': 'http://www.example.com/support',
-        'email': 'support@example.com'
+        'email': 'support@example.com',
     }
-    app.license = {
-        'name': 'Apache 2.0',
-        'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'
-    }
+    app.license = {'name': 'Apache 2.0', 'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'}
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert rv.json['info']['description'] == app.description
     assert rv.json['info']['termsOfService'] == app.terms_of_service
     assert rv.json['info']['contact'] == app.contact

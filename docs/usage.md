@@ -324,7 +324,7 @@ Read the *[API Documentations](/api-docs)* chapter for the advanced topics on AP
 To create a view function, instead of using `app.route` and set the `methods`:
 
 ```python
-@app.post('/pets', methods=['POST'])
+@app.route('/pets', methods=['POST'])
 def create_pet():
     return {'message': 'created'}, 201
 ```
@@ -529,6 +529,21 @@ def update_pet(pet_id, json_data):
         setattr(pet, attr, value)
     return pet
 ```
+
+
+If you want to disable validation on input, you can set `validation=False`. Now the
+input data will be passed to the view function without validation. If no input data,
+the view function will receive an empty dict:
+
+```python
+@app.patch('/pets_without_validation/<int:pet_id>')
+@app.input(PetIn, location='json', validation=False)
+def pets_without_validation(pet_id, json_data):
+    return {'pet_id': pet_id, 'json_data': json_data}
+```
+
+`headers` and `cookies` are special locations, they contain all the headers and cookies data, so
+you can't skip the validation for them.
 
 !!! warning
 
@@ -856,7 +871,7 @@ def hello():
 To implement an HTTP Bearer authentication, you will need to:
 
 - Create an `auth` object with `HTTPTokenAuth`
-- Register a callback function with `@auth.verify_password`, the function
+- Register a callback function with `@auth.verify_token`, the function
   should accept `token`, return the corresponding user object or `None`.
 - Protect the view function with `@app.auth_required(auth)`.
 - Access the current user object in your view function with `auth.current_user`.

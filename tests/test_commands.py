@@ -3,6 +3,7 @@ import json
 import pytest
 
 from .schemas import Foo
+from .schemas import Qux
 from apiflask.commands import spec_command
 
 
@@ -29,10 +30,10 @@ def test_flask_spec_fields_order(app, cli_runner):
     result = cli_runner.invoke(spec_command)
     assert 'openapi' in result.output
     assert json.loads(result.output) == app.spec
-    assert (
-        list(json.loads(result.output)['components']['schemas']['Foo']['properties'].keys())
-        == ['id', 'name']
-    )
+    assert list(json.loads(result.output)['components']['schemas']['Foo']['properties'].keys()) == [
+        'id',
+        'name',
+    ]
 
 
 @pytest.mark.parametrize('format', ['json', 'yaml', 'yml', 'foo'])
@@ -71,3 +72,18 @@ def test_flask_spec_indent(cli_runner, indent, tmp_path):
     else:
         assert f'{{\n{" " * indent}"info": {{' in stdout_result.output
         assert f'{{\n{" " * indent}"info": {{' in file_result.output
+
+
+def test_flask_spec_quiet(app, cli_runner):
+    result = cli_runner.invoke(spec_command, ['--quiet'])
+    assert result.output == ''
+
+
+def test_flask_spec_decimal_field(app, cli_runner):
+    @app.get('/qux')
+    @app.output(Qux)
+    def qux():
+        pass
+
+    result = cli_runner.invoke(spec_command)
+    assert 'openapi' in result.output
