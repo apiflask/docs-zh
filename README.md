@@ -5,32 +5,9 @@
 
 [![Build status](https://github.com/apiflask/apiflask/actions/workflows/tests.yml/badge.svg)](https://github.com/apiflask/apiflask/actions) [![codecov](https://codecov.io/gh/apiflask/apiflask/branch/main/graph/badge.svg?token=2CFPCZ1DMY)](https://codecov.io/gh/apiflask/apiflask) [![Netlify Status](https://api.netlify.com/api/v1/badges/456180b4-55f0-417c-9c4e-88e407a24011/deploy-status)](https://app.netlify.com/sites/zh-apiflask/deploys)
 
+本项目已经完成翻译，感谢各位参与者的贡献。如果你发现翻译有误，欢迎提交 issue 或 PR。
 
-## 翻译流程
-
-欢迎参与翻译，仓库地址为：
-
-<https://github.com/apiflask/docs-zh>
-
-参与翻译的基本流程如下：
-
-- 创建 PR 在下面列表里你想翻译的章节后添加你的名字，一次一章
-- Fork 本仓库（[apiflask/docs-zh](https://github.com/apiflask/docs-zh)），然后克隆你的 fork 到本地（将下面的 `{username}` 替换为你的用户名）：
-
-```
-$ git clone https://github.com/{username}/docs-zh
-$ cd docs-zh
-$ git remote add upstream https://github.com/apiflask/docs-zh
-```
-
-- 参考[贡献指南](/contributing)搭建开发环境（跳过 fork 部分）
-- 阅读《[翻译指南](https://github.com/apiflask/docs-zh/wiki/Translation-Guide)》了解翻译要求
-- 创建 branch 翻译 docs_zh/ 目录下对应的文件
-- 执行 `mkdocs serve` 预览文档并修正错误
-- 提交 PR 等待审核
-
-
-## 翻译章节列表
+## 翻译贡献者
 
 - Home (index.md) [@greyli](https://github.com/greyli)
 - Documentation Index (docs.md) [@rice0208](https://github.com/rice0208)
@@ -46,22 +23,9 @@ $ git remote add upstream https://github.com/apiflask/docs-zh
 - Error Handling (error-handling.md) [@yangfan9702](https://github.com/yangfan9702)
 - Examples (examples.md) [@Tridagger](https://github.com/Tridagger)
 - Comparison and Motivations (comparison.md) [@Tridagger](https://github.com/Tridagger)
-- Authors (authors.md)
-- Changelog (changelog.md)
-- Contributing Guide (contributing.md)
-- API Reference:
-    - APIFlask (api/app.md)
-    - APIBlueprint (api/blueprint.md)
-    - Exceptions (api/exceptions.md)
-    - OpenAPI (api/openapi.md)
-    - Schemas (api/schemas.md)
-    - Fields (api/fields.md)
-    - Validators (api/validators.md)
-    - Route (api/route.md)
-    - Security (api/security.md)
-    - Helpers (api/helpers.md)
-    - Commands (api/commands.md)
-
+- Authors (authors.md) [@greyli](https://github.com/greyli)
+- Changelog (changelog.md) [@greyli](https://github.com/greyli)
+- Contributing Guide (contributing.md) [@greyli](https://github.com/greyli)
 
 ## 介绍
 
@@ -367,4 +331,4 @@ from marshmallow import pre_load, post_dump, ValidationError
 
 ## 致谢
 
-APIFlask 基于 [APIFairy](https://github.com/miguelgrinberg/APIFairy) 改写，并且受到 [flask-smorest](https://github.com/marshmallow-code/flask-smorest) 和 [FastAPI](https://github.com/tiangolo/fastapi) 的启发（阅读 [对比和动机](https://apiflask.com/comparison) 了解这些项目之间的区别）。
+APIFlask 早期版本基于 [APIFairy](https://github.com/miguelgrinberg/APIFairy) 改写，并且受到 [flask-smorest](https://github.com/marshmallow-code/flask-smorest) 和 [FastAPI](https://github.com/tiangolo/fastapi) 的启发（阅读 [对比和动机](https://apiflask.com/comparison) 了解这些项目之间的区别）。
