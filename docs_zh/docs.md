@@ -8,7 +8,8 @@
 你可以通过阅读以下章节来了解 APIFlask 的用法：
 
 - **[引言](/)**：一个关于 APIFlask 的总体介绍。
-- **[从 Flask 迁移](/migrating)**：迁移指南与注意事项。
+- **[从 Flask 迁移](/migrations/flask)**：从 Flask 迁移到 APIFlask。
+- **[从 Flask-RESTPlus/Flask-RESTX 迁移](/migrations/flask-restplus)**：从 Flask-RESTPlus/Flask-RESTX 迁移到 APIFlask。
 - **[基本用法](/usage)**：开始使用 APIFlask。
 - **[请求处理](/request)**：对 `@app.input` 装饰器的详细介绍。
 - **[响应格式化](/response)**： 对 `@app.output` 装饰器的详细介绍。
