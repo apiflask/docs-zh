@@ -1,6 +1,6 @@
-# Changelog
+# 更新日志
 
-Upgrade to the latest version:
+升级到最新版本：
 
 === "Linux/macOS"
 
@@ -14,7 +14,7 @@ Upgrade to the latest version:
     > pip install -U apiflask
     ```
 
-or check the currently installed version first:
+或者先检查当前安装的版本：
 
 === "Linux/macOS"
 

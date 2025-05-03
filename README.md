@@ -157,7 +157,7 @@ def get_pet(pet_id):
 @app.patch('/pets/<int:pet_id>')
 @app.input(PetIn(partial=True))  # -> json_data
 @app.output(PetOut)
-def update_pet(pet_id, data):
+def update_pet(pet_id, json_data):
     # 验证且解析后的请求输入数据会
     # 作为一个字典传递给视图函数
     if pet_id > len(pets) - 1:
@@ -259,7 +259,7 @@ async def say_hello():
 把代码保存到 `app.py`，然后使用下面的命令运行：
 
 ```bash
-$ flask run --reload
+$ flask run --debug
 ```
 
 现在访问 <http://localhost:5000/docs> 查看交互式 API 文档（Swagger UI）：

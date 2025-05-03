@@ -80,7 +80,7 @@ nav:
     - Helpers: api/helpers.md
     - Commands: api/commands.md
   - 对比和动机: comparison.md
-  - 作者: authors.md
+  - 项目作者: authors.md
   - 变更日志: changelog.md
   - 贡献指南: contributing.md
   - 捐赠支持: https://opencollective.com/apiflask
