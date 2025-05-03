@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing as t
 
 from .openapi import get_path_description
@@ -21,9 +23,9 @@ def route_patch(cls):
 
     *Version added: 0.5.0*
     """
+
     def record_spec_for_view_class(
-        view_func: ViewFuncType,
-        view_class: ViewClassType
+        view_func: ViewFuncType, view_class: ViewClassType
     ) -> ViewFuncType:
         # when the user call add_url_rule multiple times for one view class,
         # we only need to extract info from view class once since it will
@@ -63,9 +65,9 @@ def route_patch(cls):
     def add_url_rule(
         self,
         rule: str,
-        endpoint: t.Optional[str] = None,
-        view_func: t.Optional[ViewFuncOrClassType] = None,
-        provide_automatic_options: t.Optional[bool] = None,
+        endpoint: str | None = None,
+        view_func: ViewFuncOrClassType | None = None,
+        provide_automatic_options: bool | None = None,
         **options: t.Any,
     ):
         """Record the spec for view classes before calling the actual `add_url_rule` method.
@@ -96,7 +98,7 @@ def route_patch(cls):
             endpoint,
             view_func,
             provide_automatic_options=provide_automatic_options,
-            **options
+            **options,
         )
 
     cls.add_url_rule = add_url_rule

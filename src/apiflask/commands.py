@@ -1,7 +1,6 @@
-import json
-
 import click
 from flask import current_app
+from flask import json
 from flask.cli import with_appcontext
 
 
@@ -10,22 +9,25 @@ from flask.cli import with_appcontext
     '--format',
     '-f',
     type=click.Choice(['json', 'yaml', 'yml']),
-    help='The format of the spec, defaults to SPEC_FORMAT config.'
+    help='The format of the spec, defaults to SPEC_FORMAT config.',
 )
 @click.option(
     '--output',
     '-o',
     type=click.Path(),
-    help='The file path to the spec file, defaults to LOCAL_SPEC_PATH config.'
+    help='The file path to the spec file, defaults to LOCAL_SPEC_PATH config.',
 )
 @click.option(
     '--indent',
     '-i',
     type=int,
-    help='The indentation for JSON spec, defaults to LOCAL_SPEC_JSON_INDENT config.'
+    help='The indentation for JSON spec, defaults to LOCAL_SPEC_JSON_INDENT config.',
+)
+@click.option(
+    '--quiet', '-q', type=bool, is_flag=True, help='A flag to suppress printing output to stdout.'
 )
 @with_appcontext
-def spec_command(format, output, indent):
+def spec_command(format, output, indent, quiet):
     """Output the OpenAPI spec to stdout or a file.
 
     Check out the docs for the detailed usage:
@@ -43,7 +45,8 @@ def spec_command(format, output, indent):
         spec = json.dumps(spec, indent=json_indent)
 
     # output to stdout
-    click.echo(spec)
+    if not quiet:
+        click.echo(spec)
 
     # output to local file
     if output_path:

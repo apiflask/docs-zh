@@ -13,18 +13,16 @@ class PetIn:
         metadata={
             'required': True,
             'validate': Length(min=1, max=10),
-            'example': 'Medor',
-            'description': 'This will be printed in the generated doc. '
-                           'The "example" value "Medor" will be fed '
-                           'into the "try it"/"Send API request".',
+            'metadata': {
+                'example': 'Medor',
+                'description': 'This will be printed in the generated doc. '
+                'The "example" value "Medor" will be fed '
+                'into the "try it"/"Send API request".',
+            },
         }
     )
     category: str = field(
-        default='dog',
-        metadata={
-            'required': True,
-            'validate': OneOf(['cat', 'dog'])
-        }
+        default='dog', metadata={'required': True, 'validate': OneOf(['cat', 'dog'])}
     )
 
 
@@ -38,7 +36,7 @@ class PetOut:
 pets = [
     {'id': 0, 'name': 'Kitty', 'category': 'cat'},
     {'id': 1, 'name': 'Coco', 'category': 'dog'},
-    {'id': 2, 'name': 'Flash', 'category': 'cat'}
+    {'id': 2, 'name': 'Flash', 'category': 'cat'},
 ]
 
 
@@ -66,11 +64,7 @@ def get_pets():
 @app.output(PetOut.Schema, status_code=201)
 def create_pet(pet: PetIn):
     pet_id = len(pets)
-    pets.append({
-        'id': pet_id,
-        'name': pet.name,
-        'category': pet.category
-    })
+    pets.append({'id': pet_id, 'name': pet.name, 'category': pet.category})
     return pets[pet_id]
 
 

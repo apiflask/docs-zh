@@ -1,5 +1,5 @@
+import openapi_spec_validator as osv
 import pytest
-from openapi_spec_validator import validate_spec
 
 from .schemas import Foo
 from apiflask import Schema
@@ -22,32 +22,20 @@ class BadBaseResponse(Schema):
 
 base_response_schema_dict = {
     'properties': {
-        'data': {
-            'type': 'object'
-        },
-        'message': {
-            'type': 'string'
-        },
-        'status_code': {
-            'type': 'integer'
-        }
+        'data': {'type': 'object'},
+        'message': {'type': 'string'},
+        'status_code': {'type': 'integer'},
     },
-    'type': 'object'
+    'type': 'object',
 }
 
 bad_base_response_schema_dict = {
     'properties': {
-        'some_data': {
-            'type': 'object'
-        },
-        'message': {
-            'type': 'string'
-        },
-        'status_code': {
-            'type': 'integer'
-        }
+        'some_data': {'type': 'object'},
+        'message': {'type': 'string'},
+        'status_code': {'type': 'integer'},
     },
-    'type': 'object'
+    'type': 'object',
 }
 
 
@@ -78,8 +66,8 @@ def test_output_base_response(app, client):
         BadBaseResponse,
         bad_base_response_schema_dict,
         '',
-        None
-    ]
+        None,
+    ],
 )
 def test_base_response_spec(app, client, base_schema):
     app.config['BASE_RESPONSE_SCHEMA'] = base_schema
@@ -101,9 +89,10 @@ def test_base_response_spec(app, client, base_schema):
     else:
         rv = client.get('/openapi.json')
         assert rv.status_code == 200
-        validate_spec(rv.json)
-        schema = rv.json['paths']['/']['get']['responses']['200']['content'][
-            'application/json']['schema']
+        osv.validate(rv.json)
+        schema = rv.json['paths']['/']['get']['responses']['200']['content']['application/json'][
+            'schema'
+        ]
         schema_ref = '#/components/schemas/Foo'
         # TODO the output schema ref contains unused `'x-scope': ['']` field
         # it seems related to openapi-spec-validator:
@@ -142,7 +131,7 @@ def test_base_response_204(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert 'content' not in rv.json['paths']['/']['get']['responses']['204']
 
 
@@ -173,9 +162,10 @@ def test_bare_view_base_response_spec(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
-    schema = rv.json['paths']['/']['get']['responses']['200']['content'][
-        'application/json']['schema']
+    osv.validate(rv.json)
+    schema = rv.json['paths']['/']['get']['responses']['200']['content']['application/json'][
+        'schema'
+    ]
     assert schema['properties']['status_code'] == {'type': 'integer'}
     assert schema['properties']['message'] == {'type': 'string'}
 
@@ -191,8 +181,9 @@ def test_input_with_base_response_spec(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
-    schema = rv.json['paths']['/']['get']['responses']['200']['content'][
-        'application/json']['schema']
+    osv.validate(rv.json)
+    schema = rv.json['paths']['/']['get']['responses']['200']['content']['application/json'][
+        'schema'
+    ]
     assert schema['properties']['status_code'] == {'type': 'integer'}
     assert schema['properties']['message'] == {'type': 'string'}

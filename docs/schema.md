@@ -143,6 +143,8 @@ API documentation: <https://flask-marshmallow.readthedocs.io/en/latest/#flask-ma
 - `AbsoluteURLFor`
 - `Hyperlinks`
 - `URLFor`
+- `File`
+- `Config`
 
 
 ## webargs fields
@@ -151,14 +153,6 @@ API documentation: <https://webargs.readthedocs.io/en/latest/api.html#module-web
 
 - `DelimitedList`
 - `DelimitedTuple`
-
-
-## APIFlask fields
-
-API documentation: <https://apiflask.com/api/fields>
-
-- `File`: represents a file input.
-- `Config`: dump a config value from Flask's `config` object.
 
 !!! tip
 
@@ -169,7 +163,7 @@ API documentation: <https://apiflask.com/api/fields>
 ## Data validators
 
 APIFlask's `aipflask.validators` contains all the validator class provided by marshmallow
-and two extra validators `FileType` and `FileSize`:
+and two extra validators `FileType` and `FileSize` provided by flask-marshmallow:
 
 - `ContainsNoneOf`
 - `ContainsOnly`
@@ -187,7 +181,7 @@ and two extra validators `FileType` and `FileSize`:
 - `FileSize`
 
 See the [marshmallow API documentation](https://marshmallow.readthedocs.io/en/stable/marshmallow.validate.html)
-and the [apiflask API documentation](https://apiflask.com/api/validators)
+and the [flask-marshmallow API documentation](https://flask-marshmallow.readthedocs.io/en/latest/#flask-marshmallow-validate)
 for the detailed usage.
 
 When specifying validators for a field, you can pass a single validator to the `validate` parameter:
@@ -323,9 +317,15 @@ app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
 Now you can return a dict matches the base response schema in your view functions:
 
 ```python
+class PetOut(Schema):
+    id = Integer()
+    name = String()
+    category = String()
+
 @app.get('/')
-def say_hello():
-    data = {'name': 'Grey'}
+@app.output(PetOut)
+def get_pet():
+    data = {'id': 2, 'name': 'Kitty', 'category': 'cat'}
     return {
         'data': data,
         'message': 'Success!',
@@ -378,7 +378,7 @@ class PetOut:
 
 
 @app.post('/pets')
-@app.input(PetIn.Schema)
+@app.input(PetIn.Schema, arg_name='pet')
 @app.output(PetOut.Schema, status_code=201)
 def create_pet(pet: PetIn):
     return {

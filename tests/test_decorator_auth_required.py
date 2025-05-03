@@ -1,5 +1,5 @@
+import openapi_spec_validator as osv
 from flask.views import MethodView
-from openapi_spec_validator import validate_spec
 
 from apiflask import APIBlueprint
 from apiflask.security import HTTPBasicAuth
@@ -72,11 +72,11 @@ def test_auth_required(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert 'BasicAuth' in rv.json['components']['securitySchemes']
     assert rv.json['components']['securitySchemes']['BasicAuth'] == {
         'scheme': 'basic',
-        'type': 'http'
+        'type': 'http',
     }
 
     assert 'BasicAuth' in rv.json['paths']['/foo']['get']['security'][0]
@@ -149,11 +149,11 @@ def test_auth_required_with_methodview(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert 'BasicAuth' in rv.json['components']['securitySchemes']
     assert rv.json['components']['securitySchemes']['BasicAuth'] == {
         'scheme': 'basic',
-        'type': 'http'
+        'type': 'http',
     }
 
     assert 'BasicAuth' in rv.json['paths']['/']['get']['security'][0]
@@ -206,7 +206,7 @@ def test_auth_required_at_blueprint_before_request(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
 
     assert 'auth' in app._auth_blueprints
     assert 'no-auth' not in app._auth_blueprints
@@ -214,7 +214,7 @@ def test_auth_required_at_blueprint_before_request(app, client):
     assert 'BearerAuth' in rv.json['components']['securitySchemes']
     assert rv.json['components']['securitySchemes']['BearerAuth'] == {
         'scheme': 'bearer',
-        'type': 'http'
+        'type': 'http',
     }
 
     assert 'BearerAuth' in rv.json['paths']['/foo']['get']['security'][0]
@@ -225,7 +225,6 @@ def test_auth_required_at_blueprint_before_request(app, client):
 
 
 def test_lowercase_token_scheme_value(app, client):
-
     auth = HTTPTokenAuth(scheme='bearer')
 
     @app.route('/')
@@ -235,7 +234,7 @@ def test_lowercase_token_scheme_value(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
 
     assert 'BearerAuth' in rv.json['components']['securitySchemes']
     assert 'BearerAuth' in rv.json['paths']['/']['get']['security'][0]

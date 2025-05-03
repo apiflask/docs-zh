@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing as t
 
 from werkzeug.exceptions import default_exceptions
@@ -26,19 +28,20 @@ class HTTPError(Exception):
         return f'Hello, escape{name}'!
     ```
     """
+
     status_code: int = 500
-    message: t.Optional[str] = None
+    message: str | None = None
     detail: t.Any = {}
     headers: ResponseHeaderType = {}
     extra_data: t.Mapping[str, t.Any] = {}
 
     def __init__(
         self,
-        status_code: t.Optional[int] = None,
-        message: t.Optional[str] = None,
-        detail: t.Optional[t.Any] = None,
-        headers: t.Optional[ResponseHeaderType] = None,
-        extra_data: t.Optional[t.Mapping[str, t.Any]] = None
+        status_code: int | None = None,
+        message: str | None = None,
+        detail: t.Any | None = None,
+        headers: ResponseHeaderType | None = None,
+        extra_data: t.Mapping[str, t.Any] | None = None,
     ) -> None:
         """Initialize the error response.
 
@@ -71,7 +74,7 @@ class HTTPError(Exception):
             # TODO: support use custom error status code?
             if status_code not in default_exceptions:
                 raise LookupError(
-                    f'No exception for status code {status_code!r}, '
+                    f'No exception for status code {status_code!r},'
                     ' valid error status code are "4XX" and "5XX".'
                 )
             self.status_code = status_code
@@ -97,11 +100,11 @@ class _ValidationError(HTTPError):
 
 def abort(
     status_code: int,
-    message: t.Optional[str] = None,
-    detail: t.Optional[t.Any] = None,
-    headers: t.Optional[ResponseHeaderType] = None,
-    extra_data: t.Optional[dict] = None
-) -> None:
+    message: str | None = None,
+    detail: t.Any | None = None,
+    headers: ResponseHeaderType | None = None,
+    extra_data: dict | None = None,
+) -> t.NoReturn:
     """A function to raise HTTPError exception.
 
     Similar to Flask's `abort`, but returns a JSON response.

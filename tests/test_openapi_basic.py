@@ -1,8 +1,8 @@
 import json
 
+import openapi_spec_validator as osv
 import pytest
 from flask import request
-from openapi_spec_validator import validate_spec
 
 from .schemas import Bar
 from .schemas import Baz
@@ -30,7 +30,7 @@ def test_spec_processor(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert rv.json['openapi'] == '3.0.2'
     assert rv.json['info']['title'] == 'Foo'
 
@@ -49,7 +49,7 @@ def test_spec_processor_pass_object(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert rv.json['info']['title'] == 'Foo'
     assert 'NotUsed' in rv.json['components']['schemas']
     assert 'id' in rv.json['components']['schemas']['NotUsed']['properties']
@@ -81,7 +81,6 @@ def test_get_spec_force_update(app):
 
 
 def test_spec_bypass_endpoints(app):
-
     bp = APIBlueprint('foo', __name__, static_folder='static', url_prefix='/foo')
     app.register_blueprint(bp)
 
@@ -94,7 +93,6 @@ def test_spec_bypass_endpoints(app):
 
 
 def test_spec_bypass_methods(app):
-
     class Foo:
         def bar(self):
             pass
@@ -162,37 +160,22 @@ def test_servers_and_externaldocs(app):
     assert app.external_docs is None
     assert app.servers is None
 
-    app.external_docs = {
-        'description': 'Find more info here',
-        'url': 'https://docs.example.com/'
-    }
+    app.external_docs = {'description': 'Find more info here', 'url': 'https://docs.example.com/'}
     app.servers = [
-        {
-            'url': 'http://localhost:5000/',
-            'description': 'Development server'
-        },
-        {
-            'url': 'https://api.example.com/',
-            'description': 'Production server'
-        }
+        {'url': 'http://localhost:5000/', 'description': 'Development server'},
+        {'url': 'https://api.example.com/', 'description': 'Production server'},
     ]
 
     rv = app.test_client().get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert rv.json['externalDocs'] == {
         'description': 'Find more info here',
-        'url': 'https://docs.example.com/'
+        'url': 'https://docs.example.com/',
     }
     assert rv.json['servers'] == [
-        {
-            'url': 'http://localhost:5000/',
-            'description': 'Development server'
-        },
-        {
-            'url': 'https://api.example.com/',
-            'description': 'Production server'
-        }
+        {'url': 'http://localhost:5000/', 'description': 'Development server'},
+        {'url': 'https://api.example.com/', 'description': 'Production server'},
     ]
 
 
@@ -201,7 +184,7 @@ def test_default_servers(app):
 
     rv = app.test_client().get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     with app.test_request_context():
         assert rv.json['servers'] == [
             {
@@ -243,14 +226,13 @@ def test_auto_200_response(app, client):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert '200' in rv.json['paths']['/foo']['get']['responses']
     assert '200' in rv.json['paths']['/bar']['get']['responses']
     assert '200' in rv.json['paths']['/baz']['get']['responses']
     assert '200' not in rv.json['paths']['/eggs']['get']['responses']
     assert '200' not in rv.json['paths']['/spam']['get']['responses']
-    assert rv.json['paths']['/spam']['get']['responses'][
-        '204']['description'] == 'empty'
+    assert rv.json['paths']['/spam']['get']['responses']['204']['description'] == 'empty'
 
 
 def test_sync_local_json_spec(app, client, tmp_path):
@@ -263,7 +245,7 @@ def test_sync_local_json_spec(app, client, tmp_path):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
 
     with open(local_spec_path) as f:
         spec_content = json.loads(f.read())

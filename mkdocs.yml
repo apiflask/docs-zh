@@ -12,6 +12,8 @@ theme:
   icon:
     repo: fontawesome/brands/github
   language: zh
+  features:
+    - content.code.copy
 repo_url: https://github.com/apiflask/apiflask
 repo_name: apiflask/apiflask
 extra:
@@ -36,10 +38,10 @@ copyright:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
   - pymdownx.highlight
   - pymdownx.inlinehilite
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences
   - pymdownx.snippets
   - pymdownx.progressbar
@@ -50,7 +52,9 @@ markdown_extensions:
 nav:
   - 主页: index.md
   - 文档索引: docs.md
-  - 从 Flask 迁移: migrating.md
+  - 迁移到 APIFlask:
+    - 从 Flask 迁移: migrations/flask.md
+    - 从 Flask-RESTPlus/Flask-RESTX 迁移: migrations/flask-restplus.md
   - 基本用法: usage.md
   - 请求处理: request.md
   - 响应格式化: response.md
@@ -61,6 +65,7 @@ nav:
   - 配置: configuration.md
   - 错误处理: error-handling.md
   - 示例程序: examples.md
+  - Tips: tips.md
   - API 参考:
     - APIFlask: api/app.md
     - APIBlueprint: api/blueprint.md
@@ -77,19 +82,20 @@ nav:
   - 作者: authors.md
   - 变更日志: changelog.md
   - 贡献指南: contributing.md
+  - 捐赠支持: https://opencollective.com/apiflask
 plugins:
   - search
   - mkdocstrings:
       default_handler: python
       handlers:
         python:
-          rendering:
+          options:
             heading_level: 2
-      watch:
-        - src/apiflask
-        - README.md
-        - examples/README.md
-        - CHANGES.md
-        - CONTRIBUTING.md
+watch:
+  - src/apiflask
+  - README.md
+  - examples/README.md
+  - CHANGES.md
+  - CONTRIBUTING.md
 extra_css:
   - _assets/extra.css

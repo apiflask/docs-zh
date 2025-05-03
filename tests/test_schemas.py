@@ -1,5 +1,5 @@
+import openapi_spec_validator as osv
 import pytest
-from openapi_spec_validator import validate_spec
 
 from apiflask.schemas import EmptySchema
 from apiflask.schemas import FileSchema
@@ -10,7 +10,7 @@ def test_file_schema(app, client):
     @app.output(
         FileSchema(type='string', format='binary'),
         content_type='image/png',
-        description='An image file'
+        description='An image file',
     )
     def get_image():
         return 'file'
@@ -19,10 +19,9 @@ def test_file_schema(app, client):
     assert rv.status_code == 200
     content = rv.json['paths']['/image']['get']['responses']['200']['content']
     assert 'image/png' in content
-    assert content['image/png']['schema'] == {
-        'type': 'string',
-        'format': 'binary'
-    }
+    assert content['image/png']['schema'] == {'type': 'string', 'format': 'binary'}
+    rv = client.get('/image')
+    assert rv.status_code == 200
 
 
 def test_file_schema_repr():
@@ -44,9 +43,10 @@ def test_empty_schema(app, client, schema):
 
     rv = client.get('/openapi.json')
     assert rv.status_code == 200
-    validate_spec(rv.json)
+    osv.validate(rv.json)
     assert 'content' not in rv.json['paths']['/foo']['get']['responses']['204']
 
     assert 'content' in rv.json['paths']['/bar']['get']['responses']['200']
-    assert rv.json['paths']['/bar']['get']['responses']['200'][
-        'content']['image/png']['schema'] == {}
+    assert (
+        rv.json['paths']['/bar']['get']['responses']['200']['content']['image/png']['schema'] == {}
+    )

@@ -246,6 +246,19 @@ $ flask spec
 ```
 
 
+### Suppress the output
+
+!!! warning "Version >= 2.1.1"
+
+    This feature was added in the [version 2.1.1](/changelog/#version-211).
+
+If you wish to write the spec to a local file without also printing to stdout, you can specify the `--quiet/-q` option:
+
+```
+$ flask spec --output openapi.json --quiet
+```
+
+
 ## Keep the local spec in sync
 
 !!! warning "Version >= 0.7.0"
@@ -992,6 +1005,22 @@ app.config['AUTO_OPERATION_ID'] = True
 The auto-operationId will in the format of `{HTTP method}_{endpoint of the view}` (e.g. `get_hello`).
 
 
+### Operation spec extensions
+
+!!! warning "Version >= 2.2.0"
+
+    This feature was added in the [version 2.2.0](/changelog/#version-220).
+
+You can add custom fields to the operation object with the `extensions` parameter:
+
+```python
+@app.get('/')
+@app.doc(extensions={'x-foo': 'bar'})
+def hello():
+    return 'Hello'
+```
+
+
 ## Security information
 
 APIFlask will generate the `security` object and operation `security` field based on
@@ -1135,5 +1164,5 @@ def update_spec(spec):
     return spec
 ```
 
-Check out [the example application](https://github.com/apiflask/apiflask/tree/main/examples/openapi/app.py)
+Check out [the example application](https://github.com/apiflask/apiflask/tree/main/examples/openapi)
 for OpenAPI support, see [the examples page](/examples) for running the example application.

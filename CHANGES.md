@@ -1,6 +1,225 @@
+## Version 2.4.0
+
+Released: 2025/3/25
+
+- Add `docs_oauth2_redirect_path_external` parameter to support absolute OAuth2 redirect url ([issue #602][issue_602]).
+- Change the default docs CDN to jsDelivr by default instead of unpkg ([pr #650](pr_650)).
+
+[issue_602]: https://github.com/apiflask/apiflask/issues/602
+[pr_650]: https://github.com/apiflask/apiflask/pull/650
+
+
+## Version 2.3.2
+
+Released: 2024/12/15
+
+- Fix response headers to be compliant with the OpenAPI specification for versions 3.0.0+ ([issue #631][issue_631]).
+- Fix input data loading implementation when input validation is skipped ([issue #629][issue_629]).
+
+[issue_629]: https://github.com/apiflask/apiflask/issues/629
+[issue_631]: https://github.com/apiflask/apiflask/issues/631
+
+
+## Version 2.3.1
+
+Released: 2024/12/7
+
+- Include input documentation in API spec when specifying `validation=False` on `@input` decorator  ([issue #626][issue_626]).
+
+[issue_626]: https://github.com/apiflask/apiflask/issues/626
+
+
+## Version 2.3.0
+
+Released: 2024/11/25
+
+- Support skipping the validation for the request body with `@input(validation=False)` ([issue #573][issue_573]).
+- Enable CI test for Python 3.13.
+
+[issue_573]: https://github.com/apiflask/apiflask/issues/573
+
+
+## Version 2.2.1
+
+Released: 2024/9/8
+
+- Fix OpenAPI spec for multiple content types with `json_or_form` location ([issue #600][issue_600]).
+
+[issue_600]: https://github.com/apiflask/apiflask/issues/600
+
+
+## Version 2.2.0
+
+Released: 2024/8/3
+
+- Fix deprecated warnings in tests ([issue #594][issue_594]).
+- Use postponed evaluation of annotations ([pr #585][pr_585]).
+- Add static OpenAPI docs example ([issue #587][issue_587]).
+- Add spec extensions support with `@doc(extensions=...)` for the view function ([issue #571][issue_571]).
+
+[pr_585]: https://github.com/apiflask/apiflask/pull/585
+[issue_594]: https://github.com/apiflask/apiflask/issues/594
+[issue_587]: https://github.com/apiflask/apiflask/issues/587
+[issue_571]: https://github.com/apiflask/apiflask/issues/571
+
+
+## Version 2.1.3
+
+Released: 2024/7/14
+
+- Fix the `flask spec` command for latest Flask ([issue #582][issue_582]).
+
+[issue_582]: https://github.com/apiflask/apiflask/issues/582
+
+
+## Version 2.1.2
+
+Released: 2024/7/6
+
+- Deprecate the `__version__` attribute. Use feature detection or `importlib.metadata.version("apiflask")` instead.
+- Explicitly skip the data serialization for response with `app.output(FileSchema)`.
+
+
+## Version 2.1.1
+
+Released: 2024/3/10
+
+- Reuse the `File`, `Config` field, and file-related validators from flask-marshmallow ([issue #540][issue_540]).
+- Add support for a `--quiet` option to the `flask spec` command ([issue #548][issue_548]).
+- Fix the `flask spec` command for validators operating on complex data types ([issue #547][issue_547]).
+
+[issue_540]: https://github.com/apiflask/apiflask/issues/540
+[issue_548]: https://github.com/apiflask/apiflask/issues/548
+[issue_547]: https://github.com/apiflask/apiflask/issues/547
+
+
+## Version 2.1.0
+
+Released: 2023/12/16
+
+- Add `FileType` and `FileSize` validators ([issue #253][issue_253]).
+- Allow adding multiple media types for a response ([issue #494][issue_494]).
+- Support adding headers to the response schema ([issue #507][issue_507]).
+- Add support for adding decorators to the OpenAPI spec and documentation UI endpoints ([issue #483][issue_483]).
+- Fix the base response schema inconsistency issue.
+
+[issue_494]: https://github.com/apiflask/apiflask/issues/494
+[issue_507]: https://github.com/apiflask/apiflask/issues/507
+[issue_483]: https://github.com/apiflask/apiflask/issues/483
+[issue_253]: https://github.com/apiflask/apiflask/issues/253
+
+
+## Version 2.0.2
+
+Released: 2023/9/24
+
+- Loose Flask version requirement to >= 2.0.0 and add test
+  for minimum dependency versions ([issue #478][issue_478]).
+- Add file uploading example application ([pr #476][pr_476]).
+- Fix token authentication example application ([pr #472][pr_472]).
+
+[issue_478]: https://github.com/apiflask/apiflask/issues/478
+[pr_476]: https://github.com/apiflask/apiflask/pull/476
+[pr_472]: https://github.com/apiflask/apiflask/pull/472
+
+
+## Version 2.0.1
+
+Released: 2023/8/15
+
+- Add `Config` field to dump Flask `app.config` variables ([issue #468][issue_468]).
+- Fix the typing of newly updated `doc(responses)` parameter ([issue #466][issue_466]).
+
+[issue_466]: https://github.com/apiflask/apiflask/issues/466
+[issue_468]: https://github.com/apiflask/apiflask/issues/468
+
+
+## Version 2.0.0
+
+Released: 2023/7/26<br>Codename: Gongqing
+
+Please see the [migration guide](/migration_guide/#migrate-to-apiflask-2x) for APIFlask 1.x -> 2.0.0.
+
+- Drop Python 3.7 support.
+- Drop Flask 1.x support ([issue #442][issue_442]).
+- Only pass keyword arguments to the view function. The argument name
+  of the parsed data from `app.input()` will be `{location}_data` or the
+  value of `arg_name` ([issue #427][issue_427]).
+- Add `FileSchema` to generate OpenAPI file response ([issue #447][issue_447]).
+- Support using `{}` to represent not only empty body (204) but also empty schema.
+  Use `{}` or `EmptySchema` will not set the status code to 204 anymore.
+- Remove the previously deprecated code:
+    - The `tag` parameter in `@app.doc`.
+    - The `role` parameter in `@app.auth_required`.
+    - The `redoc_path` parameter in `apiflask.APIFlask` and the `/redoc` path.
+- Support setting a complete response OpenAPI spec throught the `app.doc(responses)`
+  parameter (i.e. `responses={400: {'description': '', 'content': ...}}`)
+  ([issue #327][issue_327]).
+
+[issue_327]: https://github.com/apiflask/apiflask/issues/327
+[issue_427]: https://github.com/apiflask/apiflask/issues/427
+[issue_442]: https://github.com/apiflask/apiflask/issues/442
+[issue_447]: https://github.com/apiflask/apiflask/issues/447
+
+
+## Version 1.3.1
+
+Released: 2023/3/27
+
+- Fix the import error when calling `apispec.yaml_utils.dict_to_yaml`
+  ([issue #419][issue_419]).
+
+[issue_419]: https://github.com/apiflask/apiflask/issues/419
+
+
+## Version 1.3.0
+
+Released: 2023/3/18
+
+- Add `scurity_scheme_name` for `HTTPBasicAuth` and `HTTPTokenAuth` to define custom
+  OpenAPI security scheme name ([issue #410][issue_410]).
+- Add config `SPEC_PROCESSOR_PASS_OBJECT` to control the argument type of
+  spec processor. The `spec` argument will be an `apispec.APISpec` object
+  when this config is `True` ([issue #213][issue_213]).
+- Add `content_type` parameter to the `output()` decorator to customize the
+  response's content/media type.
+
+[issue_410]: https://github.com/apiflask/apiflask/issues/410
+[issue_357]: https://github.com/apiflask/apiflask/issues/357
+[issue_213]: https://github.com/apiflask/apiflask/issues/213
+
+
+## Version 1.2.3
+
+Released: 2023/2/21
+
+- Bypass OpenAPI spec generation for view methods ([issue #406][issue_406]).
+
+[issue_406]: https://github.com/apiflask/apiflask/issues/406
+
+
+## Version 1.2.2
+
+Released: 2023/2/18
+
+- Remove the validation of input locations ([issue #259][issue_259]).
+- Support passing `Function` type config to `SWAGGER_UI_CONFIG` ([issue #381][issue_381]).
+- Fix the base response support so that a custom class can be returned from
+  the view function ([issue #384][issue_384]).
+
+[issue_259]: https://github.com/apiflask/apiflask/issues/259
+[issue_381]: https://github.com/apiflask/apiflask/issues/381
+[issue_384]: https://github.com/apiflask/apiflask/issues/384
+
+
 ## Version 1.2.1
 
-Released: -
+Released: 2023/1/15
+
+- Support to generate the OpenAPI `servers` field when the reqeust context is available. Add
+  the config `AUTO_SERVERS` to control this automation behavior ([issue #377][issue_377]).
+
+[issue_377]: https://github.com/apiflask/apiflask/issues/377
 
 
 ## Version 1.2.0
@@ -69,7 +288,7 @@ Released: 2022/7/3
 - Add a `docs_ui` parameter to APIFlask to set the API docs UI (can be
   `swagger-ui` (default), `redoc`, `rapidoc`, and `rapipdf`).
 - Deprecate the separate docs path `/redoc` and the `redoc_path` parameter.
-- Add the following configuration variables for new docs supprt:
+- Add the following configuration variables for new docs support:
     - `ELEMENTS_JS`
     - `ELEMENTS_CSS`
     - `ELEMENTS_LAYOUT`
