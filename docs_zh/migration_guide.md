@@ -14,7 +14,7 @@ def create_pet(query_data, json_data):
     pass
 ```
 
-您可以使用 `arg_name` 设置自定义参数名称：
+你可以使用 `arg_name` 设置自定义参数名称：
 
 ```py
 @app.post('/pets')
@@ -27,7 +27,7 @@ def create_pet(query_data, pet):
 
 ### 替换 `/redoc` 和 `redoc_path` 参数
 
-从 APIFlask 2.x 开始，所有的 OpenAPI 文档都可以通过 `/docs` 访问。您可以使用 `docs_ui` 参数将文档界面更改为 ReDoc，并使用 `docs_path` 参数更改文档路径：
+从 APIFlask 2.x 开始，所有的 OpenAPI 文档都可以通过 `/docs` 访问。你可以使用 `docs_ui` 参数将文档界面更改为 ReDoc，并使用 `docs_path` 参数更改文档路径：
 
 ```py
 from apiflask import APIFlask
@@ -58,7 +58,7 @@ app = APIFlask(__name__, docs_ui='redoc', docs_path='/redoc')
 
 在 APIFlask 2.x 中，空模式（schema）有了不同的含义，并且不会将状态码设置为 204。
 
-要返回 204 响应，您必须设置状态码：
+要返回 204 响应，你必须设置状态码：
 
 ```py
 @app.get('/nothing')
