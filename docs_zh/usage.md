@@ -205,71 +205,71 @@ $ flask run --reload
 
     [_debug_mode]: https://flask.palletsprojects.com/quickstart/#debug-mode
 
-## 使用 python-dotenv 管理环境变量
+??? "使用 python-dotenv 管理环境变量"
 
-手动设置环境变量有些不便，因为变量仅在当前终端会话中有效。每次重新打开终端或重启计算机时都需要重新设置。因此，我们需要使用 python-dotenv，Flask 也对此提供了特殊支持。
+    手动设置环境变量有些不便，因为变量仅在当前终端会话中有效。每次重新打开终端或重启计算机时都需要重新设置。因此，我们需要使用 python-dotenv，Flask 也对此提供了特殊支持。
 
-使用 pip 安装 `python-dotenv`：
+    使用 pip 安装 `python-dotenv`：
 
-=== "Linux/macOS"
+    === "Linux/macOS"
+
+        ```bash
+        $ pip3 install python-dotenv
+        ```
+
+    === "Windows"
+
+        ```
+        > pip install python-dotenv
+        ```
+
+    现在，我们可以将环境变量存储在 `.env` 文件中。与 Flask 相关的环境变量应保存在名为 `.flaskenv` 的文件中：
+
+    ```ini
+    # 保存为 .flaskenv
+    FLASK_APP=hello
+    FLASK_DEBUG=1
+    ```
+
+    而敏感信息应保存在 `.env` 文件中：
+
+    ```ini
+    # 保存为 .env
+    SECRET_KEY=some-random-string
+    DATABASE_URL=your-database-url
+    FOO_APP_KEY=some-app-key
+    ```
+
+    !!! warning
+
+        由于 `.env` 文件包含敏感信息，请勿将其提交到 Git 历史记录中。确保通过将文件名添加到 `.gitignore` 来忽略它。
+
+    在程序中，我们现在可以通过 `os.getenv(key, default_value)` 读取这些变量：
+
+    ```python
+    import os
+
+    from apiflask import APIFlask
+
+    app = APIFlask(__name__)
+    app.secret_key = os.getenv('SECRET_KEY')
+    ```
+
+    任何 `flask` 命令都会读取 `.flaskenv` 和 `.env` 设置的环境变量。现在，当你运行 `flask run` 时，Flask 将读取 `.flaskenv` 文件中的 `FLASK_APP` 和 `FLASK_DEBUG` 的值，以从给定的导入路径中找到程序实例并启用调试模式：
 
     ```bash
-    $ pip3 install python-dotenv
+    $ flask run
+    * Environment: development
+    * Debug mode: on
+    * Restarting with stat
+    * Debugger is active!
+    * Debugger PIN: 101-750-099
+    * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
     ```
 
-=== "Windows"
+    更多详情请参见 *[从 dotenv 加载环境变量][_dotenv]{target=_blank}*。
 
-    ```
-    > pip install python-dotenv
-    ```
-
-现在，我们可以将环境变量存储在 `.env` 文件中。与 Flask 相关的环境变量应保存在名为 `.flaskenv` 的文件中：
-
-```ini
-# 保存为 .flaskenv
-FLASK_APP=hello
-FLASK_DEBUG=1
-```
-
-而敏感信息应保存在 `.env` 文件中：
-
-```ini
-# 保存为 .env
-SECRET_KEY=some-random-string
-DATABASE_URL=your-database-url
-FOO_APP_KEY=some-app-key
-```
-
-!!! warning
-
-    由于 `.env` 文件包含敏感信息，请勿将其提交到 Git 历史记录中。确保通过将文件名添加到 `.gitignore` 来忽略它。
-
-在程序中，我们现在可以通过 `os.getenv(key, default_value)` 读取这些变量：
-
-```python
-import os
-
-from apiflask import APIFlask
-
-app = APIFlask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
-```
-
-任何 `flask` 命令都会读取 `.flaskenv` 和 `.env` 设置的环境变量。现在，当你运行 `flask run` 时，Flask 将读取 `.flaskenv` 文件中的 `FLASK_APP` 和 `FLASK_DEBUG` 的值，以从给定的导入路径中找到程序实例并启用调试模式：
-
-```bash
-$ flask run
- * Environment: development
- * Debug mode: on
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 101-750-099
- * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-```
-
-更多详情请参见 *[从 dotenv 加载环境变量][_dotenv]{target=_blank}*。
-
-[_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
+    [_dotenv]: https://flask.palletsprojects.com/en/1.1.x/cli/#environment-variables-from-dotenv
 
 ## 交互式 API 文档
 
@@ -480,8 +480,7 @@ def update_pet(pet_id, json_data):
     return pet
 ```
 
-如果你希望禁用输入验证，可以设置 `validation=False`。这时输入数据会直接传入视图函数，未做任何验证。
-如果没有输入数据，视图函数将接收到一个空字典：
+如果你希望禁用输入验证，可以设置 `validation=False`。这时输入数据会直接传入视图函数，未做任何验证。如果没有输入数据，视图函数将接收到一个空字典：
 
 ```python
 @app.patch('/pets_without_validation/<int:pet_id>')

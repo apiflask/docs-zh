@@ -35,7 +35,7 @@ externalDocs | - | 使用配置变量 [`EXTERNAL_DOCS`](/configuration/#external
 
 在从代码生成 OpenAPI spec 时，APIFlask 具有以下自动化行为：
 
-- 从视图函数名称生成默认的 operation 摘要。
+- 从视图函数名称生成默认的 operation 摘要（summary）。
 - 从视图函数的文档字符串生成默认的 operation 描述。
 - 从蓝本名称生成标签。
 - 为注册到应用程序的任何视图添加默认的 200 响应。
@@ -51,7 +51,7 @@ externalDocs | - | 使用配置变量 [`EXTERNAL_DOCS`](/configuration/#external
 OpenAPI spec 的默认格式是 JSON，同时也支持 YAML。如果你想启用 YAML 支持，请安装带有 `yaml` 额外依赖的 APIFlask（它会安装 `PyYAML`）：
 
 ```
-$ pip install apiflask[yaml]
+$ pip install "apiflask[yaml]"
 ```
 
 现在你可以通过 `SPEC_FORMAT` 配置更改格式：
@@ -207,6 +207,18 @@ app.config['LOCAL_SPEC_JSON_INDENT'] = 4
 
 ```
 $ flask spec
+```
+
+### 抑制 spec 输出
+
+!!! warning "版本 >= 2.1.1"
+
+    此功能在 [版本 2.1.1](/changelog/#version-211) 中添加。
+
+如果你希望将 spec 写入本地文件而不同时打印到标准输出，可以指定 `--quiet/-q` 选项：
+
+```
+$ flask spec --output openapi.json --quiet
 ```
 
 
@@ -532,7 +544,7 @@ class PetIn(Schema):
 在 API 文档中渲染规范时，文档工具会为你生成一个默认示例。如果你想添加自定义示例，可以使用 `example` 参数在 `input`/`output` 装饰器中传递一个字典作为响应的 `example`：
 
 ```python hl_lines="6"
-from apiflask import APIFlask, input
+from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
@@ -545,7 +557,7 @@ def create_pet():
 对于多个示例，可以使用 `examples` 参数并传递一个字典的字典，每个示例字典映射一个唯一名称：
 
 ```python hl_lines="17"
-from apiflask import APIFlask, output
+from apiflask import APIFlask
 
 app = APIFlask(__name__)
 
@@ -575,6 +587,184 @@ def get_pets():
         name = String(metadata={'example': 'Flash'})
     ```
 
+## 响应 `links`
+
+!!! warning "版本 >= 0.10.0"
+
+    此功能在 [版本 0.10.0](/changelog/#version-0100) 中添加。
+
+你可以通过 `output` 装饰器中的 `links` 参数传递链接：
+
+```python
+pet_links = {
+    'getAddressByUserId': {
+        'operationId': 'getUserAddress',
+        'parameters': {
+            'userId': '$request.path.id'
+        }
+    }
+}
+
+@app.post('/pets')
+@app.output(PetOut, links=pet_links)
+def new_pet():
+    pass
+```
+
+或者，你也可以将链接添加到组件中，然后在操作中引用它：
+
+```python
+links = {
+    'getAddressByUserId': {
+        'operationId': 'getUserAddress',
+        'parameters': {
+            'userId': '$request.path.id'
+        }
+    }
+}
+
+@app.spec_processor
+def update_spec(spec):
+    spec['components']['links'] = links
+    return spec
+
+
+@app.post('/pets')
+@app.output(PetOut, links={'getAddressByUserId': {'$ref': '#/components/links/getAddressByUserId'}})
+def new_pet():
+    pass
+```
+
+
+## 响应 `headers`
+
+!!! warning "版本 >= 2.1.0"
+
+    此功能在 [版本 2.1.0](/changelog/#version-210) 中添加。
+
+你可以在 `output` 装饰器中通过 `headers` 参数传递一个模式类：
+
+```python
+class Header(Schema):
+    x_token = String(
+        data_key='X-Token',
+        metadata={'description': '一个自定义的 token 头'}
+    )
+
+@app.post('/pets')
+@app.output(PetOut, headers=Header)
+def new_pet():
+    pass
+```
+
+当传递模式到 `headers` 时，你也可以使用字典而不是模式类：
+
+```python
+@app.post('/pets')
+@app.output(PetOut, headers={'X-Token': String(metadata={'description': '一个自定义的 token 头'})})
+def new_pet():
+    pass
+```
+
+
+## 请求和响应的内容类型 / 媒体类型
+
+对于请求，内容类型（media/content type）会根据输入的位置自动设置：
+
+- `json`: `application/json`
+- `form`: `application/x-www-form-urlencoded`
+- `files`, `form_and_files`: `multipart/form-data`
+
+对于响应，默认的内容类型是 `application/json`。你可以通过 `output()` 装饰器中的 `content_type` 参数（APIFlask >= 1.3.0）设置自定义内容类型：
+
+```python
+@app.post('/foo')
+@app.output({FooSchema}, content_type='custom/type')
+def get_foo():
+    pass
+```
+
+!!! note
+
+    为了与 Flask/Werkzeug 保持一致，我们使用 `content_type` 而不是 `media_type`。
+
+
+## 文件响应
+
+!!! warning "版本 >= 2.0.0"
+
+    此功能在 [版本 2.0.0](/changelog/#version-0200) 中添加。
+
+当你创建一个返回文件的端点时，应使用 `FileSchema`：
+
+```python
+from apiflask.schemas import FileSchema
+from flask import send_from_directory
+
+@app.get('/images/<filename>')
+@app.output(FileSchema, content_type='image/png')
+def get_image(filename):
+    return send_from_directory(app.config['IMAGE_FOLDER'], filename)
+```
+
+根据 OpenAPI 规范，如果文件格式是二进制的，可以省略模式，因此你也可以使用 `EmptySchema`：
+
+```python
+from apiflask.schemas import EmptySchema
+
+@app.get('/images/<filename>')
+@app.output(EmptySchema, content_type='image/png')
+```
+
+或者：
+
+```python
+@app.get('/images/<filename>')
+@app.output({}, content_type='image/png')
+```
+
+你可以使用 `type` 和 `format` 设置自定义文件类型和格式（`binary` 和 `base64` 之一，默认为 `binary`）：
+
+```python
+@app.output(FileSchema(format='base64'), content_type='image/png')
+```
+
+
+## 使用 `doc` 装饰器
+
+你还可以使用 `doc` 装饰器显式设置操作字段。
+
+
+### Operation 的 `summary` 和 `description`
+
+以下是使用 `doc` 装饰器设置 `summary` 和 `description` 的示例：
+
+```python
+from apiflask import APIFlask
+
+app = APIFlask(__name__)
+
+@app.get('/hello')
+@app.doc(summary='打招呼', description='关于 /hello 的一些描述')
+def hello():
+    return 'Hello'
+```
+
+
+### Operation 的 `tags`
+
+当你在应用中使用蓝本时，APIFlask 提供了一个自动标签系统，详见 [标签](#tags)。
+
+如果你没有使用蓝本，或者希望自己控制标签，则需要设置标签。`tags` 参数接受一个标签名称字符串的列表，这些名称应与 `TAGS` 配置或 `app.tags` 属性中传递的值匹配：
+
+```python
+@app.get('/')
+@app.doc(tags=['Foo'])
+def hello():
+    return 'Hello'
+```
+
+
 ### 为 operation 设置替代的 `responses`
 
 如上所述，APIFlask 会根据你在视图函数上添加的装饰器（200、422、401、404）添加一些响应。有时你可能希望添加视图函数将返回的替代响应，此时可以使用 `@app.doc(responses=...)` 参数。它接受以下值：
@@ -588,6 +778,38 @@ def get_pets():
 def hello():
     return 'Hello'
 ```
+
+
+### 为响应设置媒体类型（media type）
+
+你可以为响应添加额外的媒体类型，这些媒体类型将被添加到 OpenAPI 文档中。这允许你描述在某些情况下可能返回资源的不同表示形式，例如通过执行基于请求某些参数的[内容协商][content_negotiation]。这可以通过提供自定义的 `responses` 并在每个响应的 `content` 部分中包含额外的媒体类型来实现，如下所示：
+
+```python
+@app.get("/pets/<int:pet_id>")
+@app.input(Accept, location="headers")
+@app.output(PetOut)
+@app.doc(responses={
+    200: {
+        'description': '以 JSON 或 HTML 格式返回资源',
+        'content': {
+            'text/html': {}
+        }
+    }
+})
+def get_pet(pet_id, headers_data):
+    pet = pets[pet_id]
+    if "html" in headers_data.get('accept'):
+        result = render_template('pets/pet-detail.j2.html', pet=pet)
+    else:
+        result = pet
+    return result
+```
+
+上面的代码片段展示了如何检查请求的 `Accept` 头，然后返回资源的 HTML 表示或 JSON 表示。
+
+请注意，APIFlask 允许你补充默认的 `application/json` 媒体类型（对于包含 `@app.output` 装饰器的视图，APIFlask 会自动添加此媒体类型），并添加额外的媒体类型。
+
+[content_negotiation]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation
 
 
 ### 将 operation 标记为 `deprecated`
@@ -626,6 +848,21 @@ app.config['AUTO_OPERATION_ID'] = True
 自动生成的 `operationId` 格式为 `{HTTP 方法}_{视图的端点}`（例如 `get_hello`）。
 
 
+### Operation spec 扩展
+
+!!! warning "版本 >= 2.2.0"
+
+    此功能在 [版本 2.2.0](/changelog/#version-220) 中添加。
+
+你可以使用 `extensions` 参数向 operation 对象添加自定义字段：
+
+```python
+@app.get('/')
+@app.doc(extensions={'x-foo': 'bar'})
+def hello():
+    return 'Hello'
+```
+
 ## 安全信息
 
 APIFlask 将根据通过 `auth_required` 装饰器传递的认证对象生成 `security` 对象 operation 的 `security` 字段：
@@ -651,9 +888,18 @@ app = APIFlask(__name__)
 auth = HTTPTokenAuth(description='一些描述')
 ```
 
+## 保护 OpenAPI 端点
+
+如果你希望对 OpenAPI 端点应用身份验证或自定义处理逻辑，可以使用以下配置选项：`SPEC_DECORATORS`、`DOCS_DECORATORS` 和 `SWAGGER_UI_OAUTH_REDIRECT_DECORATORS`：
+
+```python
+app.config['SPEC_DECORATORS'] = [app.auth_required(auth)]
+app.config['DOCS_DECORATORS'] = [app.auth_required(auth)]
+```
+
+查看完整示例：[examples/openapi/custom_decorators/app.py](https://github.com/apiflask/apiflask/tree/main/examples/openapi/custom_decorators/app.py)
 
 ## 禁用 OpenAPI 支持
-
 
 ### 全局禁用
 
@@ -725,9 +971,22 @@ def update_spec(spec):
     return spec
 ```
 
-请注意，spec 的格式取决于配置变量 `SPEC_FORMAT` 的值（默认为 `'json'`）：
+默认情况下，`spec` 参数是一个字典。当配置项 `SPEC_PROCESSOR_PASS_OBJECT` 设置为 `True` 时，`spec` 参数将是一个 [`apispec.APISpec`](https://apispec.readthedocs.io/en/latest/api_core.html#apispec.APISpec) 对象。
 
-- `'json'` -> 字典
-- `'yaml'` -> 字符串
+```python
+from apiflask import APIFlask
 
-查看 [示例应用程序](https://github.com/apiflask/apiflask/tree/main/examples/openapi/app.py) 以了解 OpenAPI 支持，参阅 [示例页面](/examples) 以运行示例应用程序。
+app = APIFlask(__name__)
+app.config['SPEC_PROCESSOR_PASS_OBJECT'] = True
+
+class FooSchema(Schema):
+    id = Integer()
+
+@app.spec_processor
+def update_spec(spec):
+    spec.title = '更新后的标题'
+    spec.components.schema('Foo', schema=FooSchema)  # 手动添加一个 schema
+    return spec
+```
+
+查看 [示例应用程序](https://github.com/apiflask/apiflask/tree/main/examples/openapi/) 以了解 OpenAPI 支持，参阅 [示例页面](/examples) 以运行示例应用程序。

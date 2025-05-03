@@ -37,16 +37,19 @@ app.security_schemes = {  # 等同于 SECURITY_SCHEMES 配置
 ```python hl_lines="5"
 @app.post('/pets')
 @my_auth_lib.protect  # 使用外部安全认证库提供的装饰器保护路由
-@app.input(PetInSchema)
-@app.output(PetOutSchema, 201)
+@app.input(PetIn)
+@app.output(PetOut,  status_code=201)
 @app.doc(security='ApiKeyAuth')
-def create_pet(data):
+def create_pet(json_data):
     pet_id = len(pets)
-    data['id'] = pet_id
-    pets.append(data)
+    json_data['id'] = pet_id
+    pets.append(json_data)
     return pets[pet_id]
 ```
 
+从 [APIFlask 1.0.2](/changelog/#version-102) 开始，当同时使用内置认证支持和外部认证库时，安全方案（security schemes）将会被合并。
+
+`app.auth_required` 会自动生成操作的安全性（operation security），如果你在已经使用了 `app.auth_required` 的视图中使用了 `@doc(security=...)`，那么 `@doc(security=...)` 中传递的值将会被使用。
 
 ## 处理安全认证错误
 

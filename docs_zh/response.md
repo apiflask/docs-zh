@@ -23,7 +23,7 @@ APIFlask 提供了两个用于分页的工具：
 
 `pagination_builder` 是一个用来为 `PaginationSchema` 生成分页数据的辅助函数。
 
-下面为我们的宠物商店示例添加分页支持。首先，我们创建一个 PetQuerySchema 类：
+下面为我们的宠物商店示例添加分页支持。首先，我们创建一个 PetQuery schema 类：
 
 ```python
 from apiflask import Schema
@@ -31,28 +31,27 @@ from apiflask.fields import Integer
 from apiflask.validators import Range
 
 
-class PetQuerySchema(Schema):
+class PetQuery(Schema):
     page = Integer(load_default=1)  # 设置默认页面为 1
     # 将默认值设置为 20，并确保该值不超过 30
     per_page = Integer(load_default=20, validate=Range(max=30))
 ```
 
-然后我们创建 `PetOutSchema` 类，和嵌套了 `PetOutSchema` 和 `PaginationSchema` 的
-`PetsOutSchema` 类。
+然后我们创建 `PetOut` 类，和嵌套了 `PetOut` 和 `Pagination` 的 `PetsOut` 类。
 
 ```python
 from apiflask import Schema, PaginationSchema
 from apiflask.fields import Integer, String, List, Nested
 
 
-class PetOutSchema(Schema):
+class PetOut(Schema):
     id = Integer()
     name = String()
     category = String()
 
 
-class PetsOutSchema(Schema):
-    pets = List(Nested(PetOutSchema))
+class PetsOut(Schema):
+    pets = List(Nested(PetOut))
     pagination = Nested(PaginationSchema)
 ```
 
@@ -63,8 +62,8 @@ from apiflask import APIFlask, pagination_builder
 
 
 @app.get('/pets')
-@app.input(PetQuerySchema, 'query')
-@app.output(PetsOutSchema)
+@app.input(PetQuery, 'query')
+@app.output(PetsOut)
 def get_pets(query):
     pagination = PetModel.query.paginate(
         page=query['page'],
@@ -104,11 +103,11 @@ def get_pets(query):
 将 schema 传递给 `app.output` 时，你可以使用字典来代替 schema 类：
 
 ```python
-from apiflask.fields import Integer
+from apiflask.fields import String
 
 
 @app.get('/')
-@app.output({'answer': Integer(dump_default=42)})
+@app.output({'answer': String(dump_default='Nothing')})
 def get_answer():
     return {'answer': 'Nothing'}
 ```
@@ -116,11 +115,11 @@ def get_answer():
 字典 schema 的名称将会类似 `"Generated"`。要指定 schema 名称，可使用 `schema_name` 参数：
 
 ```python
-from apiflask.fields import Integer
+from apiflask.fields import String
 
 
 @app.get('/')
-@app.output({'answer': Integer(dump_default=42)}, schema_name='AnswerSchema')
+@app.output({'answer': String(dump_default='Nothing')}, schema_name='Answer')
 def get_answer():
     return {'answer': 'Nothing'}
 ```

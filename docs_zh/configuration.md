@@ -92,7 +92,7 @@ app.config.from_pyfile('settings.py')
     但是，当你定义一个数据 schema 时，一般不会拥有应用上下文，
     所以你无法使用 `current_app`。在这种情况下从存储配置变量的模块访问它们：
 
-    ```python hl_lines="3 6"
+    ```python
     from apiflask import Schema
 
     from .settings import CATEGORIES  # 导入配置变量
@@ -105,7 +105,7 @@ app.config.from_pyfile('settings.py')
 
 ## 内置配置变量
 
-以下时所有 APIFlask 内置的配置变量：
+以下是所有 APIFlask 内置的配置变量：
 
 
 ### OpenAPI 字段
@@ -142,12 +142,17 @@ app.openapi_version = '3.0.2'
 API 项目的服务器信息（`openapi.servers`），接受多个服务器信息的字典。
 这个配置也可以通过 `app.servers` 属性设置。
 
+[`AUTO_SERVERS`](/configuration#auto_servers) 配置的默认值为 `True`，这意味着当请求上下文可用时，服务器信息将会被自动设置。
+
 - 类型：`List[Dict[str, str]]`
 - 默认值：`None`
 - 示例：
-
 ```python
 app.config['SERVERS'] = [
+    {
+        'name': 'Dev Server',
+        'url': 'http://localhost:5000'
+    },
     {
         'name': 'Production Server',
         'url': 'http://api.example.com'
@@ -159,6 +164,10 @@ app.config['SERVERS'] = [
 
 ```python
 app.servers = [
+    {
+        'name': 'Dev Server',
+        'url': 'http://localhost:5000'
+    },
     {
         'name': 'Production Server',
         'url': 'http://api.example.com'
@@ -380,6 +389,41 @@ app.license = {
 ```
 
 
+### SECURITY_SCHEMES
+
+### `SECURITY_SCHEMES`
+
+API 的自定义安全方案（`openapi.components.securitySchemes`）。当你使用第三方认证库并希望为其添加 OpenAPI 规范时，可以使用此配置。如果使用内置的 `HTTPBasicAuth` 和 `HTTPTokenAuth`，安全信息将会自动生成。
+
+此配置也可以通过 `app.security_schemes` 属性进行设置。
+
+- 类型: `Dict[str, t.Any]`
+- 默认值: `None`
+- 示例：
+
+```python
+app.config['SECURITY_SCHEMES'] = {
+    'ApiKeyAuth': {
+      'type': 'apiKey',
+      'in': 'header',
+      'name': 'X-API-Key',
+    }
+}
+```
+
+或：
+
+```python
+app.security_schemes = {
+    'ApiKeyAuth': {
+      'type': 'apiKey',
+      'in': 'header',
+      'name': 'X-API-Key',
+    }
+}
+```
+
+
 ### OpenAPI spec
 
 自定义 OpenAPI spec 的生成。
@@ -392,6 +436,12 @@ OpenAPI spec 的格式，接受 `'json'`、`'yaml'` 或 `'yml'`中的一个。
 
 - 通过内置的路由返回 spec 信息。
 - 在不传入 `--format`/`-f` 选项时运行 `flask spec` 命令。
+
+如果你想启用 YAML 支持，可以通过 `yaml` 额外选项安装 APIFlask（这将安装 `PyYAML`）：
+
+```
+$ pip install "apiflask[yaml]"
+```
 
 !!! warning
     `APIFlask(spec_path=...)` 在 0.7.0 及之后的版本中去除了对格式的自动检测。
@@ -500,6 +550,62 @@ app.config['YAML_SPEC_MIMETYPE'] = 'text/x-yaml'
     这个配置变量在 [0.4.0 版本](/changelog/#version-040) 中添加。
 
 
+### DOCS_DECORATORS
+
+OpenAPI 文档 UI 端点（`/docs`）的自定义装饰器。
+
+- 类型: `List[Callable]`
+- 默认值: `None`
+- 示例：
+
+```python
+app.config['DOCS_DECORATORS'] = [your_decorator]
+```
+
+
+### SPEC_DECORATORS
+
+OpenAPI spec 端点（`/openapi.json`）的自定义装饰器。
+
+- 类型: `List[Callable]`
+- 默认值: `None`
+- 示例：
+
+```python
+app.config['SPEC_DECORATORS'] = [your_decorator]
+```
+
+
+### SWAGGER_UI_OAUTH_REDIRECT_DECORATORS
+
+Swagger UI OAuth 重定向端点（`/docs/oauth2-redirect`）的自定义装饰器。
+
+- 类型: `List[Callable]`
+- 默认值: `None`
+- 示例：
+
+```python
+app.config['SWAGGER_UI_OAUTH_REDIRECT_DECORATORS'] = [your_decorator]
+```
+
+### SPEC_PROCESSOR_PASS_OBJECT
+
+如果设置为 `True`，传递给 spec 处理器的 `spec` 参数将会是一个
+[`apispec.APISpec`](https://apispec.readthedocs.io/en/latest/api_core.html#apispec.APISpec) 对象。
+
+- 类型: `bool`
+- 默认值: `False`
+- 示例：
+
+```python
+app.config['SPEC_PROCESSOR_PASS_OBJECT'] = True
+```
+
+!!! warning "版本 >= 1.3.0"
+
+    这个配置变量在 [1.3.0 版本](/changelog/#version-130) 中添加。
+
+
 ### 对自动化行为的控制
 
 以下配置变量被用来控制 APIflask 的自动化行为，所有这些配置变量的默认值都是
@@ -520,6 +626,31 @@ app.config['YAML_SPEC_MIMETYPE'] = 'text/x-yaml'
 
 ```python
 app.config['AUTO_TAGS'] = False
+```
+
+
+### AUTO_SERVERS
+
+!!! warning "版本 >= 1.2.1"
+
+    这个配置变量在 [1.2.1 版本](/changelog/#version-121) 中添加。
+
+启用或禁用从请求上下文自动生成服务器信息（`openapi.servers`）。
+
+当你在带有 URL 前缀的反向代理后运行 API 时，这个功能非常有用。
+
+注意，当请求上下文不可用时（例如运行 `flask spec` 命令），`servers` 字段将不存在。
+
+!!! tip
+
+    这种自动化行为仅当 `app.servers` 或配置项 `SERVERS` 没有被设置时才会进行。
+
+- 类型: `bool`
+- 默认值: `True`
+- 示例：
+
+```python
+app.config['AUTO_SERVERS'] = False
 ```
 
 
@@ -821,6 +952,18 @@ app.config['BASE_RESPONSE_DATA_KEY'] = 'data'
 
     这个配置变量在 [0.9.0 版本](/changelog/#version-090) 中添加。
 
+!!! note
+
+    `BASE_RESPONSE_DATA_KEY` 应该与 `data_key` 的值一致，而不是属性的名字（如果你指定了 `data_key`）。
+
+    例如，在基响应 schema 中，`BASE_RESPONSE_DATA_KEY` 应该被赋值为 `payload` 而不是 `data`：
+
+    ```python
+    class BaseResponse(Schema):
+        message = String()
+        status_code = Integer()
+        data = Field(data_key='payload')
+    ```
 
 ## API documentation
 
@@ -955,6 +1098,17 @@ app.config['SWAGGER_UI_CONFIG'] = {
 }
 ```
 
+!!! tip
+
+    Configurations of `Function` type can be provided through strings after  [version 1.2.2](/changelog/#version-122).
+
+    For example:
+    ```py
+    app.config['SWAGGER_UI_CONFIG'] = {
+        'requestInterceptor': '(req) => { console.log("Intercepted!"); return req; }'
+    }
+    ```
+
 
 #### `SWAGGER_UI_OAUTH_CONFIG`
 
@@ -977,6 +1131,152 @@ ui.initOAuth(yourConfig)
 ```python
 app.config['SWAGGER_UI_OAUTH_CONFIG'] = {
     'realm': 'foo'
+}
+```
+
+### ELEMENTS_CSS
+
+Elements CSS 文件的绝对或相对 URL。
+
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/@stoplight/elements/styles.min.css'`
+- 示例：
+
+```python
+app.config['ELEMENTS_CSS'] = 'https://cdn.jsdelivr.net/npm/@stoplight/elements-dev-portal@1.7.4/styles.min.css'
+```
+
+
+### ELEMENTS_JS
+
+Elements JavaScript 文件的绝对或相对 URL。
+
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/@stoplight/elements/web-components.min.js'`
+- 示例：
+
+```python
+app.config['ELEMENTS_JS'] = 'https://cdn.jsdelivr.net/npm/@stoplight/elements-dev-portal@1.7.4/web-components.min.js'
+```
+
+
+### ELEMENTS_LAYOUT
+
+Elements 的布局类型，可选值为 `'sidebar'` 和 `'stacked'`。
+
+- 类型: `str`
+- 默认值: `'sidebar'`
+- 示例：
+
+```python
+app.config['ELEMENTS_LAYOUT'] = 'stacked'
+```
+
+
+### ELEMENTS_CONFIG
+
+Elements 的配置，这些配置值将覆盖现有配置，例如 `ELEMENTS_LAYOUT`。
+
+!!! 提示
+
+    查看 *[Elements 配置选项][_elements_conf]{target:_blank}*
+    了解可用的配置选项。
+
+[_elements_conf]: https://github.com/stoplightio/elements/blob/main/docs/getting-started/elements/elements-options.md
+
+- 类型: `dict`
+- 默认值: `None`
+- 示例：
+
+```python
+app.config['ELEMENTS_CONFIG'] = {
+    'hideTryIt': 'true',
+    'layout': 'stacked',
+}
+```
+
+
+### RAPIDOC_JS
+
+RapiDoc JavaScript 文件的绝对或相对 URL。
+
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/rapidoc/dist/rapidoc-min.js'`
+- 示例：
+
+```python
+app.config['RAPIDOC_JS'] = 'https://cdn.jsdelivr.net/npm/rapidoc@9.3.2/dist/rapidoc-min.min.js'
+```
+
+
+### RAPIDOC_THEME
+
+RapiDoc 的主题，可选值为 `'light'` 和 `'dark'`。
+
+- 类型: `str`
+- 默认值: `'light'`
+- 示例：
+
+```python
+app.config['RAPIDOC_THEME'] = 'dark'
+```
+
+
+### RAPIDOC_CONFIG
+
+RapiDoc 的配置，这些配置值将覆盖现有配置，例如 `RAPIDOC_THEME`。
+
+!!! 提示
+
+    查看 *[RapiDoc API][_rapidoc_conf]{target:_blank}* 文档
+    了解可用的配置选项。
+
+[_rapidoc_conf]: https://rapidocweb.com/api.html
+
+- 类型: `dict`
+- 默认值: `None`
+- 示例：
+
+```python
+app.config['RAPIDOC_CONFIG'] = {
+    'update-route': False,
+    'layout': 'row'
+}
+```
+
+
+### RAPIPDF_JS
+
+RapiPDF JavaScript 文件的绝对或相对 URL。
+
+- 类型: `str`
+- 默认值: `'https://cdn.jsdelivr.net/npm/rapipdf/dist/rapipdf-min.js'`
+- 示例：
+
+```python
+app.config['RAPIPDF_JS'] = 'https://cdn.jsdelivr.net/npm/rapipdf@2.2.1/src/rapipdf.min.js'
+```
+
+
+### RAPIPDF_CONFIG
+
+RapiPDF 的配置。
+
+!!! 提示
+
+    查看 *[RapiPDF API][_rapipdf_conf]{target:_blank}* 文档
+    了解可用的配置选项。
+
+[_rapipdf_conf]: https://mrin9.github.io/RapiPdf/api.html
+
+- 类型: `dict`
+- 默认值: `None`
+- 示例：
+
+```python
+app.config['RAPIPDF_CONFIG'] = {
+    'include-example': True,
+    'button-label': 'Generate!'
 }
 ```
 

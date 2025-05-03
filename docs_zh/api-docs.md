@@ -111,7 +111,7 @@ def my_redoc():
 
 通过这种方式，你可以同时支持多个 API 文档，或是为文档视图添加安全认证。如果你想要为 API 文档使用内置的配置变量或者只是想少些一点代码，可以直接从 APIFlask 导入 API 文档的模板：
 
-```python hl_lines="2 10"
+```python
 from apiflask import APIFlask
 from apiflask.ui_templates import redoc_template
 from flask import render_template_string
@@ -123,6 +123,10 @@ app = APIFlask(__name__)
 def my_redoc():
     return render_template_string(redoc_template, title='My API', version='1.0')
 ```
+
+## 为 API 文档添加认证保护
+
+有关更多详细信息，请参阅 *[保护 OpenAPI 端点](/openapi/#protect-openapi-endpoints)*。
 
 
 ## 全局禁用 API 文档
@@ -250,3 +254,41 @@ app.config['RAPIPDF_JS'] = 'https://cdn.jsdelivr.net/npm/rapipdf@2.2.1/src/rapip
     Swagger UI 的相关资源可以在 [Swagger UI 发行页][_swagger_ui_releases]{target=_blank} 中下载资源里的 `dist` 文件夹中找到。
 
     [_swagger_ui_releases]: https://github.com/swagger-api/swagger-ui/releases
+
+### 独立的静态 HTML 文档
+
+对于离线使用，你可以使用 RapiPDF 将 OpenAPI 文档生成 PDF 文件：
+
+```python
+from apiflask import APIFlask
+
+app = APIFlask(__name__, docs_ui='rapipdf')
+```
+
+如果生成的 PDF 文件无法满足你的需求，你也可以将静态 HTML 文件作为 API 文档提供。
+
+以 Swagger UI 为例，你需要：
+
+1. 创建一个加载 Swagger UI JavaScript 和 CSS 文件的静态 HTML 文件。
+2. 使用 `flask spec` 命令生成本地 OpenAPI 规范文件，并设置以下配置：
+
+    ```python
+    app.config['SYNC_LOCAL_SPEC'] = True  # 保持规范文件与代码同步
+    app.config['LOCAL_SPEC_PATH'] = 'openapi.json'  # 规范文件的路径
+    app.config['LOCAL_SPEC_JSON_INDENT'] = 0  # 设置为 0 以移除缩进
+    ```
+
+3. 创建一个 shell 脚本来读取 OpenAPI 规范文件并将其传递给 Swagger UI HTML 文件。例如：
+
+    ```sh
+    #!/bin/sh
+
+    spec_value=$(python3 -c "import json; print(open('openapi.json').read())")
+    # 替换 index.html 中的 var spec = {...} 行
+    sed -i "s|var spec = {.*}|var spec = $spec_value|g" index.html
+    ```
+
+这里是[一个完整的示例](https://github.com/apiflask/apiflask/tree/main/examples/openapi/static_docs)。
+
+另请参阅 [Swagger UI 文档](https://github.com/swagger-api/swagger-ui/blob/master/docs/usage/installation.md#plain-old-htmlcssjs-standalone)
+了解独立安装的更多信息。

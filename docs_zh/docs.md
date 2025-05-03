@@ -19,6 +19,8 @@
 - **[Swagger UI 和 Redoc](/api-docs)**：API 文档工具的用法和配置
 - **[配置](/configuration)**：内置的配置变量表。
 - **[应用示例](/examples)**：应用示例集。
+- **[Tips](/tips)**：关于使用 APIFlask 开发 Web API 的最佳实践和注意事项集合。
+- **[迁移指南](/migration_guide)**：APIFlask 各个主要版本的迁移指南。
 
 以下章节对贡献者和想要继续了解 APIFlask 的人有用。
 
