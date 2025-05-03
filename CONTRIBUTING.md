@@ -1,90 +1,66 @@
-# Contributing Guide
+# 贡献指南
 
-Thank you for contributing to APIFlask.
+感谢你为 APIFlask 做出贡献。
 
 
-## Support questions
+## 支持问题
 
-Please don't use the issue tracker for this. The issue tracker is a tool
-to address bugs and feature requests in APIFlask itself. Use one of the
-following resources for questions about using APIFlask or issues with your
-own code:
+请不要在问题追踪器中提交支持问题。问题追踪器是用于处理 APIFlask 本身的错误和功能请求的工具。对于使用 APIFlask 或你自己代码中的问题，请使用以下资源：
 
-- Search with Google first using: `site:stackoverflow.com apiflask {search term, exception message, etc.}`.
-- Ask on our [GitHub Discussion][_gh_discuss], create a discussion under
-the "Q&A" category.
-- Ask on [Stack Overflow][_so].
+- 首先使用 Google 搜索：`site:stackoverflow.com apiflask {搜索词、异常信息等}`。
+- 在我们的 [GitHub Discussion][_gh_discuss] 中提问，在 "Q&A" 分类下创建讨论。
+- 在 [Stack Overflow][_so] 上提问。
 
-Include the following information in your post:
+在你的帖子中包含以下信息：
 
-- Describe what you expected to happen.
-- If possible, include a [minimal reproducible example][_mcve] to help us
-identify the issue. This also helps check that the issue is not with
-your own code.
-- Describe what actually happened. Include the full traceback if there
-was an exception.
-- List your Python, Flask and APIFlask versions. If possible, check if this
-issue is already fixed in the latest releases or the latest code in
-the repository.
+- 描述你期望的结果。
+- 如果可能，请包含一个 [最小可复现示例][_mcve]，以帮助我们识别问题。这也有助于检查问题是否出在你的代码中。
+- 描述实际发生的情况。如果有异常，请包含完整的回溯信息。
+- 列出你的 Python、Flask 和 APIFlask 版本。如果可能，请检查此问题是否已在最新版本或代码库的最新代码中修复。
 
 [_gh_discuss]: https://github.com/apiflask/apiflask/discussions
 [_so]: https://stackoverflow.com/questions/tagged/apiflask?tab=Frequent
 
 
-## Reporting issues
+## 报告问题
 
-If you find a bug related to APIFlask itself, or you think APIFlask
-should provide a new feature/enhacement, feel free to create an
-issue on our [issue tracker][_gh_issue].
+如果你发现与 APIFlask 本身相关的错误，或者认为 APIFlask 应该提供新的功能/增强功能，请随时在我们的 [问题追踪器][_gh_issue] 中创建问题。
 
-Include the following information in your post:
+在你的帖子中包含以下信息：
 
-- Describe what you expected to happen.
-- If possible, include a [minimal reproducible example][_mcve] to help us
-identify the issue. This also helps check that the issue is not with
-your own code.
-- Describe what actually happened. Include the full traceback if there
-was an exception.
-- List your Python, Flask and APIFlask versions. If possible, check if this
-issue is already fixed in the latest releases or the latest code in
-the repository.
+- 描述你期望的结果。
+- 如果可能，请包含一个 [最小可复现示例][_mcve]，以帮助我们识别问题。这也有助于检查问题是否出在你的代码中。
+- 描述实际发生的情况。如果有异常，请包含完整的回溯信息。
+- 列出你的 Python、Flask 和 APIFlask 版本。如果可能，请检查此问题是否已在最新版本或代码库的最新代码中修复。
 
 [_gh_issue]: https://github.com/apiflask/apiflask/issues
 [_mcve]: https://stackoverflow.com/help/minimal-reproducible-example
 
 
-## Submitting patches
+## 提交补丁
 
-If there is not an open issue for what you want to submit, prefer
-opening one for discussion before working on a PR. You can work on any
-issue that doesn't have an open PR linked to it or a maintainer assigned
-to it. These show up in the sidebar. No need to ask if you can work on
-an issue that interests you.
+如果你想提交的内容没有对应的开放问题，建议先打开一个问题进行讨论，然后再开始处理 PR。你可以处理任何没有关联开放 PR 或分配给维护者的问题。这些问题会显示在侧边栏中。无需询问是否可以处理你感兴趣的问题。
 
-Include the following in your patch:
+在你的补丁中包含以下内容：
 
-- Include tests if your patch adds or changes code. Make sure the test
-fails without your patch.
-- Update any relevant docs pages and docstrings. Docs pages and
-docstrings should be wrapped at 72 characters.
-- Add an entry in `CHANGES.md`. Use the same style as other
-entries. Also include `Version Changed` or `Version Added` section
-in relevant docstrings.
+- 如果你的补丁添加或更改了代码，请包含测试。确保测试在没有你的补丁时会失败。
+- 更新任何相关的文档页面和文档字符串。文档页面和文档字符串应限制在 72 个字符以内。
+- 在 `CHANGES.md` 中添加一条条目。使用与其他条目相同的风格。在相关的文档字符串中也包括 `Version Changed` 或 `Version Added` 部分。
 
 
-### First time setup
+### 第一次设置
 
-- Download and install the latest version of Git.
-- Configure git with your username and email.
+- 下载并安装最新版本的 Git。
+- 使用你的用户名和电子邮件配置 Git。
 
 ```
 $ git config --global user.name 'your name'
 $ git config --global user.email 'your email'
 ```
 
-- Make sure you have a GitHub account.
-- Click the "[Fork][_fork]" button to fork APIFlask on GitHub.
-- Clone your fork repository locally (replace `{username}` with your username):
+- 确保你有一个 GitHub 账户。
+- 点击 "[Fork][_fork]" 按钮在 GitHub 上 fork APIFlask。
+- 将你的 fork 仓库克隆到本地（将 `{username}` 替换为你的用户名）：
 
 ```
 $ git clone https://github.com/{username}/apiflask
@@ -92,9 +68,9 @@ $ cd apiflask
 $ git remote add upstream https://github.com/apiflask/apiflask
 ```
 
-- Create a virtual environment and install requirements:
+- 创建虚拟环境并安装依赖项：
 
-For Linux/macOS:
+对于 Linux/macOS：
 
 ```
 $ python3 -m venv env
@@ -105,7 +81,7 @@ $ pip install -e .
 $ pre-commit install
 ```
 
-For Windows:
+对于 Windows：
 
 ```
 > python -m venv env
@@ -119,61 +95,56 @@ For Windows:
 [_fork]: https://github.com/apiflask/apiflask/fork
 
 
-### Start coding
+### 开始编码
 
-- Create a new branch to address the issue you want to work on (be sure to
-update the example branch name):
+- 创建一个新分支来处理你想要解决的问题（请确保更新示例分支名称）：
 
 ```
 $ git fetch upstream
 $ git checkout -b your-branch-name upstream/main
 ```
 
-- Using your favorite editor, make your changes,
-[committing as you go][_commit].
-- Include tests that cover any code changes you make. Make sure the
-test fails without your patch. Run the tests as described below.
-- Push your commits to your fork on GitHub:
+- 使用你喜欢的编辑器进行更改，[并随时提交][_commit]。
+- 包括覆盖你所做代码更改的测试。确保测试在没有你的补丁时会失败。按照下面的描述运行测试。
+- 将你的提交推送到 GitHub 上的 fork 仓库：
 
 ```
 $ git push --set-upstream origin your-branch-name
 ```
 
-- [Create a pull request][_pr]. Link to the issue being addressed with `fixes #123` in the pull request.
+- [创建一个拉取请求][_pr]。在拉取请求中使用 `fixes #123` 链接到正在解决的问题。
 
 [_commit]: https://dont-be-afraid-to-commit.readthedocs.io/en/latest/git/commandlinegit.html#commit-your-changes
 [_pr]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request
 
 
-### Running the tests
+### 运行测试
 
-Run the basic test suite with pytest:
+使用 pytest 运行基本测试套件：
 
 ```
 $ pytest
 ```
 
-This runs the tests for the current environment, which is usually
-sufficient. You can run the full test suite (including checks for unit test,
-test coverage, code style, mypy) with tox:
+这将运行当前环境的测试，通常已经足够。你可以使用 tox 运行完整的测试套件（包括单元测试、测试覆盖率、代码风格检查、mypy 检查）：
 
 ```
 $ tox
 ```
 
 
-### Building the docs
+### 构建文档
 
-Serve the live docs with MkDocs:
+使用 MkDocs 提供实时文档服务：
 
 ```
 $ mkdocs serve
 ```
 
-You can also build the HTML docs to preview:
+你还可以构建 HTML 文档以进行预览：
 
 ```
 $ mkdocs build
 ```
 
-Open ``site/index.html`` in your browser to view the docs.
+在浏览器中打开 ``site/index.html`` 查看文档。
