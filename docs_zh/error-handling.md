@@ -6,7 +6,7 @@ APIFlask 中的错误处理基于以下基本概念：
 - 所有错误都建立在基本异常类 [`HTTPError`](/api/exceptions/#apiflask.exceptions.HTTPError) 之上。
 - 使用 `APIFlask.abort()` 函数或抛出 `HTTPError` 类来生成一个错误响应。
 - 使用 `app.error_processor`（`app` 是 `apiflask.APIFlask` 的一个实例）来注册一个自定义的错误响应处理器。
-- 使用 `auth.error_processor` （`auth`是`apiflask.HTTPBasicAuth`或 `apiflask.HTTPTokenAuth` 的
+- 使用 `auth.error_processor` （`auth` 是 `apiflask.HTTPBasicAuth`或 `apiflask.HTTPTokenAuth` 的
   一个实例）来注册一个自定义的认证错误响应处理器。
 - 子类化 `HTTPError` 来创建自定义的错误类。
 
@@ -151,7 +151,7 @@ def get_pet(pet_id):
     return {'message': 'Pet'}
 ```
 
-!!! tips "使用 Werkzeug 中的异常类"
+!!! tip "使用 Werkzeug 中的异常类"
 
     如果在创建 `app` 实例时没有将 `json_errors` 设置为 `False`，
     APIFlask 将捕获所有 Werkzeug 异常，包括被直接抛出的异常：
@@ -193,7 +193,7 @@ def get_pet(pet_id):
 - 使用 [`HTTPError`][apiflask.exceptions.HTTPError] 触发的异常。
 - 使用 [`abort`][apiflask.exceptions.abort] 触发的异常。
 
-你仍然可以使用 `app.errorhandler(code_or_exection)` 装饰器来为特定的异常或错误状态码注册错误处理器。
+你仍然可以使用 `app.errorhandler(code_or_exception)` 装饰器来为特定的异常或错误状态码注册错误处理器。
 在这种情况下，这些错误处理器的返回值将用作相应错误或异常发生时的响应。
 
 回调函数必须接受一个错误对象作为参数，并返回一个有效响应：
@@ -327,8 +327,7 @@ JSON 格式的错误，并调用内置的错误回调或通过 `app.error_proces
 对于以下情况，你需要为认证错误注册一个单独的错误处理器：
 
 - 如果想对 401/403 错误做一些额外的处理，但不想使用`app.errorhandler(401)` 或
-  `app.errorhandler(403)` 注册特定的错误处理器，这时就必须使用 `auth.error_processor`
-  来注册一个认证错误处理器。
+  `app.errorhandler(403)` 注册特定的错误处理器，这时就必须使用 `auth.error_processor` 来注册一个认证错误处理器。
 - 如果已将 `json_errors` 设置为 `False`，但还想自定义错误响应，由于全局错误处理器将不被使用，
   这时就得注册一个自定义的认证错误处理器。
 

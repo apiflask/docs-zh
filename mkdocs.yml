@@ -64,6 +64,7 @@ nav:
   - API 文档: api-docs.md
   - 配置: configuration.md
   - 错误处理: error-handling.md
+  - 版本迁移指南: migration_guide.md
   - 示例程序: examples.md
   - Tips: tips.md
   - API 参考:
@@ -79,7 +80,7 @@ nav:
     - Helpers: api/helpers.md
     - Commands: api/commands.md
   - 对比和动机: comparison.md
-  - 作者: authors.md
+  - 项目作者: authors.md
   - 变更日志: changelog.md
   - 贡献指南: contributing.md
   - 捐赠支持: https://opencollective.com/apiflask

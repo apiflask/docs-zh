@@ -17,6 +17,7 @@ APIFlask 提供了以下请求位置支持（`location` 参数）：
 - `json` （默认）
 - `form`
 - `query` （与 `querystring` 相同）
+- `path`（与 `view_args` 相同）
 - `cookies`
 - `headers`
 - `files`
@@ -33,39 +34,60 @@ APIFlask 提供了以下请求位置支持（`location` 参数）：
 
 ```python
 @app.get('/')
-@app.input(FooHeaderSchema, location='headers')  # header
-@app.input(FooQuerySchema, location='query')  # query string
-@app.input(FooInSchema, location='json')  # JSON data (body location)
-def hello(headers, query, data):
+@app.input(FooHeader, location='headers')  # header
+@app.input(FooQuery, location='query')  # query string
+@app.input(FooIn, location='json')  # JSON data (body location)
+def hello(headers_data, query_data, data_data):
     pass
 ```
 
+## 请求体的 media type
+
+在生成的 OpenAPI 规范中，请求体的内容类型是根据你声明的输入位置设置的。
+
+- `json`: `application/json`
+- `form`: `application/x-www-form-urlencoded`
+- `files`: `multipart/form-data`
+- `form_and_files`: `multipart/form-data`
+- `json_or_form`: `application/json` 和 `application/x-www-form-urlencoded`。对于这个位置，APIFlask 会
+    尝试先将请求体解析为 JSON，如果失败，则会尝试将其解析为表单数据。在 OpenAPI 规范中会显示两种内容类型，例如：
+
+    ```yaml
+    requestBody:
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        ...
+            application/x-www-form-urlencoded:
+                schema:
+                    type: object
+                    properties:
+                        ...
+    ```
 
 ## 请求体的验证
 
 当你使用 `app.input` 声明一个输入时，APIFlask（webargs）将会从指定的位置获取数据，并依据 schema 的定义验证它。
 
-假如解析与验证均成功，数据将会被传至视图函数。当你声明多个输入时，参数的顺序从上到下依次排列：
+假如解析与验证均成功，数据将会以关键字参数 `{location}_data` 传至视图函数：
 
 ```python
 @app.get('/')
-@app.input(FooQuerySchema, location='query')  # query
-@app.input(FooInSchema, location='json')  # data
-def hello(query, data):
+@app.input(FooQuery, location='query')  # query data
+@app.input(FooIn, location='json')  # JSON data
+def hello(query_data, json_data):
     pass
 ```
 
-!!! tip
-
-    视图函数的参数名称（`query, data`）由你来定义，你可以换成任何一个你喜欢的名字。
-
-如果你还定义了 URL 变量，参数的顺序在从上至下的基础上，从左到右排列：
+如果你还定义了 URL 变量，它们也会作为关键字参数传入：
 
 ```python
 @app.get('/<category>/articles/<int:article_id>')  # category, article_id
-@app.input(ArticleQuerySchema, location='query')  # query
-@app.input(ArticleInSchema, location='json')  # data
-def get_article(category, article_id, query, data):
+@app.input(ArticleQuery, location='query')  # query data
+@app.input(ArticleIn, location='json')  # JSON data
+def get_article(category, article_id, query_data, json_data):
     pass
 ```
 
@@ -116,8 +138,8 @@ from apiflask.fields import Integer
     {'page': Integer(load_default=1), 'per_page': Integer(load_default=10)},
     location='query'
 )
-@app.input(FooInSchema, location='json')
-def hello(query, data):
+@app.input(FooIn, location='json')
+def hello(query_data, json_data):
     pass
 ```
 
@@ -133,8 +155,8 @@ from apiflask.fields import Integer
     location='query',
     schema_name='PaginationQuery'
 )
-@app.input(FooInSchema, location='json')
-def hello(query, data):
+@app.input(FooIn, location='json')
+def hello(query_data, json_data):
     pass
 ```
 
@@ -157,14 +179,14 @@ from werkzeug.utils import secure_filename
 from apiflask.fields import File
 
 
-class ImageSchema(Schema):
+class Image(Schema):
     image = File()
 
 
 @app.post('/images')
-@app.input(ImageSchema, location='files')
-def upload_image(data):
-    f = data['image']
+@app.input(Image, location='files')
+def upload_image(files_data):
+    f = files_data['image']
 
     filename = secure_filename(f.filename)
     f.save(os.path.join(the_path_to_uploads, filename))
@@ -190,15 +212,15 @@ from werkzeug.utils import secure_filename
 from apiflask.fields import String, File
 
 
-class ProfileInSchema(Schema):
+class ProfileIn(Schema):
     name = String()
     avatar = File()
 
 @app.post('/profiles')
-@app.input(ProfileInSchema, location='form_and_files')
-def create_profile(data):
-    avatar_file = data['avatar']
-    name = data['name']
+@app.input(ProfileIn, location='form_and_files')
+def create_profile(form_and_files_data):
+    avatar_file = form_and_files_data['avatar']
+    name = form_and_files_data['name']
 
     avatar_filename = secure_filename(avatar_file.filename)
     avatar_file.save(os.path.join(the_path_to_uploads, avatar_filename))
@@ -212,15 +234,14 @@ def create_profile(data):
 
 !!! notes
 
-    文件字段的验证器将在后续版本中可用
-    （参见 [#253](https://github.com/apiflask/apiflask/issues/253)）。目前，
-    你可以在 schema 或者视图函数中手动验证文件：
+    从 APIFlask 2.1.0 开始，你可以使用 `FileType` 和 `FileSize` 验证器来验证文件类型和大小：
 
     ```python
-    class ImageSchema(Schema):
-        image = File(validate=lambda f: f.mimetype in ['image/jpeg', 'image/png'])
-    ```
+    from apiflask.validators import FileType, FileSize
 
+    class Image(Schema):
+        image = File(validate=[FileType(['.png', '.jpg', '.jpeg', '.gif']), FileSize(max='5 MB')])
+    ```
 
 ## 请求示例
 

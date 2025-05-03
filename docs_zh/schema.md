@@ -124,6 +124,9 @@ API 文档：<https://flask-marshmallow.readthedocs.io/en/latest/#flask-marshmal
 - `AbsoluteURLFor`
 - `Hyperlinks`
 - `URLFor`
+- `File`
+- `Config`
+
 
 ## webargs 字段
 
@@ -134,16 +137,18 @@ API 文档：<https://webargs.readthedocs.io/en/latest/api.html#module-webargs.f
 
 ## APIFlask 字段
 
-API 文档：<https://apiflask.com/api/fields/#apiflask.fields.File>
+API 文档：<https://apiflask.com/api/fields>
 
-- `File`
+- `File`: represents a file input.
+ - `Config`: dump a config value from Flask's `config` object.
 
 !!! tip
 
     如果现有字段不能满足你的需求，你也可以创建[自定义字段](https://marshmallow.readthedocs.io/en/stable/custom_fields.html)。
+
 ## 数据验证器
 
-APIFlask 的 `apiflask.validators` 包含了 marshmallow 提供的所有验证器类：
+APIFlask 的 `apiflask.validators` 包含了 marshmallow 提供的所有验证器类以及额外的 `FileType` 和 `FileSize` 验证器：
 
 - `ContainsNoneOf`
 - `ContainsOnly`
@@ -157,8 +162,11 @@ APIFlask 的 `apiflask.validators` 包含了 marshmallow 提供的所有验证�
 - `Regexp`
 - `URL`
 - `Validator`
+- `FileType`
+- `FileSize`
 
-详细用法请参阅 [API 文档](https://marshmallow.readthedocs.io/en/stable/marshmallow.validate.html)。
+
+详细用法请参阅 [marshmallow 的 API 文档](https://marshmallow.readthedocs.io/en/stable/marshmallow.validate.html)以及  [APIFlask 的 API documentation](https://apiflask.com/api/validators)。
 
 为字段指定验证器时，你可以向 `validate` 参数传递单个验证器：
 
@@ -282,9 +290,14 @@ app.config['BASE_RESPONSE_DATA_KEY'] = 'data'
 现在你可以在视图函数中返回与基础响应模式相匹配的字典：
 
 ```python
-@app.get('/')
-def say_hello():
-    data = {'name': 'Grey'}
+ class PetOut(Schema):
+    id = Integer()
+    name = String()
+    category = String()
+
+@app.output(PetOut)
+ def get_pet():
+    data = {'id': 2, 'name': 'Kitty', 'category': 'cat'}
     return {
         'data': data,
         'message': 'Success!',
@@ -333,7 +346,7 @@ class PetOut:
 
 
 @app.post('/pets')
-@app.input(PetIn.Schema)
+@app.input(PetIn.Schema, arg_name='pet')
 @app.output(PetOut.Schema, status_code=201)
 def create_pet(pet: PetIn):
     return {
