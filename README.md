@@ -66,7 +66,8 @@ Windows：
 ## 链接
 
 - 网站：<https://apiflask.com>
-- 文档：<https://apiflask.com/docs>
+- 文档（英文）：<https://apiflask.com/docs>
+- 文档（中文）：<https://zh.apiflask.com/docs>
 - PyPI：<https://pypi.python.org/pypi/APIFlask>
 - 变更日志：<https://apiflask.com/changelog>
 - 源代码：<https://github.com/apiflask/apiflask>
