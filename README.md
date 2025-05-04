@@ -73,7 +73,7 @@ Windows：
 - 源代码：<https://github.com/apiflask/apiflask>
 - Issue 追踪：<https://github.com/apiflask/apiflask/issues>
 - 论坛（英文）：<https://github.com/apiflask/apiflask/discussions>
-- 论坛（中文）：<https://discuss.helloflask.com/>
+- 论坛（中文）：<<https://codekitchen.community>>
 - Twitter：<https://twitter.com/apiflask>
 
 
