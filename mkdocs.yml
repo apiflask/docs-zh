@@ -79,7 +79,7 @@ nav:
     - Security: api/security.md
     - Helpers: api/helpers.md
     - Commands: api/commands.md
-  - 对比和动机: comparison.md
+  - 项目对比: comparison.md
   - 项目作者: authors.md
   - 变更日志: changelog.md
   - 贡献指南: contributing.md
